@@ -184,7 +184,7 @@ select:focus {
 
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
 }
 
@@ -193,49 +193,53 @@ select:focus {
 .paper-card {
     background: var(--bg-alt);
     border-radius: 0.9rem;
-    padding: 1.8rem 0.9rem 0.8rem;
+    padding: 1.8rem 0.9rem 0.8rem; /* meer ruimte voor badge */
     box-shadow: var(--card-shadow);
     border: 1px solid rgba(148, 163, 184, 0.25);
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.45rem;
     position: relative;
     overflow: hidden;
     transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
 }
 
 .paper-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.12);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.10);
     border-color: rgba(59, 130, 246, 0.4);
 }
 
 .paper-card h2 {
     margin: 0;
-    font-size: 1rem;
-    line-height: 1.3;
+    font-size: 1.05rem;
+    line-height: 1.35;
 }
 
 .paper-card .date {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--muted);
+    opacity: 0.85;
 }
 
 .paper-card p {
     margin: 0.2rem 0 0;
     font-size: 0.9rem;
     color: var(--text);
+    line-height: 1.45;
 }
 
-.paper-card a {
-    margin-top: 0.4rem;
-    font-size: 0.85rem;
-    color: var(--accent);
-    text-decoration: none;
-}
+/* Fade-out effect */
 
-.paper-card a:hover {
-    text-decoration: underline;
+.paper-card::after {
+    content: "";
+    position: absolute;
+    bottom: 2.2rem;
+    left: 0;
+    right: 0;
+    height: 2rem;
+    background: linear-gradient(to bottom, transparent, var(--bg-alt));
+    pointer-events: none;
 }
 
 /* Source badge */
@@ -244,14 +248,15 @@ select:focus {
     position: absolute;
     top: 0.6rem;
     right: 0.7rem;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    padding: 0.15rem 0.5rem;
+    padding: 0.12rem 0.45rem;
     border-radius: 999px;
     border: 1px solid rgba(148, 163, 184, 0.5);
     background: rgba(248, 250, 252, 0.9);
     color: var(--muted);
+    opacity: 0.9;
 }
 
 body.dark .source-badge {
