@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         badge.textContent = source.charAt(0).toUpperCase() + source.slice(1);
         card.insertBefore(badge, card.firstChild);
 
-        // Collapsible abstract (now uses full text from data-full)
+        // Collapsible abstract (uses full text from data-full)
         if (abstractEl) {
             const fullText = abstractEl.dataset.full.trim();
 
@@ -187,11 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Real read-time (uses full abstract, not truncated)
+        // ⭐ REAL READ-TIME (correct full abstract)
         const readTimeEl = card.querySelector(".read-time");
         if (abstractEl && readTimeEl) {
-            const full = abstractEl.dataset.full || abstractEl.innerText;
-            const words = full.trim().split(/\s+/).length;
+            const full = abstractEl.dataset.full.trim();
+            const words = full.split(/\s+/).length;
             const minutes = Math.max(1, Math.round(words / 200));
             readTimeEl.textContent = `${minutes} min read`;
         }
@@ -271,23 +271,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-
-<!-- ⭐ REAL READ-TIME SCRIPT -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const WPM = 200;
-
-    document.querySelectorAll(".paper-card").forEach(card => {
-        const abstract = card.querySelector(".abstract");
-        const readTime = card.querySelector(".read-time");
-        if (!abstract || !readTime) return;
-
-        const words = abstract.innerText.trim().split(/\s+/).length;
-        const minutes = Math.max(1, Math.round(words / WPM));
-        readTime.textContent = `${minutes} min read`;
-    });
-});
-</script>
 
 </body>
 </html>
