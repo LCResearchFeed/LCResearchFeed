@@ -437,7 +437,10 @@ def main() -> None:
 
     log(f"[lc] Done. {len(new_papers)} new papers added to GitHub Pages.")
     log("------------------------------")
-
+    log("")
+    log("")
+    log("")
+    
 
 if __name__ == "__main__":
     main()
