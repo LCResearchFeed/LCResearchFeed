@@ -218,7 +218,7 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
     return papers
 
 # ---------------------------------------------------------
-# NATURE — ROBUUSTE HTML SCRAPER
+# NATURE 
 # ---------------------------------------------------------
 def fetch_nature_results(max_results: int = 50) -> list[dict]:
     log("[lc] Scraping Nature HTML…")
