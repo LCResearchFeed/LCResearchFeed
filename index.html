@@ -144,11 +144,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let cards = Array.from(cardsWrapper.querySelectorAll(".paper-card"));
 
-    // Enrich cards with source + collapsible abstract
+    // Enrich cards with source + collapsible abstract + real read-time
     cards.forEach(card => {
         const link = card.querySelector("a[href]");
         const dateEl = card.querySelector(".date");
-        const abstractEl = card.querySelector("p");
+        const abstractEl = card.querySelector(".abstract");
 
         const url = link ? link.getAttribute("href") : "";
         let source = "other";
@@ -164,9 +164,10 @@ document.addEventListener("DOMContentLoaded", () => {
         badge.textContent = source.charAt(0).toUpperCase() + source.slice(1);
         card.insertBefore(badge, card.firstChild);
 
-        // Collapsible abstract
+        // Collapsible abstract (now uses full text from data-full)
         if (abstractEl) {
-            const fullText = abstractEl.textContent.trim();
+            const fullText = abstractEl.dataset.full.trim();
+
             if (fullText.length > 260) {
                 const shortText = fullText.slice(0, 260) + "…";
                 abstractEl.textContent = shortText;
@@ -186,6 +187,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // Real read-time (uses full abstract, not truncated)
+        const readTimeEl = card.querySelector(".read-time");
+        if (abstractEl && readTimeEl) {
+            const full = abstractEl.dataset.full || abstractEl.innerText;
+            const words = full.trim().split(/\s+/).length;
+            const minutes = Math.max(1, Math.round(words / 200));
+            readTimeEl.textContent = `${minutes} min read`;
+        }
+
         // Normalize date for sorting
         if (dateEl) {
             const raw = dateEl.textContent.trim();
@@ -201,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let visibleCards = cards.filter(card => {
             const title = card.querySelector("h2")?.textContent.toLowerCase() || "";
-            const abstract = card.querySelector("p")?.textContent.toLowerCase() || "";
+            const abstract = card.querySelector(".abstract")?.dataset.full.toLowerCase() || "";
             const source = card.dataset.source || "other";
 
             if (sourceFilter !== "all" && source !== sourceFilter) return false;
@@ -260,6 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
     applyFilters();
 });
 </script>
+
 
 <!-- ⭐ REAL READ-TIME SCRIPT -->
 <script>
