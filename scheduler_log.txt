@@ -1,0 +1,275 @@
+[06/27/2026 18:37:07]
+Session: Console
+[lc] Loading seen IDs…
+[lc] Searching PubMed…
+[lc] Found PMIDs: 200
+[lc] Fetching PubMed details…
+[lc] Fetched PubMed papers: 200
+[lc] Scraping Nature…
+[lc] Nature papers: 85
+[lc] Strict LC mech/treatment PubMed: 21
+[lc] Strict LC mech/treatment Nature: 13
+[lc] Selected PubMed papers: 5
+[lc] Selected Nature papers: 5
+[lc] New pubmed paper: Effect of L-Citrulline Supplementation on Endothelial Function and Body Composition in Post-COVID-19 Syndrome: A Randomized Clinical Trial.
+Posted to Bluesky: Effect of L-Citrulline Supplementation on Endothelial Functi ...
+[lc] Posted: Effect of L-Citrulline Supplementation on Endothelial Functi...
+[lc] New pubmed paper: DNAm landscape up to 4 months post SARS-CoV-2 infection: insights from four population-based cohorts.
+Posted to Bluesky: DNAm landscape up to 4 months post SARS-CoV-2 infection: ins ...
+[lc] Posted: DNAm landscape up to 4 months post SARS-CoV-2 infection: ins...
+[lc] New pubmed paper: Community-delivered hyperbaric oxygen therapy for people affected by long COVID: a pilot study.
+Posted to Bluesky: Community-delivered hyperbaric oxygen therapy for people aff ...
+[lc] Posted: Community-delivered hyperbaric oxygen therapy for people aff...
+[lc] New pubmed paper: Symptom burden, lung function, exercise tolerance and inflammation in patients post COVID-19: results from the prospective COVID-19 Chronic Morbidity (CCHROMO) study.
+Posted to Bluesky: Symptom burden, lung function, exercise tolerance and inflam ...
+[lc] Posted: Symptom burden, lung function, exercise tolerance and inflam...
+[lc] New pubmed paper: Investigating the feasibility and acceptability of the TeleRehabilitation of balance clinical and economic Decision Support System (TeleRehaB DSS) in adults at risk of falls: study protocol for a multicentre clinical trial.
+Posted to Bluesky: Investigating the feasibility and acceptability of the TeleR ...
+[lc] Posted: Investigating the feasibility and acceptability of the TeleR...
+[lc] New nature paper: Transcutaneous auricular vagus nerve stimulation improves dysautonomia, post-traumatic stress disorder and cognitive impairment in long covid patients: a pilot study
+Posted to Bluesky: Transcutaneous auricular vagus nerve stimulation improves dy ...
+[lc] Posted: Transcutaneous auricular vagus nerve stimulation improves dy...
+[lc] New nature paper: Assessing autonomic nervous system imbalance in long COVID-19 patients through heart rate variability during tilt testing
+Posted to Bluesky: Assessing autonomic nervous system imbalance in long COVID-1 ...
+[lc] Posted: Assessing autonomic nervous system imbalance in long COVID-1...
+[lc] New nature paper: Pathological potential of autoantibodies in long COVID
+Posted to Bluesky: Pathological potential of autoantibodies in long COVID
+
+
+
+ht ...
+[lc] Posted: Pathological potential of autoantibodies in long COVID
+
+
+
+ht...
+[lc] New nature paper: Retinal microvascular alterations consistent with endothelial dysregulation in paediatric post-COVID-19 syndrome: A prospective matched-cohort study
+Posted to Bluesky: Retinal microvascular alterations consistent with endothelia ...
+[lc] Posted: Retinal microvascular alterations consistent with endothelia...
+[lc] New nature paper: Integrated immune, apoptotic and mitochondrial gene dysregulation in Long COVID and their association with symptom burden at 10 months post-infection
+Posted to Bluesky: Integrated immune, apoptotic and mitochondrial gene dysregul ...
+[lc] Posted: Integrated immune, apoptotic and mitochondrial gene dysregul...
+[lc] Done. 10 new posts sent to Bluesky.
+------------------------------
+[06/28/2026 10:17:24]
+Session: Console
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+[lc] Done. 5 new papers added to GitHub Pages.
+------------------------------
+[06/28/2026 10:19:20]
+Session: Console
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+Author identity unknown
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'Matthijs@ASUS-ZENBOOK-MATTHIJS.(none)')
+Everything up-to-date
+[lc] Done. 10 new papers added to GitHub Pages.
+------------------------------
+[06/28/2026 10:23:25]
+Session: Console
+[06/28/2026 10:24:37]
+Session: Console
