@@ -1,21 +1,2 @@
-[06/28/2026 19:23:11]
-Session: Console
-[2026-06-28 19:23:12] Session: Console
-[2026-06-28 19:23:12] [lc] Searching PubMed…
-[2026-06-28 19:23:12] [lc] Found PMIDs: 200
-[2026-06-28 19:23:12] [lc] Fetching PubMed details…
-[2026-06-28 19:23:15] [lc] Fetched PubMed papers: 200
-[2026-06-28 19:23:15] [lc] Scraping Nature HTML…
-[2026-06-28 19:23:16] [lc] Nature papers: 50
-[2026-06-28 19:23:16] [lc] Scraping Science RSS…
-[2026-06-28 19:23:16] [lc] Science RSS blocked.
-[2026-06-28 19:23:16] [lc] Selected papers: 6
-[2026-06-28 19:23:17] [main d85af12] Update LC papers
- 2 files changed, 31 insertions(+), 197 deletions(-)
-[2026-06-28 19:23:19] To https://github.com/LCResearchFeed/LCResearchFeed.git
-   0e6853e..d85af12  main -> main
-[2026-06-28 19:23:19] [lc] Done. 6 new papers added to GitHub Pages.
-[2026-06-28 19:23:19] ------------------------------
-------------------------------
-[06/28/2026 19:24:01]
+[06/28/2026 19:35:04]
 Session: Console

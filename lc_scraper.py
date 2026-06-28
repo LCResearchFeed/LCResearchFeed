@@ -340,8 +340,9 @@ def build_card_html(p: dict) -> str:
 <div class="paper-card">
     <h2>{p['title']}</h2>
     <div class="date">{p['date'].strftime('%Y-%m-%d')}</div>
-    <p>{p['abstract']}</p>
+    <p class="abstract">{p['abstract']}</p>
     <a href="{p['url']}" target="_blank">Read paper</a>
+    <span class="read-time"></span>
 </div>
 """.strip()
 

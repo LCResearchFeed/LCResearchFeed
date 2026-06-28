@@ -238,6 +238,21 @@ select:focus {
     text-decoration: underline;
 }
 
+/* ⭐ READ-TIME (added) */
+
+.read-time {
+    display: block;
+    text-align: right;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    opacity: 0.9;
+}
+
+.read-time::before {
+    content: "⏱ ";
+}
+
 /* Source badge */
 
 .source-badge {
