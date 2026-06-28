@@ -336,15 +336,24 @@ def fetch_science_results(max_results: int = 50) -> list[dict]:
 # HTML CARDS
 # ---------------------------------------------------------
 def build_card_html(p: dict) -> str:
+    # Store full abstract in data-full so JS can calculate real read-time
+    full_abstract = p['abstract'].replace('"', '&quot;').replace("'", "&#39;")
+
     return f"""
 <div class="paper-card">
     <h2>{p['title']}</h2>
     <div class="date">{p['date'].strftime('%Y-%m-%d')}</div>
-    <p class="abstract">{p['abstract']}</p>
+
+    <!-- Visible abstract (initially full, JS will collapse it) -->
+    <p class="abstract" data-full="{full_abstract}">{p['abstract']}</p>
+
     <a href="{p['url']}" target="_blank">Read paper</a>
+
+    <!-- Read-time placeholder -->
     <span class="read-time"></span>
 </div>
 """.strip()
+
 
 
 def inject_cards_into_index(cards_html: str) -> None:
