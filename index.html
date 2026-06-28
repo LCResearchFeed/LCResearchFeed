@@ -1,67 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>LC Research Feed</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
-</head>
+<meta charset="UTF-8">
+<title>Long Covid Research Feed</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
+<style>
+    body {
+        font-family: Inter, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        transition: background 0.3s, color 0.3s;
+    }
+
+    :root {
+        --bg: #ffffff;
+        --text: #222;
+        --card-bg: #fafafa;
+        --card-border: #e5e5e5;
+    }
+
+    .dark {
+        --bg: #111;
+        --text: #eaeaea;
+        --card-bg: #1b1b1b;
+        --card-border: #333;
+    }
+
+    header {
+        padding: 25px;
+        text-align: center;
+        border-bottom: 1px solid var(--card-border);
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    #toggle {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        cursor: pointer;
+        padding: 8px 14px;
+        border-radius: 6px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 20px;
+    }
+
+    .paper-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        transition: transform 0.15s ease;
+    }
+
+    .paper-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .paper-card h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+    }
+
+    .date {
+        color: #888;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+
+    a {
+        color: #0077cc;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<script>
+function toggleMode() {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+}
+window.onload = () => {
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+    }
+};
+</script>
+
+</head>
 <body>
 
+<button id="toggle" onclick="toggleMode()">🌓 Theme</button>
+
 <header>
-    Long Covid Research Feed
+    <h1>Long Covid Research Feed</h1>
+    <p>Automatically updated with new mechanism & treatment papers.</p>
 </header>
 
-<div id="papers">
-    <!-- SCRAPER_INJECT_START -->
+<div class="container">
+<!-- SCRAPER_INJECT_START -->
 <div class="paper-card">
-    <h2>Transcutaneous auricular vagus nerve stimulation improves dysautonomia, post-traumatic stress disorder and cognitive impairment in long covid patients: a pilot study</h2>
-    <div class="date">2026-05-09</div>
-    <p></p>
-    <a href="https://www.nature.com/articles/s41598-026-52582-9" target="_blank">Read paper</a>
+    <h2>Dietary Macronutrient Intake and Vascular Health in Patients with Long COVID: The BioICOPER Study.</h2>
+    <div class="date">2026-06-28</div>
+    <p>Background: Long COVID (LC) has been associated with persistent endothelial dysfunction and vascular impairment. Although nutrition is a key modifiable determinant of cardiovascular health, the relationship between dietary macronutrient intake and vascular alterations in LC remains poorly understood. Objective: To evaluate the association between dietary macronutrient intake and markers of vascular structure, arterial stiffness, and vascular aging in patients with LC, including potential sex differences. Methods: We conducted a cross-sectional study including 304 patients with LC. Dietary intake was assessed using a validated 7-day dietary record (EVIDENT study). Vascular evaluation included carotid intima-media thickness (cIMT), carotid-femoral pulse wave velocity (cfPWV), brachial-ankle pulse wave velocity (baPWV), cardio-ankle vascular index (CAVI), augmentation index adjusted to a heart rate of 75 beats per minute (AIx@75), and vascular aging index (VAI), measured using carotid ultrasound and validated devices (SphygmoCor® and VaSera®). Results: The mean age was 53 ± 12, higher in men (p = 0.001). The study included 207 women (68%) and 97 men (32%). Energy intake and carbohydrate intake in g/day showed a negative association with cfPWV in Model 2 (energy intake: β = -0.06; 95% CI: -0.11 to -0.01; p = 0.02; carbohydrate intake: β = -0.47; 95% CI: -0.87 to -0.07; p = 0.02). The percentage of carbohydrate/total energy intake was positively associated with AIx@75 in Model 2 (β = 0.8; 95% CI 0.12 to 1.49; p = 0.02), and percentage of fat/total energy intake showed a consistent inverse association (β = -0.30; 95% CI: -0.49 to -0.11; p = 0.002). No significant associations were observed for cIMT, baPWV, CAVI or VAI. Conclusions: In patients with LC, total energy intake and absolute carbohydrate intake were negatively associated with cfPWV, whereas the relative contribution of carbohydrates and fats to total energy intake showed divergent associations with AIx@75. These findings suggest that both absolute macronutrient intake and relative macronutrient distribution may be related to central arterial stiffness and wave reflection parameters LC. However, given the cross-sectional design of the study, these results should be interpreted as exploratory and do not allow causal inference. Further longitudinal and interventional studies are needed to confirm these findings and to assess whether nutritional strategies may contribute to modulating vascular risk in this population.</p>
+    <a href="https://pubmed.ncbi.nlm.nih.gov/42356414/" target="_blank">Read paper</a>
 </div>
 
 <div class="paper-card">
-    <h2>Distinct brain alterations and neurodegenerative processes in cognitive impairment associated with post-acute sequelae of COVID-19</h2>
-    <div class="date">2025-11-26</div>
-    <p>Post-acute sequelae of SARS-CoV-2 (PASC) have been linked to brain alterations, but association with cognitive problems are not well understood. Here, the authors analyze blood proteins and brain MRI data one year after mild COVID-19, revealing distinct neurodegenerative processes in PASC patients with cognitive problems, such as cortical thinning, brain iron deposition, enlarged choroid plexus, and increased blood neuronal/glial injury markers, compared to other-PASC.</p>
-    <a href="https://www.nature.com/articles/s41467-025-65597-z" target="_blank">Read paper</a>
+    <h2>Transcranial direct current stimulation in affecting neuropsychiatric symptoms of post-COVID syndrome: No change in microstates and functional connectivity.</h2>
+    <div class="date">2026-01-01</div>
+    <p>Neuropsychiatric symptoms of post-covid syndrome (PCS) involve fatigue, brain fog, cognitive impairment, or symptoms of depression and anxiety. These symptoms are in other diagnoses associated with electroencephalography (EEG) changes in microstates and functional connectivity. Transcranial direct current stimulation (tDCS) is effective in alleviating certain abovementioned symptoms in other diagnoses. The main objective was to evaluate EEG changes in PCS patients after tDCS intervention.A randomised control trial (registered in ISRCTN database, No.: ISRCTN10942585) with 35 participants (n = 33 received the intervention) involved 20 applications (over four weeks) of tDCS (anode over F3, cathode over F4, duration 30 min, intensity 2mA). Participants were divided into active (n = 16) and sham (n = 17) groups. Resting-state EEG was measured at baseline, after two weeks (T1), and after the intervention (four weeks, T2) as an exploratory endpoint. Microstates and functional connectivity between F3 and F4 were analysed; differences between active and sham groups in change from baseline to T1 and from baseline to T2 were evaluated.EEG measurements from 26 participants (n = 13 for active and n = 13 for sham group) were included into the statistical analysis. No significant results were found. No serious adverse events were noted.We did not find a significant difference in selected EEG parameters between active and sham groups. The possible reasons include choice of tDCS parameters (electrode montage or stimulation duration), and EEG variables selected for evaluation (microstates and functional connectivity). These results are in line with the results of cognitive and clinical assessment. However, the EEG endpoints were exploratory and the study was primarily powered for clinical results, therefore small effects cannot be excluded due to limited statistical power.Copyright: © 2026 Biačková et al. This is an open access article distributed under the terms of the Creative Commons Attribution License, which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.</p>
+    <a href="https://pubmed.ncbi.nlm.nih.gov/42361028/" target="_blank">Read paper</a>
 </div>
 
 <div class="paper-card">
-    <h2>Pathological potential of autoantibodies in long COVID</h2>
-    <div class="date">2026-06-12</div>
-    <p>Functional profiling of autoantibodies from individuals with long COVID demonstrates a casual link with neurological symptoms, reframing long COVID as, at least in part, an antibody-mediated disease.</p>
-    <a href="https://www.nature.com/articles/s41577-026-01326-x" target="_blank">Read paper</a>
-</div>
-
-<div class="paper-card">
-    <h2>Endothelial dysfunction and metabolic biomarkers in post-COVID-19 syndrome</h2>
-    <div class="date">2026-05-13</div>
-    <p></p>
-    <a href="https://www.nature.com/articles/s41598-026-50965-6" target="_blank">Read paper</a>
-</div>
-
-<div class="paper-card">
-    <h2>Involvement of autoantibodies against G protein-coupled receptors in post-COVID condition and Chronic Fatigue Syndrome</h2>
-    <div class="date">2026-05-05</div>
-    <p></p>
-    <a href="https://www.nature.com/articles/s41598-026-49131-9" target="_blank">Read paper</a>
-</div>
-
-<div class="paper-card">
-    <h2>A digital platform with activity tracking for energy management support in long COVID: a randomised controlled trial</h2>
-    <div class="date">2026-02-02</div>
-    <p>Long COVID is associated with challenges in energy management, with limited interventions available. In this study, a just-in-time app-based energy management intervention for long COVID did not reduce postexertional malaise compared to usual care, though both groups improved over time, showing the approach was safe but not effective.</p>
-    <a href="https://www.nature.com/articles/s41467-025-64831-y" target="_blank">Read paper</a>
-</div>
-
-<div class="paper-card">
-    <h2>Human genetics implicate thromboembolism in the pathogenesis of long COVID in individuals of European ancestry</h2>
-    <div class="date">2025-12-16</div>
-    <p>Schuermans et al. discovered that genetic predisposition to thromboembolism is associated with a greater risk of post-acute sequelae after SARS-CoV-2 infection, including long COVID, and downstream analyses implicated PAR-1 as a potential contributor to long COVID.</p>
-    <a href="https://www.nature.com/articles/s44161-025-00749-4" target="_blank">Read paper</a>
+    <h2>Clinical and Humoral Immune Features of Post-COVID Syndrome One Year After SARS-CoV-2 Infection in Elderly Patients with Type 2 Diabetes.</h2>
+    <div class="date">2026-06-28</div>
+    <p>Background: Post-COVID syndrome represents a significant medical and public health challenge, particularly among older adults and individuals with type 2 diabetes mellitus (T2DM), in whom disturbances in immune and metabolic homeostasis may contribute to the development and persistence of symptoms following SARS-CoV-2 infection. Objective: To investigate the clinical, immunological, and metabolic characteristics of post-COVID syndrome in older adults with T2DM. Methods: A cross-sectional comparative study was conducted involving 141 patients aged ≥ 60 years who were evaluated more than one year after SARS-CoV-2 infection. Clinical data, anthropometric measurements, complete blood count parameters, biochemical markers, glycated hemoglobin (HbA1c), and SARS-CoV-2-specific IgG antibodies were assessed. Statistical analyses were performed using nonparametric methods, while Pearson's χ2 test was applied for categorical variables. A p-value < 0.05 was considered statistically significant. Results: Symptoms consistent with post-COVID syndrome one year after SARS-CoV-2 infection were identified in 53.2% of participants. No significant differences in anthropometric characteristics, hematological parameters, or most biochemical markers were observed between patients with and without post-COVID syndrome. Patients with T2DM exhibited higher fasting glucose, HbA1c, and SARS-CoV-2-specific IgG antibody levels, reflecting underlying metabolic characteristics and differences in humoral immune responses during the late post-COVID period. Conclusions: Post-COVID syndrome symptoms were frequently observed among older adults at the time of assessment, more than one year after SARS-CoV-2 infection, despite normalization of most laboratory parameters. In patients with T2DM, higher glucose, HbA1c, and antibody levels likely reflect underlying metabolic characteristics rather than a direct effect of post-COVID syndrome. Further longitudinal studies are warranted to clarify the long-term clinical significance of the observed metabolic and immunological findings.</p>
+    <a href="https://pubmed.ncbi.nlm.nih.gov/42357680/" target="_blank">Read paper</a>
 </div>
 <!-- SCRAPER_INJECT_END -->
 </div>
