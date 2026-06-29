@@ -4566,3 +4566,40 @@ Session: Console
 ------------------------------
 [06/29/2026 15:47:27]
 Session: Console
+[2026-06-29 15:47:28] Session: Console
+[2026-06-29 15:47:28] [lc] Searching PubMed…
+[2026-06-29 15:47:29] [lc] Found PMIDs: 200
+[2026-06-29 15:47:29] [lc] Fetching PubMed details…
+[2026-06-29 15:47:31] [lc] Fetched PubMed papers: 200
+[2026-06-29 15:47:31] [lc] Scraping Nature HTML…
+[2026-06-29 15:47:32] [lc] Nature papers: 50
+[2026-06-29 15:47:32] [lc] Scraping Science RSS…
+[2026-06-29 15:47:33] [lc] Science RSS blocked.
+[2026-06-29 15:47:33] [lc] Selected papers: 10
+[2026-06-29 15:47:33] warning: in the working copy of 'lc_scraper.py', LF will be replaced by CRLF the next time Git touches it
+[2026-06-29 15:47:33] [main 4cc308c] Update LC papers
+ 4 files changed, 4677 insertions(+), 28 deletions(-)
+[2026-06-29 15:47:35] To https://github.com/LCResearchFeed/LCResearchFeed.git
+   9ce39ba..4cc308c  main -> main
+[2026-06-29 15:47:35] [lc] Done. 9 new papers added to GitHub Pages.
+[2026-06-29 15:47:35] ------------------------------
+[2026-06-29 15:47:35] 
+[2026-06-29 15:47:35] 
+[2026-06-29 15:47:35] 
+------------------------------
+[06/29/2026 15:51:56]
+Session: Console
+[2026-06-29 15:51:57] Session: Console
+[2026-06-29 15:51:57] [lc] Searching PubMed…
+[2026-06-29 15:51:58] [lc] Found PMIDs: 200
+[2026-06-29 15:51:58] [lc] Fetching PubMed details…
+[2026-06-29 15:52:01] [lc] Fetched PubMed papers: 200
+[2026-06-29 15:52:01] [lc] Scraping Nature HTML…
+[2026-06-29 15:52:02] [lc] Nature papers: 50
+[2026-06-29 15:52:02] [lc] Scraping Science RSS…
+[2026-06-29 15:52:02] [lc] Science RSS blocked.
+[2026-06-29 15:52:02] [lc] Selected papers: 10
+[2026-06-29 15:52:02] [lc] No new papers found.
+------------------------------
+[06/29/2026 15:52:51]
+Session: Console
