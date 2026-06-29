@@ -17,7 +17,7 @@ SEEN_FILE = os.path.join(REPO_PATH, "posted_pmids.txt")
 LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
 BASE_NATURE = "https://www.nature.com"
 
-DEBUG = False  # Zet op True om debug logs per paper te zien
+DEBUG = False  # Zet op True om filterdebug te zien
 
 # ---------------------------------------------------------
 # FILTER TERMS
@@ -88,7 +88,7 @@ def save_seen(seen: set[str]) -> None:
             f.write(item + "\n")
 
 # ---------------------------------------------------------
-# FILTERS (VERBETERD)
+# FILTER MODULE
 # ---------------------------------------------------------
 def is_strict_long_covid(p: dict) -> bool:
     t = p["title"].lower()
@@ -98,12 +98,19 @@ def is_strict_long_covid(p: dict) -> bool:
         "longcovid", "long covid-19", "long covid19",
         "post-acute sequelae", "post acute sequelae",
         "post-acute sars-cov-2", "post covid syndrome",
+        "post-covid syndrome", "post-covid-19 syndrome",
         "lcs", "long covid syndrome",
         "post-viral syndrome", "postinfectious syndrome",
         "post-infectious dysregulation",
+        "post-covid condition", "post covid condition",
+        "post-covid-19 condition",
     ]
 
     terms = LC_TERMS + extra_terms
+
+    if "post-pandemic" in t or "post-pandemic" in a:
+        return False
+
     return any(kw in t or kw in a for kw in terms)
 
 
@@ -124,13 +131,16 @@ def is_mechanism_or_treatment(p: dict) -> bool:
         "autofagy", "nrf2", "reactivation", "ebv", "cmv",
         "neuroinflammation", "autonomic dysfunction", "dysautonomia",
         "pots", "barrier disruption", "vascular leak",
+        "thromboinflammation", "microclots",
     ]
 
     extra_treat = [
-        "targeted therapy", "intervention", "trial", "phase",
-        "antigen clearance", "immune-modulating", "antiviral",
-        "stratified therapy", "vagus nerve stimulation",
-        "improvement", "recovery", "clinical trial",
+        "targeted therapy", "targeted treatment", "intervention",
+        "trial", "phase", "randomized", "randomised",
+        "antigen clearance", "immune-modulating", "immunomodulation",
+        "antiviral", "drug", "pharmacological",
+        "stratified therapy", "vagus nerve stimulation", "vns",
+        "clinical trial", "therapy", "therapeutic",
     ]
 
     mech_terms = MECHANISM_TERMS + extra_mech
@@ -150,10 +160,14 @@ def is_noise(p: dict) -> bool:
         "survey", "cohort", "quality of life", "qol",
         "burden", "workforce", "healthcare utilization",
         "persistent symptoms", "symptom cluster",
-        "fatigue severity", "dyspnea", "functional status",
-        "rehabilitation", "rehab", "exercise tolerance",
-        "spirometry", "lung function", "fitness",
-        "protocol", "study protocol",
+        "fatigue severity", "functional status",
+        "exercise tolerance", "spirometry", "lung function",
+        "fitness", "study protocol",
+    ]
+
+    rehab_noise = [
+        "rehabilitation", "rehab", "rehabilitation programme",
+        "tele-rehabilitation", "tele rehab",
     ]
 
     acute_noise = [
@@ -164,17 +178,29 @@ def is_noise(p: dict) -> bool:
     epi_noise = [
         "prevalence", "incidence", "risk factor",
         "predictor", "association", "cross-sectional",
+        "spatiotemporal analysis",
     ]
 
-    noise_terms = NOISE_TERMS + clinical_noise + acute_noise + epi_noise
-    return any(kw in t or kw in a for kw in noise_terms)
+    service_noise = [
+        "service", "implementation", "care pathway",
+        "healthcare access", "service delivery",
+    ]
+
+    noise_terms = clinical_noise + rehab_noise + acute_noise + epi_noise + service_noise
+
+    if any(kw in t or kw in a for kw in noise_terms):
+        if is_mechanism_or_treatment(p):
+            return False
+        return True
+
+    return False
 
 
 def is_valid_lc_mech_paper(p: dict) -> bool:
     if not is_strict_long_covid(p):
         return False
 
-    if p["source"] == "pubmed" and not has_mesh_long_covid(p):
+    if p["source"] == "pubmed" and not (has_mesh_long_covid(p) or is_strict_long_covid(p)):
         return False
 
     if not is_mechanism_or_treatment(p):
@@ -206,12 +232,12 @@ def relevance_score(p: dict) -> int:
     if p["source"] == "science":
         score += 1
     if is_noise(p):
-        score -= 3  # iets strenger
+        score -= 3
 
     return score
 
 # ---------------------------------------------------------
-# DEBUG MODUS
+# DEBUG
 # ---------------------------------------------------------
 def debug_paper(p: dict) -> None:
     print("\n" + "=" * 60)
@@ -245,7 +271,7 @@ def debug_paper(p: dict) -> None:
     print("=" * 60 + "\n")
 
 # ---------------------------------------------------------
-# PUBMED API
+# PUBMED
 # ---------------------------------------------------------
 def fetch_pubmed_pmids(max_results: int = 200) -> list[str]:
     log("[lc] Searching PubMed…")
@@ -383,7 +409,7 @@ def fetch_nature_results(max_results: int = 50) -> list[dict]:
     return final
 
 # ---------------------------------------------------------
-# SCIENCE (RSS fallback)
+# SCIENCE
 # ---------------------------------------------------------
 def fetch_science_results(max_results: int = 50) -> list[dict]:
     log("[lc] Scraping Science RSS…")
@@ -429,7 +455,7 @@ def fetch_science_results(max_results: int = 50) -> list[dict]:
     return results
 
 # ---------------------------------------------------------
-# HTML CARDS
+# HTML
 # ---------------------------------------------------------
 def build_card_html(p: dict) -> str:
     full_abstract = p['abstract'].replace('"', '&quot;').replace("'", "&#39;")
