@@ -9,15 +9,13 @@ import requests
 from bs4 import BeautifulSoup
 
 # ---------------------------------------------------------
-# CONFIG
+# PATHS
 # ---------------------------------------------------------
 REPO_PATH = r"C:\Users\mkoni\LCResearchFeed"
 INDEX_PATH = os.path.join(REPO_PATH, "index.html")
 SEEN_FILE = os.path.join(REPO_PATH, "posted_pmids.txt")
 LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
 BASE_NATURE = "https://www.nature.com"
-
-DEBUG = False  # Zet op True om debug logs per paper te zien
 
 # ---------------------------------------------------------
 # FILTER TERMS
@@ -88,101 +86,41 @@ def save_seen(seen: set[str]) -> None:
             f.write(item + "\n")
 
 # ---------------------------------------------------------
-# FILTERS (VERBETERD)
+# FILTERS
 # ---------------------------------------------------------
 def is_strict_long_covid(p: dict) -> bool:
     t = p["title"].lower()
     a = (p["abstract"] or "").lower()
-
-    extra_terms = [
-        "longcovid", "long covid-19", "long covid19",
-        "post-acute sequelae", "post acute sequelae",
-        "post-acute sars-cov-2", "post covid syndrome",
-        "lcs", "long covid syndrome",
-        "post-viral syndrome", "postinfectious syndrome",
-        "post-infectious dysregulation",
-    ]
-
-    terms = LC_TERMS + extra_terms
-    return any(kw in t or kw in a for kw in terms)
+    return any(kw in t or kw in a for kw in LC_TERMS)
 
 
 def has_mesh_long_covid(p: dict) -> bool:
-    mesh = p.get("mesh", [])
-    return any(term.lower() in mesh for term in LC_MESH)
+    return any(term.lower() in p.get("mesh", []) for term in LC_MESH)
 
 
 def is_mechanism_or_treatment(p: dict) -> bool:
     t = p["title"].lower()
     a = (p["abstract"] or "").lower()
-
-    extra_mech = [
-        "viral persistence", "persistent antigen", "viral reservoir",
-        "microvascular", "microvascular injury", "endothelial dysfunction",
-        "glycocalyx", "bioenergetic", "mitochondrial dysfunction",
-        "metabolic rewiring", "immune exhaustion", "mast cell",
-        "autofagy", "nrf2", "reactivation", "ebv", "cmv",
-        "neuroinflammation", "autonomic dysfunction", "dysautonomia",
-        "pots", "barrier disruption", "vascular leak",
-    ]
-
-    extra_treat = [
-        "targeted therapy", "intervention", "trial", "phase",
-        "antigen clearance", "immune-modulating", "antiviral",
-        "stratified therapy", "vagus nerve stimulation",
-        "improvement", "recovery", "clinical trial",
-    ]
-
-    mech_terms = MECHANISM_TERMS + extra_mech
-    treat_terms = TREATMENT_TERMS + extra_treat
-
-    mech = any(kw in t or kw in a for kw in mech_terms)
-    treat = any(kw in t or kw in a for kw in treat_terms)
-
+    mech = any(kw in t or kw in a for kw in MECHANISM_TERMS)
+    treat = any(kw in t or kw in a for kw in TREATMENT_TERMS)
     return mech or treat
 
 
 def is_noise(p: dict) -> bool:
     t = p["title"].lower()
     a = (p["abstract"] or "").lower()
-
-    clinical_noise = [
-        "survey", "cohort", "quality of life", "qol",
-        "burden", "workforce", "healthcare utilization",
-        "persistent symptoms", "symptom cluster",
-        "fatigue severity", "dyspnea", "functional status",
-        "rehabilitation", "rehab", "exercise tolerance",
-        "spirometry", "lung function", "fitness",
-        "protocol", "study protocol",
-    ]
-
-    acute_noise = [
-        "acute covid", "acute sars-cov-2", "acute infection",
-        "hospitalized covid", "icu", "ventilation",
-    ]
-
-    epi_noise = [
-        "prevalence", "incidence", "risk factor",
-        "predictor", "association", "cross-sectional",
-    ]
-
-    noise_terms = NOISE_TERMS + clinical_noise + acute_noise + epi_noise
-    return any(kw in t or kw in a for kw in noise_terms)
+    return any(kw in t or kw in a for kw in NOISE_TERMS)
 
 
 def is_valid_lc_mech_paper(p: dict) -> bool:
     if not is_strict_long_covid(p):
         return False
-
     if p["source"] == "pubmed" and not has_mesh_long_covid(p):
         return False
-
     if not is_mechanism_or_treatment(p):
         return False
-
     if is_noise(p):
         return False
-
     return True
 
 
@@ -206,43 +144,9 @@ def relevance_score(p: dict) -> int:
     if p["source"] == "science":
         score += 1
     if is_noise(p):
-        score -= 3  # iets strenger
+        score -= 2
 
     return score
-
-# ---------------------------------------------------------
-# DEBUG MODUS
-# ---------------------------------------------------------
-def debug_paper(p: dict) -> None:
-    print("\n" + "=" * 60)
-    print(f"[DEBUG] Paper: {p.get('id')} ({p.get('source')})")
-    print(f"Title: {p.get('title')[:160]}")
-
-    lc_strict = is_strict_long_covid(p)
-    lc_mesh = has_mesh_long_covid(p) if p["source"] == "pubmed" else "N/A"
-    mech_treat = is_mechanism_or_treatment(p)
-    noise = is_noise(p)
-    final = is_valid_lc_mech_paper(p)
-
-    print(f"  LC strict: {lc_strict}")
-    print(f"  LC MESH: {lc_mesh}")
-    print(f"  Mechanism/Treatment: {mech_treat}")
-    print(f"  Noise: {noise}")
-    print(f"  FINAL: {'ACCEPT' if final else 'REJECT'}")
-
-    t = p["title"].lower()
-    a = (p["abstract"] or "").lower()
-
-    def find_matches(text, keywords):
-        return [kw for kw in keywords if kw in text]
-
-    print("\n  Matches:")
-    print(f"    LC_TERMS: {find_matches(t + a, LC_TERMS)}")
-    print(f"    LC_MESH: {find_matches(p.get('mesh', []), LC_MESH)}")
-    print(f"    MECHANISM_TERMS: {find_matches(t + a, MECHANISM_TERMS)}")
-    print(f"    TREATMENT_TERMS: {find_matches(t + a, TREATMENT_TERMS)}")
-    print(f"    NOISE_TERMS: {find_matches(t + a, NOISE_TERMS)}")
-    print("=" * 60 + "\n")
 
 # ---------------------------------------------------------
 # PUBMED API
@@ -314,7 +218,7 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
     return papers
 
 # ---------------------------------------------------------
-# NATURE
+# NATURE 
 # ---------------------------------------------------------
 def fetch_nature_results(max_results: int = 50) -> list[dict]:
     log("[lc] Scraping Nature HTML…")
@@ -432,17 +336,24 @@ def fetch_science_results(max_results: int = 50) -> list[dict]:
 # HTML CARDS
 # ---------------------------------------------------------
 def build_card_html(p: dict) -> str:
+    # Store full abstract in data-full so JS can calculate real read-time
     full_abstract = p['abstract'].replace('"', '&quot;').replace("'", "&#39;")
 
     return f"""
 <div class="paper-card">
     <h2>{p['title']}</h2>
     <div class="date">{p['date'].strftime('%Y-%m-%d')}</div>
+
+    <!-- Visible abstract (initially full, JS will collapse it) -->
     <p class="abstract" data-full="{full_abstract}">{p['abstract']}</p>
+
     <a href="{p['url']}" target="_blank">Read paper</a>
+
+    <!-- Read-time placeholder -->
     <span class="read-time"></span>
 </div>
 """.strip()
+
 
 
 def inject_cards_into_index(cards_html: str) -> None:
@@ -501,10 +412,6 @@ def main() -> None:
     science_papers = fetch_science_results()
 
     all_raw = pubmed_papers + nature_papers + science_papers
-
-    if DEBUG:
-        for p in all_raw:
-            debug_paper(p)
 
     filtered = [p for p in all_raw if is_valid_lc_mech_paper(p)]
 
