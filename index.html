@@ -8,10 +8,14 @@
 </head>
 
 <body>
+
 <header class="header">
     <div class="header-top">
         <h1>Long Covid Research Feed</h1>
         <button id="darkToggle" class="btn btn-ghost">🌙 Dark mode</button>
+		<button id="lang-toggle" class="lang-btn">
+			Nederlands
+		</button>
     </div>
     <p class="subtitle">Daily updated mechanism &amp; treatment research</p>
 </header>
@@ -343,6 +347,70 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+const cache = {};
+let currentLang = "en";
+
+async function translate(text, targetLang) {
+    if (!text || !text.trim()) return text;
+
+    const key = targetLang + "::" + text;
+    if (cache[key]) return cache[key];
+
+    try {
+        const response = await fetch(
+            "https://api.mymemory.translated.net/get?q=" 
+            + encodeURIComponent(text) 
+            + "&langpair=en|" + targetLang
+        );
+        const data = await response.json();
+        const translated = data.responseData.translatedText;
+        cache[key] = translated;
+        return translated;
+    } catch (e) {
+        console.error("Translation error:", e);
+        return text;
+    }
+}
+
+async function switchToDutch() {
+    const summaries = document.querySelectorAll(".ai-summary");
+    const abstracts = document.querySelectorAll(".abstract");
+    const categories = document.querySelectorAll(".ai-category");
+    const readLinks = document.querySelectorAll("a[target='_blank']");
+
+    for (const el of summaries) {
+        el.innerText = await translate(el.innerText, "nl");
+    }
+    for (const el of abstracts) {
+        el.innerText = await translate(el.innerText, "nl");
+    }
+    for (const el of categories) {
+        el.innerText = await translate(el.innerText, "nl");
+    }
+    for (const el of readLinks) {
+        el.innerText = "Lees artikel";
+    }
+}
+
+function switchToEnglish() {
+    location.reload();
+}
+
+document.getElementById("lang-toggle").addEventListener("click", async () => {
+    const btn = document.getElementById("lang-toggle");
+
+    if (currentLang === "en") {
+        currentLang = "nl";
+        btn.innerHTML = 'English';
+        await switchToDutch();
+    } else {
+        currentLang = "en";
+        btn.innerHTML = 'Nederlands';
+        switchToEnglish();
+    }
+});
+</script>
 
 </body>
 </html>

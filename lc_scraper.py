@@ -79,8 +79,8 @@ def is_valid_candidate(p: dict) -> bool:
 # ---------------------------------------------------------
 
 def build_card_html(p: dict) -> str:
-    full_abstract = (p["abstract"] or "").replace('"', '&quot;')
-    ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;')
+    full_abstract = (p["abstract"] or "").replace('"', '&quot;').replace("'", "&#39;")
+    ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
     date_obj = p.get("date")
     if isinstance(date_obj, datetime):
@@ -99,7 +99,12 @@ def build_card_html(p: dict) -> str:
     </div>
 
     <p class="ai-summary">{ai_summary}</p>
-    <p class="abstract" data-full="{full_abstract}">{p['abstract']}</p>
+
+    <button class="toggle-abstract" onclick="this.nextElementSibling.classList.toggle('hidden'); this.textContent = this.nextElementSibling.classList.contains('hidden') ? 'Show abstract' : 'Hide abstract';">
+        Show abstract
+    </button>
+
+    <p class="abstract hidden" data-full="{full_abstract}">{p['abstract']}</p>
 
     <a href="{p['url']}" target="_blank">Read paper</a>
 </div>
@@ -229,6 +234,7 @@ def main() -> None:
 
     if not new_papers:
         print("[DONE] No new papers to inject.")
+        commit_and_push()
         return
 
     print("[HTML] Building HTML cards...")
