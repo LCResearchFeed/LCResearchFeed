@@ -1,5 +1,3 @@
-''@echo off
-
 powershell -Command "Add-Content scheduler_log.txt ('[' + (Get-Date) + ']')"
 powershell -Command "Add-Content scheduler_log.txt ('Session: ' + $env:SESSIONNAME)"
 
