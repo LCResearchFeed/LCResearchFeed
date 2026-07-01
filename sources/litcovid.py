@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 
-API_URL = "https://www.ncbi.nlm.nih.gov/research/litcovid/api/records/"
+API_URL = "https://www.ncbi.nlm.nih.gov/research/litcovid/api/records"
 
 def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
     print("[LitCovid] Fetching LitCovid papers...")
