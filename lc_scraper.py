@@ -14,7 +14,7 @@ LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
 from storage.seen import load_seen, save_seen
 from storage.cache import load_ai_cache, save_ai_cache
 
-# Uniform source modules
+# Source modules
 from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
 from sources.europepmc import fetch_europepmc_papers
@@ -42,7 +42,7 @@ def log(msg: str) -> None:
         pass
 
 # ---------------------------------------------------------
-# PREFILTER
+# PREFILTER (EuropePMC-vriendelijk)
 # ---------------------------------------------------------
 
 LC_TERMS = ["long covid", "post covid", "post-covid", "pasc", "post-acute", "sars-cov-2"]
@@ -55,15 +55,13 @@ def is_valid_candidate(p: dict) -> bool:
     abstract = (p.get("abstract") or "").lower()
     source = p.get("source", "").lower()
 
-    # EuropePMC → altijd doorlaten naar AI als het mechanisme of treatment is
+    # EuropePMC mechanisme/treatment → altijd door naar AI
     if source == "europepmc":
         mech = any(kw in title or kw in abstract for kw in MECH_TERMS)
         treat = any(kw in title or kw in abstract for kw in TREAT_TERMS)
         if mech or treat:
             return True
-        # anders normale filtering
-        # (EuropePMC heeft veel epidemiologie → die mag eruit)
-    
+
     # Normale LC relevance
     if not any(kw in title or kw in abstract for kw in LC_TERMS):
         if "covid" not in title:
@@ -81,7 +79,6 @@ def is_valid_candidate(p: dict) -> bool:
 
     return True
 
-
 # ---------------------------------------------------------
 # HTML CARD GENERATION
 # ---------------------------------------------------------
@@ -91,10 +88,7 @@ def build_card_html(p: dict) -> str:
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
     date_obj = p.get("date")
-    if isinstance(date_obj, datetime):
-        date_str = date_obj.strftime("%Y-%m-%d")
-    else:
-        date_str = str(date_obj)
+    date_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, datetime) else str(date_obj)
 
     return f"""
 <div class="paper-card" data-source="{p.get('source','other')}">
@@ -181,10 +175,9 @@ def main() -> None:
         "scienceopen": fetch_scienceopen_papers(),
     }
 
-    # ENSURE EACH PAPER HAS A SOURCE LABEL
+    # AUTOMATISCH source-labels zetten
     for name, papers in sources.items():
         for p in papers:
-            # alleen zetten als het nog niet bestaat
             p.setdefault("source", name)
 
     for name, papers in sources.items():
@@ -198,14 +191,7 @@ def main() -> None:
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
     # PREFILTER
-    candidates = []
-    for p in all_raw:
-        try:
-            if is_valid_candidate(p):
-                candidates.append(p)
-        except Exception as e:
-            print(f"[PREFILTER ERROR] Paper {p.get('id')} crashed: {e}")
-
+    candidates = [p for p in all_raw if is_valid_candidate(p)]
     log(f"[PREFILTER] Candidates: {len(candidates)}")
 
     # AI CLASSIFICATION
@@ -216,12 +202,23 @@ def main() -> None:
         log(f"[AI] ({idx}/{total}) Classifying: {p.get('title','')[:80]}")
         ai = classify_paper(p, ai_cache)
 
-        if not ai.get("long_covid"):
-            continue
-        if ai.get("category") in ("Irrelevant", "Epidemiology"):
-            continue
-        if ai.get("score", 0) < 70:
-            continue
+        source = p.get("source", "").lower()
+
+        # EuropePMC mildere filtering
+        if source == "europepmc":
+            if ai.get("category") in ("Irrelevant", "Epidemiology"):
+                continue
+            if ai.get("score", 0) < 60:
+                continue
+
+        # Normale filtering voor PubMed/Nature
+        else:
+            if not ai.get("long_covid"):
+                continue
+            if ai.get("category") in ("Irrelevant", "Epidemiology"):
+                continue
+            if ai.get("score", 0) < 70:
+                continue
 
         p["ai_score"] = ai["score"]
         p["ai_category"] = ai["category"]
