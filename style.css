@@ -14,7 +14,7 @@
 }
 
 /* =========================================================
-   MANUAL DARK MODE (your existing system)
+   MANUAL DARK MODE
    ========================================================= */
 
 body.dark {
@@ -29,7 +29,7 @@ body.dark {
 }
 
 /* =========================================================
-   AUTOMATIC DARK MODE (mobile + desktop)
+   AUTO DARK MODE
    ========================================================= */
 
 @media (prefers-color-scheme: dark) {
@@ -137,6 +137,10 @@ body {
     color: var(--muted);
 }
 
+/* =========================================================
+   INPUTS & SELECTS (including sort dropdown)
+   ========================================================= */
+
 input[type="text"],
 select {
     padding: 0.45rem 0.6rem;
@@ -145,6 +149,7 @@ select {
     background: var(--bg-alt);
     color: var(--text);
     font-size: 0.9rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 input[type="text"]:focus,
@@ -152,6 +157,10 @@ select:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 1px var(--accent-soft);
+}
+
+select:hover {
+    border-color: var(--accent);
 }
 
 /* =========================================================
@@ -191,15 +200,6 @@ select:focus {
    BUTTONS
    ========================================================= */
 
-.btn {
-    border-radius: 999px;
-    border: 1px solid transparent;
-    padding: 0.35rem 0.9rem;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
 .lang-btn {
     position: absolute;
     top: 70px;
@@ -216,32 +216,6 @@ select:focus {
 
 .lang-btn:hover {
     background-color: #444;
-}
-
-.btn-ghost {
-    background: transparent;
-    border-color: var(--border);
-    color: var(--muted);
-}
-
-.btn-ghost:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    box-shadow: 0 0 0 1px var(--accent-soft);
-}
-
-.btn-link {
-    background: none;
-    border: none;
-    color: var(--accent);
-    padding: 0;
-    margin-top: 0.3rem;
-    font-size: 0.85rem;
-    cursor: pointer;
-}
-
-.btn-link:hover {
-    text-decoration: underline;
 }
 
 /* =========================================================
@@ -365,6 +339,7 @@ body.dark .source-badge {
     border-color: #f97316;
     color: #ea580c;
 }
+
 /* =========================================================
    SUBJECT BADGE
    ========================================================= */
