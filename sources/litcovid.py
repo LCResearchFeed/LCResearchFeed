@@ -1,20 +1,19 @@
 import requests
 from datetime import datetime
 
-def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
-    """
-    Fetch Long-Covid related papers from LitCovid API.
-    Returns normalized dicts compatible with the main scraper.
-    """
+API_URL = "https://www.ncbi.nlm.nih.gov/research/litcovid/api/records"
 
-    url = "https://www.ncbi.nlm.nih.gov/research/litcovid/api/records"
+def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
+    print("[LitCovid] Fetching LitCovid papers...")
+
     params = {
         "query": "long covid OR post-acute sequelae OR PASC OR post covid",
-        "limit": max_results
+        "page": 1,
+        "pageSize": max_results,
     }
 
     try:
-        r = requests.get(url, params=params, timeout=20)
+        r = requests.get(API_URL, params=params, timeout=20)
         r.raise_for_status()
         data = r.json()
     except Exception as e:
@@ -22,15 +21,13 @@ def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
         return []
 
     results = []
-
     for item in data.get("records", []):
         try:
-            pmid = item.get("pmid") or item.get("uid") or None
+            pmid = item.get("pmid") or item.get("uid")
             title = item.get("title") or ""
             abstract = item.get("abstract") or ""
             link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/" if pmid else item.get("url", "")
 
-            # Parse date
             date_raw = item.get("publish_time") or ""
             pub_date = datetime.today()
             if date_raw:
@@ -41,19 +38,19 @@ def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
 
             results.append(
                 {
-                    "id": f"litcovid-{pmid}" if pmid else f"litcovid-{title[:30]}",
+                    "id": f"litcovid-{pmid}" if pmid else f"litcovid-{title[:40]}",
                     "title": title,
                     "abstract": abstract,
                     "url": link,
                     "source": "litcovid",
-                    "mesh": [],  # LitCovid does not provide MESH
+                    "mesh": [],
                     "date": pub_date,
                 }
             )
-
         except Exception as e:
             print(f"[LitCovid] ERROR parsing item: {e}")
             continue
 
     print(f"[LitCovid] Parsed papers: {len(results)}")
     return results
+

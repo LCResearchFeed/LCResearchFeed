@@ -5,33 +5,20 @@ import os
 import subprocess
 from datetime import datetime
 
-# Absolute path to your repo
 REPO_PATH = r"C:\Users\mkoni\LCResearchFeed"
 INDEX_PATH = os.path.join(REPO_PATH, "index.html")
 LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
 
-# Storage modules
 from storage.seen import load_seen, save_seen
 from storage.cache import load_ai_cache, save_ai_cache
 
-# Source modules
+# Premium sources
 from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
-from sources.science import fetch_science_papers
-
-# NEW SOURCES
 from sources.litcovid import fetch_litcovid_papers
-from sources.recover import fetch_recover_papers
-from sources.scienceopen import fetch_scienceopen_papers
-from sources.rki import fetch_rki_papers
-from sources.longcovidweb import fetch_longcovidweb_papers
+from sources.europepmc import fetch_europepmc_papers
 
-# AI classifier
 from ai.classifier import classify_paper
-
-# ---------------------------------------------------------
-# LOGGING
-# ---------------------------------------------------------
 
 def log(msg: str) -> None:
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -42,10 +29,6 @@ def log(msg: str) -> None:
             f.write(line + "\n")
     except Exception:
         pass
-
-# ---------------------------------------------------------
-# PREFILTER (SAFE, UITGEBREID)
-# ---------------------------------------------------------
 
 LC_TERMS = [
     "long covid", "post covid", "post-covid", "pasc", "post-acute", "sars-cov-2",
@@ -68,7 +51,6 @@ TREAT_TERMS = [
 ]
 
 NOISE_TERMS = [
-    "survey", "protocol", "quality of life", "burden",
     "workforce", "healthcare utilization", "prevalence", "incidence",
 ]
 
@@ -84,27 +66,20 @@ def is_valid_candidate(p: dict) -> bool:
     t = title.lower()
     a = abstract.lower()
 
-    # LC relevance
     if not any(kw in t or kw in a for kw in LC_TERMS):
         if "covid" not in t and "sars-cov-2" not in t and "sars cov 2" not in t:
             return False
 
-    # Mechanism or treatment
     mech = any(kw in t or kw in a for kw in MECH_TERMS)
     treat = any(kw in t or kw in a for kw in TREAT_TERMS)
     if not (mech or treat):
         return False
 
-    # Noise filter – maar laat mechanisme/treatment papers door
     if any(kw in t or kw in a for kw in NOISE_TERMS):
         if not (mech or treat):
             return False
 
     return True
-
-# ---------------------------------------------------------
-# HTML CARD GENERATION
-# ---------------------------------------------------------
 
 def build_card_html(p: dict) -> str:
     full_abstract = (p.get("abstract", "") or "").replace('"', '&quot;').replace("'", "&#39;")
@@ -154,10 +129,6 @@ def inject_cards_into_index(cards_html: str) -> None:
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(new_html)
 
-# ---------------------------------------------------------
-# GIT
-# ---------------------------------------------------------
-
 def run_git(args: list[str]) -> None:
     print(f"[GIT] Running git command: {' '.join(args)}")
     result = subprocess.run(
@@ -176,10 +147,6 @@ def commit_and_push() -> None:
     run_git(["commit", "-m", "Update LC papers", "--allow-empty"])
     run_git(["push", "origin", "main"])
 
-# ---------------------------------------------------------
-# MAIN
-# ---------------------------------------------------------
-
 def main() -> None:
     print("\n================ LC SCRAPER START ================\n")
 
@@ -187,57 +154,22 @@ def main() -> None:
     ai_cache = load_ai_cache()
 
     print("[FETCH] Fetching PubMed papers...")
-    pubmed = fetch_pubmed_papers()
-    print(f"[FETCH] PubMed: {len(pubmed or [])} papers")
+    pubmed = fetch_pubmed_papers() or []
+    print(f"[FETCH] PubMed: {len(pubmed)} papers")
 
     print("[FETCH] Fetching Nature papers...")
-    nature = fetch_nature_papers()
-    print(f"[FETCH] Nature: {len(nature or [])} papers")
-
-    print("[FETCH] Fetching Science papers...")
-    science = fetch_science_papers()
-    print(f"[FETCH] Science: {len(science or [])} papers")
+    nature = fetch_nature_papers() or []
+    print(f"[FETCH] Nature: {len(nature)} papers")
 
     print("[FETCH] Fetching LitCovid papers...")
-    litcovid = fetch_litcovid_papers()
-    print(f"[FETCH] LitCovid: {len(litcovid or [])} papers")
+    litcovid = fetch_litcovid_papers() or []
+    print(f"[FETCH] LitCovid: {len(litcovid)} papers")
 
-    print("[FETCH] Fetching RECOVER papers...")
-    recover = fetch_recover_papers()
-    print(f"[FETCH] RECOVER: {len(recover or [])} papers")
+    print("[FETCH] Fetching EuropePMC papers...")
+    europepmc = fetch_europepmc_papers() or []
+    print(f"[FETCH] EuropePMC: {len(europepmc)} papers")
 
-    print("[FETCH] Fetching ScienceOpen papers...")
-    scienceopen = fetch_scienceopen_papers()
-    print(f"[FETCH] ScienceOpen: {len(scienceopen or [])} papers")
-
-    print("[FETCH] Fetching RKI papers...")
-    rki = fetch_rki_papers()
-    print(f"[FETCH] RKI: {len(rki or [])} papers")
-
-    print("[FETCH] Fetching LongCovidWeb papers...")
-    lcweb = fetch_longcovidweb_papers()
-    print(f"[FETCH] LongCovidWeb: {len(lcweb or [])} papers")
-
-    # None-safe
-    pubmed = pubmed or []
-    nature = nature or []
-    science = science or []
-    litcovid = litcovid or []
-    recover = recover or []
-    scienceopen = scienceopen or []
-    rki = rki or []
-    lcweb = lcweb or []
-
-    all_raw = (
-        pubmed
-        + nature
-        + science
-        + litcovid
-        + recover
-        + scienceopen
-        + rki
-        + lcweb
-    )
+    all_raw = pubmed + nature + litcovid + europepmc
     print(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
     print("[PREFILTER] Running prefilter...")
@@ -257,9 +189,7 @@ def main() -> None:
 
     for idx, p in enumerate(candidates, start=1):
         print(f"[AI] ({idx}/{total}) Classifying: {p.get('title','')[:80]}")
-
         ai = classify_paper(p, ai_cache)
-
         print(f"[AI] Result → score={ai['score']} category={ai['category']} long_covid={ai['long_covid']}")
 
         if not ai.get("long_covid"):
