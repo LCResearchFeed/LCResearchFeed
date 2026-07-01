@@ -306,6 +306,10 @@ body.dark .source-badge {
     color: #ea580c;
 }
 
+.hidden {
+    display: none;
+}
+
 /* Footer */
 
 .footer {

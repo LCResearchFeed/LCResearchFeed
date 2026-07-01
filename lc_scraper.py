@@ -14,7 +14,7 @@ LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
 from storage.seen import load_seen, save_seen
 from storage.cache import load_ai_cache, save_ai_cache
 
-# Source modules
+# Uniform source modules
 from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
 from sources.europepmc import fetch_europepmc_papers
@@ -39,45 +39,104 @@ def log(msg: str) -> None:
         with open(LOG_PATH, "a", encoding="utf-8") as f:
             f.write(line + "\n")
     except Exception:
+        # logging mag nooit het script breken
         pass
 
 # ---------------------------------------------------------
-# PREFILTER (EuropePMC-vriendelijk)
+# PREFILTER
 # ---------------------------------------------------------
 
-LC_TERMS = ["long covid", "post covid", "post-covid", "pasc", "post-acute", "sars-cov-2"]
-MECH_TERMS = ["immune", "inflammation", "mitochondria", "viral", "persistent", "neurological"]
-TREAT_TERMS = ["treatment", "therapy", "drug", "trial", "intervention"]
-NOISE_TERMS = ["survey", "protocol", "quality of life", "burden"]
+LC_TERMS = ["long covid", "post covid", "post-covid", "pasc", "post-acute", "sars-cov-2", "covid-19", "covid 19"]
+MECH_TERMS = ["immune", "immunity", "inflammation", "mitochondria", "mitochondrial",
+              "viral", "virus", "persistent", "reservoir", "neurological", "neuro"]
+TREAT_TERMS = ["treatment", "therapy", "drug", "trial", "intervention", "rehabilitation"]
+NOISE_TERMS = ["survey", "protocol", "quality of life", "burden", "opinion", "editorial"]
 
-def is_valid_candidate(p: dict) -> bool:
+
+def _contains_any(text: str, terms: list[str]) -> bool:
+    t = text.lower()
+    return any(kw in t for kw in terms)
+
+
+def is_valid_candidate_pubmed_nature(p: dict) -> bool:
+    """
+    Strikte filter zoals je gewend bent voor PubMed/Nature:
+    - Long Covid / COVID-19 gerelateerd
+    - Mechanisme of behandeling
+    - Geen ruis (survey/protocol/etc.)
+    """
     title = (p.get("title") or "").lower()
     abstract = (p.get("abstract") or "").lower()
-    source = p.get("source", "").lower()
+    combo = title + " " + abstract
 
-    # EuropePMC mechanisme/treatment → altijd door naar AI
-    if source == "europepmc":
-        mech = any(kw in title or kw in abstract for kw in MECH_TERMS)
-        treat = any(kw in title or kw in abstract for kw in TREAT_TERMS)
-        if mech or treat:
-            return True
-
-    # Normale LC relevance
-    if not any(kw in title or kw in abstract for kw in LC_TERMS):
-        if "covid" not in title:
+    # Long Covid / COVID-19 context
+    if not _contains_any(combo, LC_TERMS):
+        if "covid" not in combo:
             return False
 
-    # Mechanism or treatment
-    mech = any(kw in title or kw in abstract for kw in MECH_TERMS)
-    treat = any(kw in title or kw in abstract for kw in TREAT_TERMS)
+    mech = _contains_any(combo, MECH_TERMS)
+    treat = _contains_any(combo, TREAT_TERMS)
     if not (mech or treat):
         return False
 
-    # Noise filter
-    if any(kw in title or kw in abstract for kw in NOISE_TERMS):
+    if _contains_any(combo, NOISE_TERMS):
         return False
 
     return True
+
+
+def is_valid_candidate_europepmc(p: dict) -> bool:
+    """
+    Ruimere filter voor EuropePMC:
+    - Moet Long Covid / PASC / post-acute / COVID-19 gerelateerd zijn
+    - Geen harde mechanisme/treatment eis → AI mag beslissen
+    - Nog steeds wat ruis eruit (survey/protocol/etc.)
+    """
+    title = (p.get("title") or "").lower()
+    abstract = (p.get("abstract") or "").lower()
+    combo = title + " " + abstract
+
+    if not _contains_any(combo, LC_TERMS) and "covid" not in combo:
+        return False
+
+    if _contains_any(combo, NOISE_TERMS):
+        return False
+
+    return True
+
+
+def is_valid_candidate_generic(p: dict) -> bool:
+    """
+    Voor overige bronnen: redelijk ruim, maar wel Long Covid / COVID-19 + geen ruis.
+    """
+    title = (p.get("title") or "").lower()
+    abstract = (p.get("abstract") or "").lower()
+    combo = title + " " + abstract
+
+    if not _contains_any(combo, LC_TERMS) and "covid" not in combo:
+        return False
+
+    if _contains_any(combo, NOISE_TERMS):
+        return False
+
+    return True
+
+
+def is_valid_candidate(p: dict) -> bool:
+    """
+    Dispatcher op basis van bron:
+    - pubmed/nature → strikte filter
+    - europepmc → ruimere filter
+    - rest → generieke filter
+    """
+    source = (p.get("source") or "").lower()
+
+    if source in ("pubmed", "nature"):
+        return is_valid_candidate_pubmed_nature(p)
+    elif source == "europepmc":
+        return is_valid_candidate_europepmc(p)
+    else:
+        return is_valid_candidate_generic(p)
 
 # ---------------------------------------------------------
 # HTML CARD GENERATION
@@ -88,7 +147,10 @@ def build_card_html(p: dict) -> str:
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
     date_obj = p.get("date")
-    date_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, datetime) else str(date_obj)
+    if isinstance(date_obj, datetime):
+        date_str = date_obj.strftime("%Y-%m-%d")
+    else:
+        date_str = str(date_obj) if date_obj is not None else ""
 
     return f"""
 <div class="paper-card" data-source="{p.get('source','other')}">
@@ -115,6 +177,7 @@ def build_card_html(p: dict) -> str:
 </div>
 """.strip()
 
+
 def inject_cards_into_index(cards_html: str) -> None:
     log("[HTML] Injecting cards into index.html...")
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
@@ -123,8 +186,11 @@ def inject_cards_into_index(cards_html: str) -> None:
     start = "<!-- SCRAPER_INJECT_START -->"
     end = "<!-- SCRAPER_INJECT_END -->"
 
-    before = html.split(start)[0]
-    after = html.split(end)[1]
+    if start not in html or end not in html:
+        raise RuntimeError("Inject markers not found in index.html")
+
+    before, _ = html.split(start, 1)
+    _, after = html.split(end, 1)
 
     new_html = before + start + "\n" + cards_html + "\n" + end + after
 
@@ -147,6 +213,7 @@ def run_git(args: list[str]) -> None:
         print("[GIT STDOUT]", result.stdout.strip())
     if result.stderr:
         print("[GIT STDERR]", result.stderr.strip())
+
 
 def commit_and_push() -> None:
     run_git(["add", "."])
@@ -175,50 +242,39 @@ def main() -> None:
         "scienceopen": fetch_scienceopen_papers(),
     }
 
-    # AUTOMATISCH source-labels zetten
-    for name, papers in sources.items():
-        for p in papers:
-            p.setdefault("source", name)
-
     for name, papers in sources.items():
         log(f"[FETCH] {name}: {len(papers)} papers")
 
     # MERGE
-    all_raw = []
+    all_raw: list[dict] = []
     for papers in sources.values():
         all_raw.extend(papers)
 
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
-    # PREFILTER
+    # PREFILTER (bron-afhankelijk)
     candidates = [p for p in all_raw if is_valid_candidate(p)]
     log(f"[PREFILTER] Candidates: {len(candidates)}")
 
     # AI CLASSIFICATION
-    enriched = []
+    enriched: list[dict] = []
     total = len(candidates)
 
     for idx, p in enumerate(candidates, start=1):
-        log(f"[AI] ({idx}/{total}) Classifying: {p.get('title','')[:80]}")
+        title_preview = p.get("title", "")[:80]
+        log(f"[AI] ({idx}/{total}) Classifying: {title_preview}")
         ai = classify_paper(p, ai_cache)
 
-        source = p.get("source", "").lower()
-
-        # EuropePMC mildere filtering
-        if source == "europepmc":
-            if ai.get("category") in ("Irrelevant", "Epidemiology"):
-                continue
-            if ai.get("score", 0) < 60:
-                continue
-
-        # Normale filtering voor PubMed/Nature
-        else:
-            if not ai.get("long_covid"):
-                continue
-            if ai.get("category") in ("Irrelevant", "Epidemiology"):
-                continue
-            if ai.get("score", 0) < 70:
-                continue
+        # AI-beslissingslogica:
+        # - moet Long Covid / PASC / post-acute sequelae zijn
+        # - categorie niet Irrelevant/Epidemiology
+        # - score >= 70
+        if not ai.get("long_covid"):
+            continue
+        if ai.get("category") in ("Irrelevant", "Epidemiology"):
+            continue
+        if ai.get("score", 0) < 70:
+            continue
 
         p["ai_score"] = ai["score"]
         p["ai_category"] = ai["category"]
@@ -234,7 +290,7 @@ def main() -> None:
         log("[DONE] No enriched papers.")
         return
 
-    # RANK
+    # RANK: eerst op AI-score, dan op datum
     ranked = sorted(
         enriched,
         key=lambda p: (p.get("ai_score", 0), p.get("date", datetime.min)),
@@ -244,7 +300,7 @@ def main() -> None:
     top = ranked[:10]
     log(f"[RANK] Top papers: {len(top)}")
 
-    # NEW
+    # NEW vs SEEN
     new_papers = [p for p in top if p.get("id") not in seen]
     log(f"[NEW] New papers: {len(new_papers)}")
 
@@ -259,7 +315,8 @@ def main() -> None:
 
     # SEEN
     for p in new_papers:
-        seen.add(p["id"])
+        if "id" in p:
+            seen.add(p["id"])
     save_seen(seen)
 
     # GIT
@@ -267,6 +324,7 @@ def main() -> None:
 
     log(f"[DONE] Added {len(new_papers)} new papers.")
     print("\n================ LC SCRAPER END ================\n")
+
 
 if __name__ == "__main__":
     main()
