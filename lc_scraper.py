@@ -142,20 +142,39 @@ def _source_display_name(source: str) -> str:
 
 
 def build_card_html(p: dict) -> str:
+    # Bron
     source = (p.get("source", "other") or "other").lower()
+
+    # Bron-naam voor badge
+    def _source_display_name(s: str) -> str:
+        mapping = {
+            "pubmed": "PubMed",
+            "nature": "Nature",
+            "europepmc": "EuropePMC",
+            "litcovid": "LitCovid",
+            "scienceopen": "ScienceOpen",
+            "longcovidweb": "LongCovidWeb",
+            "recover": "RECOVER",
+            "rki": "RKI",
+        }
+        return mapping.get(s.lower(), "Other")
+
     source_name = _source_display_name(source)
 
+    # Onderwerp / categorie
     category_raw = p.get("ai_category", "") or ""
     category = category_raw.lower()
 
+    # Abstract + summary escaping
     full_abstract = (p.get("abstract", "") or "").replace('"', '&quot;').replace("'", "&#39;")
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
+    # Datum
     date_obj = p.get("date")
     if isinstance(date_obj, datetime):
         date_str = date_obj.strftime("%Y-%m-%d")
     else:
-        date_str = str(date_obj) if date_obj is not None else ""
+        date_str = str(date_obj) if date_obj else ""
 
     return f"""
 <div class="paper-card" data-source="{source}" data-category="{category}">
@@ -184,6 +203,7 @@ def build_card_html(p: dict) -> str:
     <a href="{p.get('url','')}" target="_blank">Read paper</a>
 </div>
 """.strip()
+
 
 
 def inject_cards_into_index(cards_html: str) -> None:

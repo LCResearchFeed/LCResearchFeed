@@ -365,6 +365,27 @@ body.dark .source-badge {
     border-color: #f97316;
     color: #ea580c;
 }
+/* =========================================================
+   SUBJECT BADGE
+   ========================================================= */
+
+.subject-badge {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.7rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-alt);
+    color: var(--muted);
+}
+
+body.dark .subject-badge {
+    background: rgba(15, 23, 42, 0.9);
+}
 
 /* =========================================================
    UTILITY
