@@ -51,30 +51,36 @@ TREAT_TERMS = ["treatment", "therapy", "drug", "trial", "intervention"]
 NOISE_TERMS = ["survey", "protocol", "quality of life", "burden"]
 
 def is_valid_candidate(p: dict) -> bool:
-    title = (p.get("title") or "")
-    abstract = (p.get("abstract") or "")
+    title = (p.get("title") or "").lower()
+    abstract = (p.get("abstract") or "").lower()
+    source = p.get("source", "").lower()
 
-    if not isinstance(title, str):
-        title = str(title)
-    if not isinstance(abstract, str):
-        abstract = str(abstract)
-
-    title = title.lower()
-    abstract = abstract.lower()
-
+    # EuropePMC → altijd doorlaten naar AI als het mechanisme of treatment is
+    if source == "europepmc":
+        mech = any(kw in title or kw in abstract for kw in MECH_TERMS)
+        treat = any(kw in title or kw in abstract for kw in TREAT_TERMS)
+        if mech or treat:
+            return True
+        # anders normale filtering
+        # (EuropePMC heeft veel epidemiologie → die mag eruit)
+    
+    # Normale LC relevance
     if not any(kw in title or kw in abstract for kw in LC_TERMS):
         if "covid" not in title:
             return False
 
+    # Mechanism or treatment
     mech = any(kw in title or kw in abstract for kw in MECH_TERMS)
     treat = any(kw in title or kw in abstract for kw in TREAT_TERMS)
     if not (mech or treat):
         return False
 
+    # Noise filter
     if any(kw in title or kw in abstract for kw in NOISE_TERMS):
         return False
 
     return True
+
 
 # ---------------------------------------------------------
 # HTML CARD GENERATION

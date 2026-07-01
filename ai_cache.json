@@ -4090,5 +4090,41 @@
     "review": false,
     "summary": "",
     "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-10.1016/j.bbih.2026.101250": {
+    "score": 70,
+    "category": "Mechanism",
+    "long_covid": false,
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-10.1038/s41598-026-45346-y": {
+    "score": 70,
+    "category": "Treatment",
+    "long_covid": false,
+    "mechanism": false,
+    "treatment": true,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-10.3389/fimmu.2025.1737983": {
+    "score": 70,
+    "category": "Mechanism",
+    "long_covid": false,
+    "mechanism": true,
+    "treatment": true,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
   }
 }
