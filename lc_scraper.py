@@ -14,7 +14,7 @@ LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
 from storage.seen import load_seen, save_seen
 from storage.cache import load_ai_cache, save_ai_cache
 
-# Source modules (uniform interface: fetch_*_papers() -> list[dict])
+# Uniform source modules
 from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
 from sources.europepmc import fetch_europepmc_papers
@@ -42,7 +42,7 @@ def log(msg: str) -> None:
         pass
 
 # ---------------------------------------------------------
-# PREFILTER (SAFE)
+# PREFILTER
 # ---------------------------------------------------------
 
 LC_TERMS = ["long covid", "post covid", "post-covid", "pasc", "post-acute", "sars-cov-2"]
@@ -51,30 +51,19 @@ TREAT_TERMS = ["treatment", "therapy", "drug", "trial", "intervention"]
 NOISE_TERMS = ["survey", "protocol", "quality of life", "burden"]
 
 def is_valid_candidate(p: dict) -> bool:
-    title = p.get("title") or ""
-    abstract = p.get("abstract") or ""
+    title = (p.get("title") or "").lower()
+    abstract = (p.get("abstract") or "").lower()
 
-    if not isinstance(title, str):
-        title = str(title)
-    if not isinstance(abstract, str):
-        abstract = str(abstract)
-
-    t = title.lower()
-    a = abstract.lower()
-
-    # LC relevance
-    if not any(kw in t or kw in a for kw in LC_TERMS):
-        if "covid" not in t:
+    if not any(kw in title or kw in abstract for kw in LC_TERMS):
+        if "covid" not in title:
             return False
 
-    # Mechanism or treatment
-    mech = any(kw in t or kw in a for kw in MECH_TERMS)
-    treat = any(kw in t or kw in a for kw in TREAT_TERMS)
+    mech = any(kw in title or kw in abstract for kw in MECH_TERMS)
+    treat = any(kw in title or kw in abstract for kw in TREAT_TERMS)
     if not (mech or treat):
         return False
 
-    # Noise filter
-    if any(kw in t or kw in a for kw in NOISE_TERMS):
+    if any(kw in title or kw in abstract for kw in NOISE_TERMS):
         return False
 
     return True
@@ -88,16 +77,11 @@ def build_card_html(p: dict) -> str:
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
     date_obj = p.get("date")
-    if isinstance(date_obj, datetime):
-        date_str = date_obj.strftime("%Y-%m-%d")
-    else:
-        date_str = str(date_obj)
-
-    source = p.get("source", "other")
+    date_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, datetime) else str(date_obj)
 
     return f"""
-<div class="paper-card" data-source="{source}">
-    <h2>{p.get('title', '')}</h2>
+<div class="paper-card" data-source="{p.get('source','other')}">
+    <h2>{p.get('title','')}</h2>
     <div class="date">{date_str}</div>
 
     <div class="ai-meta">
@@ -107,13 +91,16 @@ def build_card_html(p: dict) -> str:
 
     <p class="ai-summary">{ai_summary}</p>
 
-    <button class="toggle-abstract" onclick="this.nextElementSibling.classList.toggle('hidden'); this.textContent = this.nextElementSibling.classList.contains('hidden') ? 'Show abstract' : 'Hide abstract';">
+    <button class="toggle-abstract"
+        onclick="this.nextElementSibling.classList.toggle('hidden');
+                 this.textContent = this.nextElementSibling.classList.contains('hidden')
+                 ? 'Show abstract' : 'Hide abstract';">
         Show abstract
     </button>
 
-    <p class="abstract hidden" data-full="{full_abstract}">{p.get('abstract', '')}</p>
+    <p class="abstract hidden" data-full="{full_abstract}">{p.get('abstract','')}</p>
 
-    <a href="{p.get('url', '')}" target="_blank">Read paper</a>
+    <a href="{p.get('url','')}" target="_blank">Read paper</a>
 </div>
 """.strip()
 
@@ -165,86 +152,43 @@ def main() -> None:
     seen = load_seen()
     ai_cache = load_ai_cache()
 
-    # FETCH
-    log("[FETCH] Fetching PubMed papers...")
-    pubmed = fetch_pubmed_papers()
-    log(f"[FETCH] PubMed: {len(pubmed)} papers")
+    # FETCH ALL SOURCES
+    sources = {
+        "pubmed": fetch_pubmed_papers(),
+        "nature": fetch_nature_papers(),
+        "europepmc": fetch_europepmc_papers(),
+        "litcovid": fetch_litcovid_papers(),
+        "longcovidweb": fetch_longcovidweb_papers(),
+        "recover": fetch_recover_papers(),
+        "rki": fetch_rki_papers(),
+        "scienceopen": fetch_scienceopen_papers(),
+    }
 
-    log("[FETCH] Fetching Nature papers...")
-    nature = fetch_nature_papers()
-    log(f"[FETCH] Nature: {len(nature)} papers")
-
-    log("[FETCH] Fetching EuropePMC papers...")
-    europepmc = fetch_europepmc_papers()
-    log(f"[FETCH] EuropePMC: {len(europepmc)} papers")
-
-    log("[FETCH] Fetching LitCovid papers...")
-    litcovid = fetch_litcovid_papers()
-    log(f"[FETCH] LitCovid: {len(litcovid)} papers")
-
-    log("[FETCH] Fetching LongCovidWeb papers...")
-    longcovidweb = fetch_longcovidweb_papers()
-    log(f"[FETCH] LongCovidWeb: {len(longcovidweb)} papers")
-
-    log("[FETCH] Fetching RECOVER papers...")
-    recover = fetch_recover_papers()
-    log(f"[FETCH] RECOVER: {len(recover)} papers")
-
-    log("[FETCH] Fetching RKI papers...")
-    rki = fetch_rki_papers()
-    log(f"[FETCH] RKI: {len(rki)} papers")
-
-    log("[FETCH] Fetching ScienceOpen papers...")
-    scienceopen = fetch_scienceopen_papers()
-    log(f"[FETCH] ScienceOpen: {len(scienceopen)} papers")
+    for name, papers in sources.items():
+        log(f"[FETCH] {name}: {len(papers)} papers")
 
     # MERGE
-    all_raw = (
-        pubmed +
-        nature +
-        europepmc +
-        litcovid +
-        longcovidweb +
-        recover +
-        rki +
-        scienceopen
-    )
+    all_raw = []
+    for papers in sources.values():
+        all_raw.extend(papers)
 
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
     # PREFILTER
-    log("[PREFILTER] Running prefilter...")
-    candidates = []
-    for p in all_raw:
-        try:
-            if is_valid_candidate(p):
-                candidates.append(p)
-        except Exception as e:
-            log(f"[PREFILTER ERROR] Paper {p.get('id')} crashed: {e}")
-
+    candidates = [p for p in all_raw if is_valid_candidate(p)]
     log(f"[PREFILTER] Candidates: {len(candidates)}")
 
     # AI CLASSIFICATION
-    log("[AI] Starting AI classification...")
     enriched = []
-    total = len(candidates)
-
     for idx, p in enumerate(candidates, start=1):
-        title_preview = p.get("title", "")[:80]
-        log(f"[AI] ({idx}/{total}) Classifying: {title_preview}")
-
+        log(f"[AI] ({idx}/{len(candidates)}) Classifying: {p.get('title','')[:80]}")
         ai = classify_paper(p, ai_cache)
 
-        log(f"[AI] Result → score={ai['score']} category={ai['category']} long_covid={ai['long_covid']}")
-
         if not ai.get("long_covid"):
-            log("[AI] Skipped (not LC)")
             continue
         if ai.get("category") in ("Irrelevant", "Epidemiology"):
-            log("[AI] Skipped (category irrelevant)")
             continue
         if ai.get("score", 0) < 70:
-            log("[AI] Skipped (score < 70)")
             continue
 
         p["ai_score"] = ai["score"]
@@ -259,11 +203,9 @@ def main() -> None:
 
     if not enriched:
         log("[DONE] No enriched papers.")
-        print("\n================ LC SCRAPER END ================\n")
         return
 
     # RANK
-    log("[RANK] Ranking papers...")
     ranked = sorted(
         enriched,
         key=lambda p: (p.get("ai_score", 0), p.get("date", datetime.min)),
@@ -279,25 +221,19 @@ def main() -> None:
 
     if not new_papers:
         log("[DONE] No new papers to inject.")
-        log("[GIT] Committing and pushing...")
         commit_and_push()
-        print("\n================ LC SCRAPER END ================\n")
         return
 
     # HTML
-    log("[HTML] Building HTML cards...")
     cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
-
     inject_cards_into_index(cards_html)
 
     # SEEN
-    log("[SEEN] Updating seen list...")
     for p in new_papers:
         seen.add(p["id"])
     save_seen(seen)
 
     # GIT
-    log("[GIT] Committing and pushing...")
     commit_and_push()
 
     log(f"[DONE] Added {len(new_papers)} new papers.")
