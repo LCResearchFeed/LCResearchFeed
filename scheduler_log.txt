@@ -128,3 +128,792 @@ Everything up-to-date
 ------------------------------
 [07/01/2026 16:11:49]
 Session: Console
+[LitCovid] Fetching LitCovid papers...
+[LitCovid] ERROR fetching data: 404 Client Error: Not Found for url: https://www.ncbi.nlm.nih.gov/research/litcovid/api/records/?query=long+covid+OR+post-acute+sequelae+OR+PASC+OR+post+covid&page=1&pageSize=200
+[EuropePMC] Fetching EuropePMC papers...
+[EuropePMC] Parsed papers: 200
+[lc] Done. 0 new papers added to GitHub Pages.
+
+================ LC SCRAPER START ================
+
+[FETCH] Fetching PubMed papers...
+[lc] Fetching PubMed details…
+[lc] Fetched PubMed papers: 361
+[FETCH] PubMed: 361 papers
+[FETCH] Fetching Nature papers...
+[FETCH] Nature: 50 papers
+[FETCH] Fetching Europe PMC papers...
+[EuropePMC] Fetching EuropePMC papers...
+[EuropePMC] Parsed papers: 200
+[FETCH] Europe PMC: 200 papers
+[FETCH] Fetching LitCovid papers...
+[LitCovid] Fetching LitCovid papers...
+[LitCovid] ERROR fetching data: 404 Client Error: Not Found for url: https://www.ncbi.nlm.nih.gov/research/litcovid/api/records/?query=long+covid+OR+post-acute+sequelae+OR+PASC+OR+post+covid&page=1&pageSize=200
+[FETCH] LitCovid: 0 papers
+[FETCH] Fetching LongCovidWeb papers...
+[LongCovidWeb] Fetching LongCovidWeb publications...
+[LongCovidWeb] ERROR fetching page: HTTPSConnectionPool(host='longcovidweb.com', port=443): Max retries exceeded with url: /published-studies (Caused by NameResolutionError("HTTPSConnection(host='longcovidweb.com', port=443): Failed to resolve 'longcovidweb.com' ([Errno 11001] getaddrinfo failed)"))
+[FETCH] LongCovidWeb: 0 papers
+[FETCH] Fetching RECOVER papers...
+[RECOVER] Fetching RECOVER publications...
+[RECOVER] ERROR fetching page: 404 Client Error: Not Found for url: https://recovercovid.org/research/publications
+[FETCH] RECOVER: 0 papers
+[FETCH] Fetching RKI papers...
+[RKI] Fetching RKI Long-Covid publications...
+[RKI] ERROR fetching page: 404 Client Error: Not Found for url: https://www.rki.de/EN/Content/infections/epidemiology/long_covid/long_covid_node.html
+[FETCH] RKI: 0 papers
+[FETCH] Fetching ScienceOpen papers...
+[ScienceOpen] Fetching ScienceOpen papers...
+[ScienceOpen] ERROR fetching data: 403 Client Error: Forbidden for url: https://www.scienceopen.com/api/v1/search?q=long+covid+OR+post-acute+sequelae+OR+PASC+OR+post+covid&page=1&pageSize=200&sort=date
+[FETCH] ScienceOpen: 0 papers
+[MERGE] Total fetched: 611 papers
+[PREFILTER] Running prefilter...
+[PREFILTER] Candidates: 253
+[AI] Starting AI classification...
+[AI] (1/253) Classifying: A causal link between autoantibodies and neurological symptoms in long COVID.
+[AI] Result → score=20 category=Irrelevant long_covid=True
+[AI] Skipped (category irrelevant)
+[AI] (2/253) Classifying: [Post-COVID postural orthostatic tachycardia syndrome: Documentation of a hypera
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (3/253) Classifying: Association Between Post-COVID-19 Herpes Zoster Reactivation and Peripheral Nerv
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (4/253) Classifying: Gut microbiome shift in long COVID: impact of disease and montelukast treatment.
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (5/253) Classifying: COGNITIVE RESERVE IN PATIENTS AFTER CORONAVIRUS INFECTION.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (6/253) Classifying: Viral infection and establishing new therapeutic platforms- On the occasion of r
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (7/253) Classifying: Proteomic signatures of COVID-19 Post-Vaccination/Post-Infection Syndrome (PV/PI
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (8/253) Classifying: Post-COVID-19 Area Postrema Syndrome With SARS-CoV-2 in CSF: A Dual-Case Report 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (9/253) Classifying: Lessons from irritable bowel syndrome: potential for understanding and managing 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (10/253) Classifying: From "evidence is scarce" to trial-ready care pathways in POTS: an audit-ready r
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (11/253) Classifying: Assessment and Incidence Determination of Myalgic Encephalomyelitis/Chronic Fati
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (12/253) Classifying: Transfer of IgG from long COVID patients induces symptomology in mice.
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (13/253) Classifying: Extracellular Vesicle Protein and MiRNA Signatures as Biomarkers for Post-Infect
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (14/253) Classifying: Dysautonomia after COVID-19 infection: A case report.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (15/253) Classifying: Shared autonomic phenotype of long COVID and myalgic encephalomyelitis/chronic f
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (16/253) Classifying: Diagnosis of Dual c- and p-ANCA Vasculitis Following SARS-CoV-2 Infection: A Cas
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (17/253) Classifying: Choroid plexus alterations in long COVID and their associations with IL-6.
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (18/253) Classifying: Complex chronic adverse events following immunization: a systemic critique and r
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (19/253) Classifying: Coupling between neural oscillations and white matter integrity reveals cognitiv
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (20/253) Classifying: Invasive Group A Streptococcus infections in children during the post-pandemic p
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (21/253) Classifying: The Relationship Between Hemodynamic Responses During Head-Up Tilt Testing and P
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (22/253) Classifying: Longitudinal Patient-Reported Outcome Trajectories in Long COVID: Findings From 
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (23/253) Classifying: From infection to intervention: post-acute sequelae of SARS-CoV-2 infection and 
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (24/253) Classifying: [Time to modernise healthcare regarding functional disorders].
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (25/253) Classifying: Increase in benign acute childhood myositis in the post-COVID era: a retrospecti
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (26/253) Classifying: Post-acute Corticospinal and Spinal Tractopathy after Coronavirus Disease 2019: 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (27/253) Classifying: Long Covid in Year 5: Some Progress, Still Many Questions.
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (28/253) Classifying: Concentrations of uremic bacterial metabolites in patients with post-COVID-19 sy
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (29/253) Classifying: Symptoms and pathophysiology of post-acute sequelae following COVID-19 (PASC): a
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (30/253) Classifying: Dynamics of Clinical, Radiological, and Biological Expression in Hospitalised CO
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (31/253) Classifying: Clinical Manifestations and Outcomes of SARS-CoV-2 Infection in Children and Ado
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (32/253) Classifying: Gulf War Illness: A Historical Review and Considerations of a Post-Viral Syndrom
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (33/253) Classifying: [Diffuse changes in the brain in the acute phase of COVID-19 and after infection
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (34/253) Classifying: Cluster analysis of post-COVID-19 physical and mental health outcomes 3-6 months
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (35/253) Classifying: Neurological syndromes associated with COVID-19: a multicenter study in Brazil.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (36/253) Classifying: Real-world evidence of remdesivir in formerly hospitalized COVID-19 patients: pa
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (37/253) Classifying: Late Recurrence of C3 Glomerulopathy After SARS-CoV-2 Infection in a Long-Term K
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (38/253) Classifying: Long COVID: a consequence of chronic post-infectious inflammation!
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (39/253) Classifying: SARS-CoV-2 Infection and COVID-19 in Children.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (40/253) Classifying: Predicting post-COVID-19 condition in children and young people up to 24 months 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (41/253) Classifying: Gastrointestinal pathophysiology in long COVID: Exploring roles of microbiota dy
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (42/253) Classifying: Characteristics of COVID-19-associated multisystemic inflammatory syndrome in ch
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (43/253) Classifying: Olfactory event-related potentials (OERPs) and trigeminal event-related potentia
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (44/253) Classifying: Long COVID: a new disease?
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (45/253) Classifying: Comparative analyses of post-infectious olfactory dysfunction between COVID-19 a
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (46/253) Classifying: In-hospital unfavorable outcomes of MIS-C during 2020-2022: a systematic review.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (47/253) Classifying: Task-specific facial dystonia following COVID-19 infection: A case report.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (48/253) Classifying: Investigating the efficacy of melatonin, topical sodium citrate, and multivitami
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (49/253) Classifying: Sleep disorder syndromes of post-acute sequelae of SARS-CoV-2 (PASC) / Long Covi
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (50/253) Classifying: Molecular mimicry in multisystem inflammatory syndrome in children.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (51/253) Classifying: Pediatric endocarditis - a stone left after the pandemic cascade.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (52/253) Classifying: Gut Microbiome and Cytokine Profiles in Post-COVID Syndrome.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (53/253) Classifying: De novo design of potential peptide analogs against the main protease of Omicron
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (54/253) Classifying: Swissped-RECOVERY: masked independent adjudication for the interpretation of non
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (55/253) Classifying: Mitochondrial dysfunction in long COVID: mechanisms, consequences, and potential
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (56/253) Classifying: Long COVID and post-acute sequelae of SARS-CoV-2 pathogenesis and treatment: A K
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (57/253) Classifying: What the SARS-CoV-2 Pandemic Has Taught Us About Immunosuppression, Vaccinations
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (58/253) Classifying: Clinical presentation and management of multisystem inflammatory syndrome in chi
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (59/253) Classifying: The Role of SARS-CoV-2 Spike Protein in Long-term Damage of Tissues and Organs, 
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (60/253) Classifying: Nutritional status of elderly patients previously ill with COVID-19: Assessment 
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (61/253) Classifying: COVID-19-associated serum and cerebrospinal fluid cytokines in post- versus para
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (62/253) Classifying: Gastrointestinal Manifestations and Their Association with Neurologic and Sleep 
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (63/253) Classifying: Post-COVID exercise intolerance is associated with capillary alterations and imm
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (64/253) Classifying: First insights into multidisciplinary and multispecialty long COVID networks-a S
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (65/253) Classifying: Acute cerebellitis following COVID-19 infection associated with autoantibodies t
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (66/253) Classifying: Circulating calprotectin levels four months after severe and non-severe COVID-19
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (67/253) Classifying: Susceptibility of SARS-CoV2 infection in children.
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (68/253) Classifying: Case Report: Four cases of SARS-CoV-2-associated Guillain-Barré Syndrome with SA
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (69/253) Classifying: Long-term symptom severity and clinical biomarkers in post-COVID-19/chronic fati
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (70/253) Classifying: Interstitial lung abnormalities after hospitalization for COVID-19 in patients w
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (71/253) Classifying: Immune-mediated cerebellitis following SARS-CoV-2 infection-a case report and re
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (72/253) Classifying: The use of complementary and alternative medicine for the treatment of gastroint
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (73/253) Classifying: [S1 guidelines for the management of postviral conditions using the example of p
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (74/253) Classifying: SARS-CoV-2 infections and MIS-C among children: A narrative review.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (75/253) Classifying: Miller Fischer syndrome after COVID-19 infection and vaccine: a systematic revie
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (76/253) Classifying: ME/CFS and Long COVID share similar symptoms and biological abnormalities: road 
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (77/253) Classifying: Icosapent ethyl (VASCEPA®) as treatment for post-acute sequelae of SARS CoV-2 (P
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (78/253) Classifying: Long-term humoral signatures following acute pediatric COVID-19 and Multisystem 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (79/253) Classifying: Clinical improvement of Long-COVID is associated with reduction in autoantibodie
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (80/253) Classifying: Six-month cardiac outcomes in children with multisystem inflammatory syndrome in
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (81/253) Classifying: SARS-CoV-2 Infection and COVID-19 in Children.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (82/253) Classifying: Early symptoms preceding post-infectious irritable bowel syndrome following COVI
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (83/253) Classifying: Elevated SARS-CoV-2-Specific Antibody Levels in Patients with Post-COVID Syndrom
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (84/253) Classifying: Thymosin alpha 1 restores the immune homeostasis in lymphocytes during Post-Acut
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (85/253) Classifying: Treatment of Olfactory Disorders After SARS - CoViD 2 Virus Infection.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (86/253) Classifying: Post-COVID-19 syndrome: Insights into a novel post-infectious systemic disorder.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (87/253) Classifying: The Association between COVID-19 and Reactive Arthritis: A Systematic Review of 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (88/253) Classifying: Reactive arthritis following COVID-19 current evidence, diagnosis, and managemen
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (89/253) Classifying: Case report: Immune profiling links neutrophil and plasmablast dysregulation to 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (90/253) Classifying: Severe COVID-19 versus multisystem inflammatory syndrome: comparing two critical
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (91/253) Classifying: Understanding COVID-19 in children: immune determinants and post-infection condi
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (92/253) Classifying: Long COVID-six months of prospective follow-up of changes in symptom profiles of
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (93/253) Classifying: Development of Acute Transverse Myelitis following COVID-19 Infection: A Review 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (94/253) Classifying: [A patient diagnosed with MOGAD after COVID-19 - A case report].
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (95/253) Classifying: Reactive arthritis following COVID-19: cause for concern.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (96/253) Classifying: Impact of SARS-CoV-2 on the nervous system.
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (97/253) Classifying: COVID-19 Heart Lesions in Children: Clinical, Diagnostic and Immunological Chang
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (98/253) Classifying: Atypical myelin oligodendrocyte glycoprotein antibody-associated optic neuritis 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (99/253) Classifying: Diffuse proliferative glomerulonephritis in a patient with COVID-19 infection.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (100/253) Classifying: The Role of Infection and Inflammation in the Pathogenesis of Pediatric Arterial
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (101/253) Classifying: Pathogenesis and Preventive Tactics of Immune-Mediated Non-Pulmonary COVID-19 in
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (102/253) Classifying: Is SARS-CoV-2 the only cause of long-COVID?
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (103/253) Classifying: COVID-19 and pediatric pulmonology: Feedback from an expert center after the fir
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (104/253) Classifying: Post-Acute COVID-19 syndrome (PACS) right atrioventricular and vena cava thrombu
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (105/253) Classifying: Covid-19 and Parkinson's disease: Acute clinical implications, long-COVID and po
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (106/253) Classifying: Humoral cross-coronavirus responses against the S2 region in children with Kawas
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (107/253) Classifying: Multisystem inflammatory syndrome following mild COVID-19 in an unvaccinated Ton
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (108/253) Classifying: Sex-dependent characteristics of Neuro-Long-COVID: Data from a dedicated neurolo
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (109/253) Classifying: NeuroCOVID-19: a critical review.
+[AI] Result → score=20 category=Irrelevant long_covid=True
+[AI] Skipped (category irrelevant)
+[AI] (110/253) Classifying: Cognitive Complications of COVID-19 Infection.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (111/253) Classifying: [Immune-mediated encephalitis in a child with a history of SARS-CoV-2 infection]
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (112/253) Classifying: Long COVID and the cardiovascular system-elucidating causes and cellular mechani
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (113/253) Classifying: [Neurological Manifestations of COVID-19: Meningoencephalitis and Encephalopathy
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (114/253) Classifying: Orthostatic Challenge Causes Distinctive Symptomatic, Hemodynamic and Cognitive 
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (115/253) Classifying: Persisting gastrointestinal symptoms and post-infectious irritable bowel syndrom
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (116/253) Classifying: What SARS-CoV-2 does to our brains.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (117/253) Classifying: COVID-19 and abducens nerve palsy in a 9-year-old girl-case report.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (118/253) Classifying: A 62-Year-Old Man Presenting with Bilateral Tremor of the Upper Limb After a Dia
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (119/253) Classifying: Cognitive phenotyping of post-infectious SARS-CoV-2 patients.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (120/253) Classifying: A case of facial nerve palsy in a pediatric patient associated with Covid-19.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (121/253) Classifying: Safety profile of SARS-CoV-2 vaccination in patients with antibody-mediated CNS 
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (122/253) Classifying: Post SARS-CoV-2 Guillain-Barré syndrome in a child: case report and review of th
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (123/253) Classifying: SARS-CoV-2 and neurodegenerative diseases: what we know and what we don't.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (124/253) Classifying: It Ain't Over 'Til It's Over: SARS CoV-2 and Post-infectious Gastrointestinal Dy
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (125/253) Classifying: The challenge of diagnosing Guillain-Barre syndrome in patients with COVID-19 in
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (126/253) Classifying: Multisystem Inflammatory Syndrome in Children (MIS-C).
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (127/253) Classifying: Tumor marker response to SARS-CoV-2 infection among patients with cancer.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (128/253) Classifying: Long COVID-19 symptoms: Clinical characteristics and recovery rate among non-sev
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (129/253) Classifying: Physical and mental health 3 months after SARS-CoV-2 infection (long COVID) amon
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (130/253) Classifying: Immunology of SARS-CoV-2 infection in children.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (131/253) Classifying: SARS-CoV-2 infections in children: Understanding diverse outcomes.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (132/253) Classifying: SARS-CoV-2 vaccine-related neurological complications.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (133/253) Classifying: Clinical heterogeneity in patients with myoclonus associated to COVID-19.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (134/253) Classifying: COVID-19 as a trigger of irritable bowel syndrome: A review of potential mechani
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (135/253) Classifying: Post-COVID-19 longitudinally extensive transverse myelitis: is it a new entity?
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (136/253) Classifying: A Comparative Olfactory MRI, DTI and fMRI Study of COVID-19 Related Anosmia and 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (137/253) Classifying: Non-infectious mechanisms of neurological damage due to infection.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (138/253) Classifying: Episodic long-term memory in post-infectious SARS-CoV-2 patients.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (139/253) Classifying: Covid-19-Induced Dysautonomia: A Menace of Sympathetic Storm.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (140/253) Classifying: Recurrent Status Epilepticus and SARS-CoV-2 infection: the "perfect storm".
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (141/253) Classifying: Covid-19 associated Guillain-Barré syndrome: A series of a relatively uncommon n
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (142/253) Classifying: COVID-19 in children. II: Pathogenesis, disease spectrum and management.
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (143/253) Classifying: The case of encephalitis in a COVID-19 pediatric patient.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (144/253) Classifying: MRI-negative myeloradiculoneuropathy following Covid-19 infection: An index case
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (145/253) Classifying: Multiple Sclerosis and SARS-CoV-2: Has the Interplay Started?
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (146/253) Classifying: Longitudinally extensive transverse myelitis with anti-myelin oligodendrocyte gl
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (147/253) Classifying: Persistent IgG anticardiolipin autoantibodies are associated with post-COVID syn
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (148/253) Classifying: Post-COVID-19 bifacial weakness and paraesthesia: a case report.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (149/253) Classifying: Psychosis associated with suspected SARS-CoV-2 encephalitis with response to ste
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (150/253) Classifying: SARS-CoV-2-associated Guillain-Barré syndrome in four patients: what do we know 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (151/253) Classifying: The Pattern of Post-viral Arthritis in COVID Pandemic State: An Experience of Te
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (152/253) Classifying: Covid-19 post-infectious acute transverse myelitis responsive to corticosteroid 
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (153/253) Classifying: [Gastroenterological symptoms in COVID-19 patients with mild severity of the dis
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (154/253) Classifying: Association of CNS demyelination and COVID-19 infection: an updated systematic r
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (155/253) Classifying: New onset ANCA-associated vasculitis in an adolescent during an acute COVID-19 i
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (156/253) Classifying: Anti-GAD associated post-infectious cerebellitis after COVID-19 infection.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (157/253) Classifying: A non-RBM targeted RBD specific antibody neutralizes SARS-CoV-2 inducing S1 shed
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (158/253) Classifying: Commentary: The spectrum of neurological manifestations related to COVID-19 and 
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (159/253) Classifying: COVID-19 Post-Infectious Encephalitis Presenting With Delirium as an Initial Man
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (160/253) Classifying: Reactive Arthritis Update: Spotlight on New and Rare Infectious Agents Implicate
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (161/253) Classifying: Guillain-Barré syndrome as only manifestation of COVID-19 infection.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (162/253) Classifying: COVID-19-associated Guillain-Barre syndrome: Postinfectious alone or neuroinvasi
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (163/253) Classifying: Post-infectious and post-acute sequelae of critically ill adults with COVID-19.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (164/253) Classifying: SARS-CoV-2 and Multisystem Inflammatory Syndrome In Children (MIS-C).
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (165/253) Classifying: 6-month multidisciplinary follow-up and outcomes of patients with paediatric inf
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (166/253) Classifying: Multisystem Inflammatory Syndrome in Children (MIS-C) Associated with COVID-19: 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (167/253) Classifying: Acute Transverse Myelitis (ATM):Clinical Review of 43 Patients With COVID-19-Ass
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (168/253) Classifying: [Acute severe neuropathies in the context of SARS-CoV-2 infection].
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (169/253) Classifying: Systemic and organ-specific immune-related manifestations of COVID-19.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (170/253) Classifying: Immune dysregulation and autoreactivity correlate with disease severity in SARS-
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (171/253) Classifying: Post-infectious inflammatory syndrome associated with SARS-CoV-2 in a paediatric
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (172/253) Classifying: SARS-CoV-2 viral load dynamics and real-time RT-PCR cycle threshold interpretati
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (173/253) Classifying: Subacute cerebellar ataxia following respiratory symptoms of COVID-19: a case re
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (174/253) Classifying: COVID-19-associated multisystem inflammatory syndrome in children presenting uni
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (175/253) Classifying: COVID-19 Cliff Notes: A COVID-19 Multidisciplinary Care Compendium.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (176/253) Classifying: The Present State of Understanding of Multisystem Inflammatory Syndrome in Child
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (177/253) Classifying: Historical Insight into Infections and Disorders Associated with Neurological an
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (178/253) Classifying: Myoclonus and cerebellar ataxia associated with COVID-19: a case report and syst
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (179/253) Classifying: Opsoclonus-Myoclonus-Ataxia Syndrome (OMAS) Associated with SARS-CoV-2 Infection
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (180/253) Classifying: The evolving use of hyperbaric oxygen therapy during the COVID-19 pandemic.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (181/253) Classifying: Radiologic Assessment of the Sinonasal Tract, Nasopharynx and Mastoid Cavity in 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (182/253) Classifying: Opsoclonus-myoclonus syndrome, a post-infectious neurologic complication of COVI
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (183/253) Classifying: Multisystem Inflammatory Syndrome in Children Related to SARS-CoV-2.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (184/253) Classifying: Evidence of Coronavirus (CoV) Pathogenesis and Emerging Pathogen SARS-CoV-2 in t
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (185/253) Classifying: Neurological manifestations associated with SARS-CoV-2 and other coronaviruses: 
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (186/253) Classifying: Central and peripheral nervous system complications of COVID-19: a prospective t
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (187/253) Classifying: Guillain-Barré syndrome associated with COVID-19 infection.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (188/253) Classifying: Could KL-6 levels in COVID-19 help to predict lung disease?
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (189/253) Classifying: COVID-19 and psychosis risk: Real or delusional concern?
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (190/253) Classifying: Immunopathology of galectin-3: an increasingly promising target in COVID-19.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (191/253) Classifying: SARS-CoV-2-derived peptides define heterologous and COVID-19-induced T cell reco
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (192/253) Classifying: Paediatric Inflammatory Multisystem Syndrome Temporally Associated With SARS-CoV
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (193/253) Classifying: COVID-19 associated with encephalomyeloradiculitis and positive anti-aquaporin-4
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (194/253) Classifying: Guillain-Barré syndrome spectrum associated with COVID-19: an up-to-date systema
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (195/253) Classifying: Beyond Fever, Cough and Dyspnea: The Neurology of COVID-19.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (196/253) Classifying: Immune-mediated neurological syndromes in SARS-CoV-2-infected patients.
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (197/253) Classifying: The emerging spectrum of COVID-19 neurology: clinical, radiological and laborato
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (198/253) Classifying: COVID-19 associated Kawasaki-like multisystem inflammatory disease in an adult.
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (199/253) Classifying: Gene signatures of SARS-CoV/SARS-CoV-2-infected ferret lungs in short- and long-
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (200/253) Classifying: Smell and taste dysfunction in patients with SARS-CoV-2 infection: A review of e
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (201/253) Classifying: Guillain-Barré syndrome following COVID-19: a newly emerging post-infectious com
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (202/253) Classifying: Neurological manifestations of COVID-19.
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (203/253) Classifying: Miller-Fisher syndrome after SARS-CoV-2 infection.
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (204/253) Classifying: COVID-19-associated acute disseminated encephalomyelitis (ADEM).
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (205/253) Classifying: Pathological potential of autoantibodies in long COVID
+[AI] Result → score=20 category=Irrelevant long_covid=True
+[AI] Skipped (category irrelevant)
+[AI] (206/253) Classifying: Tocilizumab versus sarilumab among adults hospitalised with COVID-19: target tri
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (207/253) Classifying: Widespread gene-environment interactions shape the immune response to SARS-CoV-2
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (208/253) Classifying: Immune-metabolic trajectories delineate subgroups in paediatric long COVID
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (209/253) Classifying: Effectiveness of comprehensive rehabilitation for functional recovery and sympto
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (210/253) Classifying: Course of post COVID-19 disease symptoms over time in the ComPaRe long COVID pro
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (211/253) Classifying: Viral pneumonia detection during the COVID-19 pandemic using deep learning and D
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (212/253) Classifying: Autoantibodies to IL-1Ra and PGRN in severe COVID-19 are associated with inflamm
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (213/253) Classifying: Post-Acute Sequelae of COVID-19 Persist Over 3 Years in Acute Lung Injury/Acute 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (214/253) Classifying: Post-acute sequelae of COVID-19: A disorder of impaired innate immune resolution
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (215/253) Classifying: Translational insights into Long-COVID: evaluation of preclinical animal models 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (216/253) Classifying: Circulating mitochondrial and cellular damage markers in long COVID: Links to co
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (217/253) Classifying: A novel model demonstrating that human immune cells promote multiorgan SARS-CoV-
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (218/253) Classifying: Soluble ST2 fails to reflect persistent endothelial dysfunction or symptoms in p
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (219/253) Classifying: P-1662. Post-Acute Sequelae of COVID-19 and Post-COVID-19 Vaccination Syndrome: 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (220/253) Classifying: Megakaryocytes and afucosylated IgG in post-acute COVID-19: Bridging immune dysr
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (221/253) Classifying: Long-term outcomes following a pulmonary telerehabilitation trial for people wit
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (222/253) Classifying: Increased phosphorylated tau (pTau-181) is associated with neurological post-acu
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (223/253) Classifying: Plasma proteomic profile reveals persistent immune activation in post-acute sequ
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (224/253) Classifying: Candidate treatments for long COVID: a narrative review of expert and patient-dr
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (225/253) Classifying: The serum from critical COVID-19 patients induces proteomic changes in olfactory
+[AI] Result → score=20 category=Irrelevant long_covid=False
+[AI] Skipped (not LC)
+[AI] (226/253) Classifying: Experiences with Qi and changes in post-acute sequelae of COVID-19 (PASC) sympto
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (227/253) Classifying: ORF3a and exosomes mediated lung-brain axis drives neuroinflammation and neurolo
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (228/253) Classifying: Immune correlates underlying small fiber neuropathy presenting as vaccine-associ
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (229/253) Classifying: Soluble IL-2R: A potential therapeutic target for mitochondrial dysfunction in p
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (230/253) Classifying: Comment on the "Use of intravenous immunoglobulin for the treatment of severe CO
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (231/253) Classifying: The Shifting Paradigm of Monoclonal Antibodies in COVID-19 Management: From Earl
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (232/253) Classifying: Long COVID Treatment No Silver Bullets, Only a Few Bronze BBs
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (233/253) Classifying: Persistent Immune Dysregulation during Post-Acute Sequelae of COVID-19 is Manife
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (234/253) Classifying: Persistent inflammatory cytokine signature in long Covid-19 patients: a meta-ana
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (235/253) Classifying: A cross-continental comparative analysis of the neurological manifestations of L
+[AI] Result → score=20 category=Irrelevant long_covid=True
+[AI] Skipped (category irrelevant)
+[AI] (236/253) Classifying: Cardiac Tissue Damage in a Female Animal Post-COVID Model: Relevance of Chemokin
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (237/253) Classifying: Vitamin D in Myalgic Encephalomyelitis/Chronic Fatigue Syndrome After COVID-19 o
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (238/253) Classifying: Commentary: A cross-continental comparative analysis of the neurological manifes
+[AI] Result → score=20 category=Irrelevant long_covid=True
+[AI] Skipped (category irrelevant)
+[AI] (239/253) Classifying: Unraveling the immune responses in long COVID through cytokine profiling.
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (240/253) Classifying: Long COVID: a review of mechanisms and treatment modalities.
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (241/253) Classifying: Impact of pre-existing comorbidities and multimorbidities, demography and viral 
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (242/253) Classifying: Individually Tailored Physiotherapy in Persons With Respiratory Symptoms Related
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (243/253) Classifying: Transcranial direct current stimulation plus cognitive training for cognitive sy
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (244/253) Classifying: Activation of the Lectin Pathway Drives Persistent Complement Dysregulation in L
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (245/253) Classifying: Breakthrough SARS-CoV-2 outcomes in immune-disordered people during the Omicron 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (246/253) Classifying: Post-COVID pulmonary sequelae: Mechanisms and potential targets to reduce persis
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (247/253) Classifying: Effect of Paxlovid treatment during acute COVID-19 on Long COVID onset: An EHR-b
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (248/253) Classifying: Editorial: The interaction of chronic viral infections and SARS-CoV-2 infection 
+[AI] Result → score=70 category=Mechanism long_covid=False
+[AI] Skipped (not LC)
+[AI] (249/253) Classifying: Persistent Immune Dysregulation during Long COVID is Manifested in Antibodies Ta
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (250/253) Classifying: Therapeutic options for the treatment of post-acute sequelae of COVID-19: a scop
+[AI] Result → score=70 category=Treatment long_covid=False
+[AI] Skipped (not LC)
+[AI] (251/253) Classifying: Omics-based computational approaches for biomarker identification, prediction, a
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] (252/253) Classifying: Neuropsychiatric manifestations of Long COVID in India: a persistent problem 2.5
+[AI] Result → score=70 category=Mechanism long_covid=True
+[AI] (253/253) Classifying: Long COVID Treatment No Silver Bullets, Only a Few Bronze BBs
+[AI] Result → score=70 category=Treatment long_covid=True
+[AI] Selected after filtering: 52
+[RANK] Ranking papers...
+[RANK] Top papers: 10
+[NEW] New papers: 10
+[HTML] Building HTML cards...
+[HTML] Injecting cards into index.html...
+[SEEN] Updating seen list...
+[GIT] Committing and pushing...
+[GIT] Running git command: add .
+[GIT STDERR] warning: in the working copy of 'lc_scraper.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scheduler_log.txt', LF will be replaced by CRLF the next time Git touches it
+warning: adding embedded git repository: Backup GitHub Pages
+hint: You've added another git repository inside your current repository.
+hint: Clones of the outer repository will not contain the contents of
+hint: the embedded repository and will not know how to obtain it.
+hint: If you meant to add a submodule, use:
+hint:
+hint: 	git submodule add <url> Backup GitHub Pages
+hint:
+hint: If you added this path by mistake, you can remove it from the
+hint: index with:
+hint:
+hint: 	git rm --cached Backup GitHub Pages
+hint:
+hint: See "git help submodule" for more information.
+hint: Disable this message with "git config set advice.addEmbeddedRepo false"
+[GIT] Running git command: commit -m Update LC papers --allow-empty
+[GIT STDOUT] [main 9d84564] Update LC papers
+ 5 files changed, 801 insertions(+), 3705 deletions(-)
+ create mode 160000 Backup GitHub Pages
+[GIT] Running git command: push origin main
+[GIT STDERR] To https://github.com/LCResearchFeed/LCResearchFeed.git
+   8ef1b3c..9d84564  main -> main
+[DONE] Added 10 new papers.
+
+================ LC SCRAPER END ================
+
+------------------------------
+[07/01/2026 16:17:28]
+Session: Console
