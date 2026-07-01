@@ -59,17 +59,10 @@ def _contains_any(text: str, terms: list[str]) -> bool:
 
 
 def is_valid_candidate_pubmed_nature(p: dict) -> bool:
-    """
-    Strikte filter zoals je gewend bent voor PubMed/Nature:
-    - Long Covid / COVID-19 gerelateerd
-    - Mechanisme of behandeling
-    - Geen ruis (survey/protocol/etc.)
-    """
     title = (p.get("title") or "").lower()
     abstract = (p.get("abstract") or "").lower()
     combo = title + " " + abstract
 
-    # Long Covid / COVID-19 context
     if not _contains_any(combo, LC_TERMS):
         if "covid" not in combo:
             return False
@@ -86,12 +79,6 @@ def is_valid_candidate_pubmed_nature(p: dict) -> bool:
 
 
 def is_valid_candidate_europepmc(p: dict) -> bool:
-    """
-    Ruimere filter voor EuropePMC:
-    - Moet Long Covid / PASC / post-acute / COVID-19 gerelateerd zijn
-    - Geen harde mechanisme/treatment eis → AI mag beslissen
-    - Nog steeds wat ruis eruit (survey/protocol/etc.)
-    """
     title = (p.get("title") or "").lower()
     abstract = (p.get("abstract") or "").lower()
     combo = title + " " + abstract
@@ -106,9 +93,6 @@ def is_valid_candidate_europepmc(p: dict) -> bool:
 
 
 def is_valid_candidate_generic(p: dict) -> bool:
-    """
-    Voor overige bronnen: redelijk ruim, maar wel Long Covid / COVID-19 + geen ruis.
-    """
     title = (p.get("title") or "").lower()
     abstract = (p.get("abstract") or "").lower()
     combo = title + " " + abstract
@@ -123,12 +107,6 @@ def is_valid_candidate_generic(p: dict) -> bool:
 
 
 def is_valid_candidate(p: dict) -> bool:
-    """
-    Dispatcher op basis van bron:
-    - pubmed/nature → strikte filter
-    - europepmc → ruimere filter
-    - rest → generieke filter
-    """
     source = (p.get("source") or "").lower()
 
     if source in ("pubmed", "nature"):
@@ -142,7 +120,34 @@ def is_valid_candidate(p: dict) -> bool:
 # HTML CARD GENERATION
 # ---------------------------------------------------------
 
+def _source_display_name(source: str) -> str:
+    s = (source or "").lower()
+    if s == "pubmed":
+        return "PubMed"
+    if s == "nature":
+        return "Nature"
+    if s == "europepmc":
+        return "EuropePMC"
+    if s == "litcovid":
+        return "LitCovid"
+    if s == "longcovidweb":
+        return "LongCovidWeb"
+    if s == "recover":
+        return "RECOVER"
+    if s == "rki":
+        return "RKI"
+    if s == "scienceopen":
+        return "ScienceOpen"
+    return "Other"
+
+
 def build_card_html(p: dict) -> str:
+    source = (p.get("source", "other") or "other").lower()
+    source_name = _source_display_name(source)
+
+    category_raw = p.get("ai_category", "") or ""
+    category = category_raw.lower()
+
     full_abstract = (p.get("abstract", "") or "").replace('"', '&quot;').replace("'", "&#39;")
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
@@ -153,12 +158,15 @@ def build_card_html(p: dict) -> str:
         date_str = str(date_obj) if date_obj is not None else ""
 
     return f"""
-<div class="paper-card" data-source="{p.get('source','other')}">
+<div class="paper-card" data-source="{source}" data-category="{category}">
+    <span class="source-badge source-{source}">{source_name}</span>
+    <span class="subject-badge">{category_raw}</span>
+
     <h2>{p.get('title','')}</h2>
     <div class="date">{date_str}</div>
 
     <div class="ai-meta">
-        <span class="ai-category">Category: {p.get('ai_category', '')}</span>
+        <span class="ai-category">Category: {category_raw}</span>
         <span class="ai-score">AI relevance: {p.get('ai_score', 0)}/100</span>
     </div>
 
@@ -230,7 +238,6 @@ def main() -> None:
     seen = load_seen()
     ai_cache = load_ai_cache()
 
-    # FETCH ALL SOURCES
     sources = {
         "pubmed": fetch_pubmed_papers(),
         "nature": fetch_nature_papers(),
@@ -245,18 +252,15 @@ def main() -> None:
     for name, papers in sources.items():
         log(f"[FETCH] {name}: {len(papers)} papers")
 
-    # MERGE
     all_raw: list[dict] = []
     for papers in sources.values():
         all_raw.extend(papers)
 
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
-    # PREFILTER (bron-afhankelijk)
     candidates = [p for p in all_raw if is_valid_candidate(p)]
     log(f"[PREFILTER] Candidates: {len(candidates)}")
 
-    # AI CLASSIFICATION
     enriched: list[dict] = []
     total = len(candidates)
 
@@ -265,10 +269,6 @@ def main() -> None:
         log(f"[AI] ({idx}/{total}) Classifying: {title_preview}")
         ai = classify_paper(p, ai_cache)
 
-        # AI-beslissingslogica:
-        # - moet Long Covid / PASC / post-acute sequelae zijn
-        # - categorie niet Irrelevant/Epidemiology
-        # - score >= 70
         if not ai.get("long_covid"):
             continue
         if ai.get("category") in ("Irrelevant", "Epidemiology"):
@@ -290,7 +290,6 @@ def main() -> None:
         log("[DONE] No enriched papers.")
         return
 
-    # RANK: eerst op AI-score, dan op datum
     ranked = sorted(
         enriched,
         key=lambda p: (p.get("ai_score", 0), p.get("date", datetime.min)),
@@ -300,7 +299,6 @@ def main() -> None:
     top = ranked[:10]
     log(f"[RANK] Top papers: {len(top)}")
 
-    # NEW vs SEEN
     new_papers = [p for p in top if p.get("id") not in seen]
     log(f"[NEW] New papers: {len(new_papers)}")
 
@@ -309,17 +307,14 @@ def main() -> None:
         commit_and_push()
         return
 
-    # HTML
     cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
     inject_cards_into_index(cards_html)
 
-    # SEEN
     for p in new_papers:
         if "id" in p:
             seen.add(p["id"])
     save_seen(seen)
 
-    # GIT
     commit_and_push()
 
     log(f"[DONE] Added {len(new_papers)} new papers.")

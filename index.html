@@ -334,43 +334,46 @@
         /* =========================================================
            CARD FILTERING
            ========================================================= */
-        function filterCards() {
-            const search = document.getElementById("search").value.toLowerCase();
-            const source = document.getElementById("source").value;
-            const chips = [...document.querySelectorAll(".chip-active")].map(c => c.textContent.toLowerCase());
-            const cards = document.querySelectorAll(".paper-card");
+		<script>
+		function filterCards() {
+			const search = document.getElementById("search").value.toLowerCase();
+			const source = document.getElementById("source").value; // "" = all
+			const chips = [...document.querySelectorAll(".chip-active")].map(c => c.textContent.toLowerCase());
+			const cards = document.querySelectorAll(".paper-card");
 
-            cards.forEach(card => {
-                const title = card.querySelector("h2").textContent.toLowerCase();
-                const abstract = card.querySelector("p").textContent.toLowerCase();
-                const cardSource = card.dataset.source;
-                const cardCategory = card.dataset.category.toLowerCase();
+			cards.forEach(card => {
+				const title = card.querySelector("h2").textContent.toLowerCase();
+				const abstract = card.querySelector(".abstract")?.textContent.toLowerCase() || "";
+				const cardSource = card.dataset.source.toLowerCase();
+				const cardCategory = card.dataset.category.toLowerCase();
 
-                let visible = true;
+				let visible = true;
 
-                if (search && !title.includes(search) && !abstract.includes(search)) {
-                    visible = false;
-                }
+				// Search filter
+				if (search && !title.includes(search) && !abstract.includes(search)) {
+					visible = false;
+				}
 
-                if (source && cardSource !== source) {
-                    visible = false;
-                }
+				// Source filter
+				if (source && cardSource !== source) {
+					visible = false;
+				}
 
-                if (chips.length && !chips.includes(cardCategory)) {
-                    visible = false;
-                }
+				// Category filter
+				if (chips.length && !chips.includes(cardCategory)) {
+					visible = false;
+				}
 
-                card.style.display = visible ? "" : "none";
-            });
-        }
+				card.style.display = visible ? "" : "none";
+			});
+		}
 
-        /* =========================================================
-           CHIP TOGGLE
-           ========================================================= */
-        function toggleChip(el) {
-            el.classList.toggle("chip-active");
-            filterCards();
-        }
+		function toggleChip(el) {
+			el.classList.toggle("chip-active");
+			filterCards();
+		}
+		</script>
+
 
         /* =========================================================
            TRANSLATION SYSTEM (unchanged functionality)
