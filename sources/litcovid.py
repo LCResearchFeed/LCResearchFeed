@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 
-API_URL = "https://www.ncbi.nlm.nih.gov/research/litcovid/api/records"
+API_URL = "https://www.ncbi.nlm.nih.gov/research/litcovid/api/records/"
 
 def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
     print("[LitCovid] Fetching LitCovid papers...")
@@ -26,7 +26,7 @@ def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
             pmid = item.get("pmid") or item.get("uid")
             title = item.get("title") or ""
             abstract = item.get("abstract") or ""
-            link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/" if pmid else item.get("url", "")
+            link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/" if pmid else ""
 
             date_raw = item.get("publish_time") or ""
             pub_date = datetime.today()
@@ -53,4 +53,3 @@ def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
 
     print(f"[LitCovid] Parsed papers: {len(results)}")
     return results
-

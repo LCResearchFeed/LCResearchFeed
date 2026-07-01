@@ -92,18 +92,22 @@ def build_card_html(p: dict) -> str:
         date_str = str(date_obj)
 
     return f"""
-<div class="paper-card">
+<div class="paper-card" data-source="{p.get('source','other')}">
     <h2>{p.get('title','')}</h2>
     <div class="date">{date_str}</div>
 
     <div class="ai-meta">
         <span class="ai-category">Category: {p.get('ai_category', '')}</span>
         <span class="ai-score">AI relevance: {p.get('ai_score', 0)}/100</span>
+        <span class="read-time"></span>
     </div>
 
     <p class="ai-summary">{ai_summary}</p>
 
-    <button class="toggle-abstract" onclick="this.nextElementSibling.classList.toggle('hidden'); this.textContent = this.nextElementSibling.classList.contains('hidden') ? 'Show abstract' : 'Hide abstract';">
+    <button class="toggle-abstract"
+        onclick="this.nextElementSibling.classList.toggle('hidden');
+                 this.textContent = this.nextElementSibling.classList.contains('hidden')
+                 ? 'Show abstract' : 'Hide abstract';">
         Show abstract
     </button>
 
@@ -112,6 +116,7 @@ def build_card_html(p: dict) -> str:
     <a href="{p.get('url','')}" target="_blank">Read paper</a>
 </div>
 """.strip()
+
 
 def inject_cards_into_index(cards_html: str) -> None:
     print("[HTML] Injecting cards into index.html...")
