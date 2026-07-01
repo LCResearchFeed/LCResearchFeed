@@ -51,8 +51,16 @@ TREAT_TERMS = ["treatment", "therapy", "drug", "trial", "intervention"]
 NOISE_TERMS = ["survey", "protocol", "quality of life", "burden"]
 
 def is_valid_candidate(p: dict) -> bool:
-    title = (p.get("title") or "").lower()
-    abstract = (p.get("abstract") or "").lower()
+    title = (p.get("title") or "")
+    abstract = (p.get("abstract") or "")
+
+    if not isinstance(title, str):
+        title = str(title)
+    if not isinstance(abstract, str):
+        abstract = str(abstract)
+
+    title = title.lower()
+    abstract = abstract.lower()
 
     if not any(kw in title or kw in abstract for kw in LC_TERMS):
         if "covid" not in title:
@@ -77,7 +85,10 @@ def build_card_html(p: dict) -> str:
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
     date_obj = p.get("date")
-    date_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, datetime) else str(date_obj)
+    if isinstance(date_obj, datetime):
+        date_str = date_obj.strftime("%Y-%m-%d")
+    else:
+        date_str = str(date_obj)
 
     return f"""
 <div class="paper-card" data-source="{p.get('source','other')}">
@@ -164,6 +175,12 @@ def main() -> None:
         "scienceopen": fetch_scienceopen_papers(),
     }
 
+    # ENSURE EACH PAPER HAS A SOURCE LABEL
+    for name, papers in sources.items():
+        for p in papers:
+            # alleen zetten als het nog niet bestaat
+            p.setdefault("source", name)
+
     for name, papers in sources.items():
         log(f"[FETCH] {name}: {len(papers)} papers")
 
@@ -175,13 +192,22 @@ def main() -> None:
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
     # PREFILTER
-    candidates = [p for p in all_raw if is_valid_candidate(p)]
+    candidates = []
+    for p in all_raw:
+        try:
+            if is_valid_candidate(p):
+                candidates.append(p)
+        except Exception as e:
+            print(f"[PREFILTER ERROR] Paper {p.get('id')} crashed: {e}")
+
     log(f"[PREFILTER] Candidates: {len(candidates)}")
 
     # AI CLASSIFICATION
     enriched = []
+    total = len(candidates)
+
     for idx, p in enumerate(candidates, start=1):
-        log(f"[AI] ({idx}/{len(candidates)}) Classifying: {p.get('title','')[:80]}")
+        log(f"[AI] ({idx}/{total}) Classifying: {p.get('title','')[:80]}")
         ai = classify_paper(p, ai_cache)
 
         if not ai.get("long_covid"):
