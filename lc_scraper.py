@@ -316,7 +316,7 @@ def main() -> None:
         reverse=True,
     )
 
-    top = ranked[:10]
+    top = [p for p in ranked if p["ai_score"] >= 70]
     log(f"[RANK] Top papers: {len(top)}")
 
     new_papers = [p for p in top if p.get("id") not in seen]
@@ -329,6 +329,57 @@ def main() -> None:
 
     cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
     inject_cards_into_index(cards_html)
+    
+    # ---------------------------------------------------------
+    # SECOND PASS: POST RELEVANT PAPERS FROM ai_cache.json
+    # ---------------------------------------------------------
+
+    log("[CACHE] Checking cached papers for missed relevant items...")
+
+    cached_new = []
+
+    for paper_id, ai in ai_cache.items():
+        # Skip if already posted
+        if paper_id in seen:
+            continue
+
+        # Skip if AI says not long covid
+        if not ai.get("long_covid"):
+            continue
+
+        # Skip irrelevant categories
+        if ai.get("category") in ("Irrelevant", "Epidemiology"):
+            continue
+
+        # Skip low score
+        if ai.get("score", 0) < 70:
+            continue
+
+        # We need the original paper data from all_raw
+        original = next((p for p in all_raw if p.get("id") == paper_id), None)
+        if not original:
+            continue
+
+        # Attach AI fields
+        original["ai_score"] = ai["score"]
+        original["ai_category"] = ai["category"]
+        original["ai_summary"] = ai["summary"]
+        original["ai_reason"] = ai["reason"]
+
+        cached_new.append(original)
+
+    log(f"[CACHE] Missed relevant papers found: {len(cached_new)}")
+
+    if cached_new:
+        cached_html = "\n\n".join(build_card_html(p) for p in cached_new)
+        inject_cards_into_index(cached_html)
+
+    for p in cached_new:
+        seen.add(p["id"])
+    save_seen(seen)
+
+    log(f"[CACHE] Added {len(cached_new)} cached relevant papers.")
+
 
     for p in new_papers:
         if "id" in p:
