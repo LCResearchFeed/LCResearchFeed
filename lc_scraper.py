@@ -19,6 +19,13 @@ from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
 from sources.science import fetch_science_papers
 
+# NEW SOURCES
+from sources.litcovid import fetch_litcovid_papers
+from sources.recover import fetch_recover_papers
+from sources.scienceopen import fetch_scienceopen_papers
+from sources.rki import fetch_rki_papers
+from sources.longcovidweb import fetch_longcovidweb_papers
+
 # AI classifier
 from ai.classifier import classify_paper
 
@@ -37,13 +44,33 @@ def log(msg: str) -> None:
         pass
 
 # ---------------------------------------------------------
-# PREFILTER (SAFE)
+# PREFILTER (SAFE, UITGEBREID)
 # ---------------------------------------------------------
 
-LC_TERMS = ["long covid", "post covid", "post-covid", "pasc", "post-acute", "sars-cov-2"]
-MECH_TERMS = ["immune", "inflammation", "mitochondria", "viral", "persistent", "neurological"]
-TREAT_TERMS = ["treatment", "therapy", "drug", "trial", "intervention"]
-NOISE_TERMS = ["survey", "protocol", "quality of life", "burden"]
+LC_TERMS = [
+    "long covid", "post covid", "post-covid", "pasc", "post-acute", "sars-cov-2",
+    "post-acute sequelae", "post acute sequelae",
+    "post-infectious sequelae", "post infectious sequelae",
+    "post-viral sequelae", "post viral sequelae",
+    "long-term effects", "long term effects",
+    "persistent symptoms", "post-covid sequelae", "post covid sequelae",
+]
+
+MECH_TERMS = [
+    "immune", "inflammation", "mitochondria", "viral", "persistent", "neurological",
+    "pathophysiology", "pathogenesis", "endothelial", "microclots", "coagulation",
+    "metabolic", "autonomic", "dysautonomia", "pots",
+]
+
+TREAT_TERMS = [
+    "treatment", "therapy", "drug", "trial", "intervention",
+    "clinical trial", "rehabilitation", "protocol", "improvement", "recovery",
+]
+
+NOISE_TERMS = [
+    "survey", "protocol", "quality of life", "burden",
+    "workforce", "healthcare utilization", "prevalence", "incidence",
+]
 
 def is_valid_candidate(p: dict) -> bool:
     title = p.get("title") or ""
@@ -59,7 +86,7 @@ def is_valid_candidate(p: dict) -> bool:
 
     # LC relevance
     if not any(kw in t or kw in a for kw in LC_TERMS):
-        if "covid" not in t:
+        if "covid" not in t and "sars-cov-2" not in t and "sars cov 2" not in t:
             return False
 
     # Mechanism or treatment
@@ -68,9 +95,10 @@ def is_valid_candidate(p: dict) -> bool:
     if not (mech or treat):
         return False
 
-    # Noise filter
+    # Noise filter – maar laat mechanisme/treatment papers door
     if any(kw in t or kw in a for kw in NOISE_TERMS):
-        return False
+        if not (mech or treat):
+            return False
 
     return True
 
@@ -79,7 +107,7 @@ def is_valid_candidate(p: dict) -> bool:
 # ---------------------------------------------------------
 
 def build_card_html(p: dict) -> str:
-    full_abstract = (p["abstract"] or "").replace('"', '&quot;').replace("'", "&#39;")
+    full_abstract = (p.get("abstract", "") or "").replace('"', '&quot;').replace("'", "&#39;")
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
     date_obj = p.get("date")
@@ -90,7 +118,7 @@ def build_card_html(p: dict) -> str:
 
     return f"""
 <div class="paper-card">
-    <h2>{p['title']}</h2>
+    <h2>{p.get('title','')}</h2>
     <div class="date">{date_str}</div>
 
     <div class="ai-meta">
@@ -104,9 +132,9 @@ def build_card_html(p: dict) -> str:
         Show abstract
     </button>
 
-    <p class="abstract hidden" data-full="{full_abstract}">{p['abstract']}</p>
+    <p class="abstract hidden" data-full="{full_abstract}">{p.get('abstract','')}</p>
 
-    <a href="{p['url']}" target="_blank">Read paper</a>
+    <a href="{p.get('url','')}" target="_blank">Read paper</a>
 </div>
 """.strip()
 
@@ -160,17 +188,56 @@ def main() -> None:
 
     print("[FETCH] Fetching PubMed papers...")
     pubmed = fetch_pubmed_papers()
-    print(f"[FETCH] PubMed: {len(pubmed)} papers")
+    print(f"[FETCH] PubMed: {len(pubmed or [])} papers")
 
     print("[FETCH] Fetching Nature papers...")
     nature = fetch_nature_papers()
-    print(f"[FETCH] Nature: {len(nature)} papers")
+    print(f"[FETCH] Nature: {len(nature or [])} papers")
 
     print("[FETCH] Fetching Science papers...")
     science = fetch_science_papers()
-    print(f"[FETCH] Science: {len(science)} papers")
+    print(f"[FETCH] Science: {len(science or [])} papers")
 
-    all_raw = pubmed + nature + science
+    print("[FETCH] Fetching LitCovid papers...")
+    litcovid = fetch_litcovid_papers()
+    print(f"[FETCH] LitCovid: {len(litcovid or [])} papers")
+
+    print("[FETCH] Fetching RECOVER papers...")
+    recover = fetch_recover_papers()
+    print(f"[FETCH] RECOVER: {len(recover or [])} papers")
+
+    print("[FETCH] Fetching ScienceOpen papers...")
+    scienceopen = fetch_scienceopen_papers()
+    print(f"[FETCH] ScienceOpen: {len(scienceopen or [])} papers")
+
+    print("[FETCH] Fetching RKI papers...")
+    rki = fetch_rki_papers()
+    print(f"[FETCH] RKI: {len(rki or [])} papers")
+
+    print("[FETCH] Fetching LongCovidWeb papers...")
+    lcweb = fetch_longcovidweb_papers()
+    print(f"[FETCH] LongCovidWeb: {len(lcweb or [])} papers")
+
+    # None-safe
+    pubmed = pubmed or []
+    nature = nature or []
+    science = science or []
+    litcovid = litcovid or []
+    recover = recover or []
+    scienceopen = scienceopen or []
+    rki = rki or []
+    lcweb = lcweb or []
+
+    all_raw = (
+        pubmed
+        + nature
+        + science
+        + litcovid
+        + recover
+        + scienceopen
+        + rki
+        + lcweb
+    )
     print(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
     print("[PREFILTER] Running prefilter...")
@@ -217,6 +284,7 @@ def main() -> None:
 
     if not enriched:
         print("[DONE] No enriched papers.")
+        commit_and_push()
         return
 
     print("[RANK] Ranking papers...")
