@@ -10,10 +10,105 @@ def log(msg: str):
     print(msg)
 
 
+def _parse_pubmed_date(article) -> datetime:
+    """
+    Robust PubMed date parser.
+    Supports:
+        - <PubDate>
+        - <ArticleDate>
+        - <DateCreated>
+        - <DateCompleted>
+        - <DateRevised>
+        - MedlineDate (text)
+    """
+
+    # 1. PubDate (preferred)
+    pub = article.find("PubDate")
+    if pub:
+        y = pub.find("Year")
+        m = pub.find("Month")
+        d = pub.find("Day")
+        if y:
+            year = y.text
+            month = m.text if m else "01"
+            day = d.text if d else "01"
+            try:
+                return datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d")
+            except Exception:
+                pass
+
+    # 2. ArticleDate (ISO)
+    ad = article.find("ArticleDate")
+    if ad:
+        raw = ad.text.strip()
+        for fmt in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S"):
+            try:
+                return datetime.strptime(raw[:len(fmt)], fmt)
+            except Exception:
+                pass
+
+    # 3. MedlineDate (text like "2024 Feb 14")
+    md = article.find("MedlineDate")
+    if md:
+        raw = md.text.strip()
+        try:
+            return datetime.strptime(raw, "%Y %b %d")
+        except Exception:
+            try:
+                return datetime.strptime(raw, "%Y %b")
+            except Exception:
+                try:
+                    return datetime.strptime(raw, "%Y")
+                except Exception:
+                    pass
+
+    # 4. DateCreated
+    dc = article.find("DateCreated")
+    if dc:
+        y = dc.find("Year")
+        m = dc.find("Month")
+        d = dc.find("Day")
+        if y:
+            try:
+                return datetime.strptime(
+                    f"{y.text}-{m.text}-{d.text}", "%Y-%m-%d"
+                )
+            except Exception:
+                pass
+
+    # 5. DateCompleted
+    comp = article.find("DateCompleted")
+    if comp:
+        y = comp.find("Year")
+        m = comp.find("Month")
+        d = comp.find("Day")
+        if y:
+            try:
+                return datetime.strptime(
+                    f"{y.text}-{m.text}-{d.text}", "%Y-%m-%d"
+                )
+            except Exception:
+                pass
+
+    # 6. DateRevised
+    rev = article.find("DateRevised")
+    if rev:
+        y = rev.find("Year")
+        m = rev.find("Month")
+        d = rev.find("Day")
+        if y:
+            try:
+                return datetime.strptime(
+                    f"{y.text}-{m.text}-{d.text}", "%Y-%m-%d"
+                )
+            except Exception:
+                pass
+
+    # Fallback
+    return datetime.today()
+
+
 def fetch_pubmed_pmids(max_results: int = 400) -> list[str]:
-    """
-    Fetch PMIDs using a broad Long COVID query.
-    """
     text_terms = [
         '"Long COVID"',
         '"Post-COVID"',
@@ -50,6 +145,7 @@ def fetch_pubmed_pmids(max_results: int = 400) -> list[str]:
     pmids = [p.split("</Id>")[0] for p in r.text.split("<Id>")[1:]]
     return pmids
 
+
 def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
     log("[lc] Fetching PubMed details…")
     if not pmids:
@@ -57,7 +153,6 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
 
     url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 
-    # PubMed kan grote XML niet stabiel leveren → splitsen in batches
     BATCH_SIZE = 50
     papers = []
 
@@ -65,26 +160,16 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
         batch = pmids[i:i+BATCH_SIZE]
         params = {"db": "pubmed", "id": ",".join(batch), "retmode": "xml"}
 
-        # retry mechanisme
         for attempt in range(3):
             try:
-                r = requests.get(
-                    url,
-                    params=params,
-                    timeout=30,
-                    stream=True,          # belangrijk
-                )
+                r = requests.get(url, params=params, timeout=30, stream=True)
                 r.raise_for_status()
-
-                # forceer volledige content zonder chunked decoding
                 xml_text = r.content.decode("utf-8", errors="ignore")
                 soup = BeautifulSoup(xml_text, "xml")
                 break
-
             except Exception as e:
                 log(f"[lc] PubMed batch retry {attempt+1}/3 failed: {e}")
                 if attempt == 2:
-                    log("[lc] Skipping batch due to repeated failures.")
                     continue
 
         for article in soup.find_all("PubmedArticle"):
@@ -97,16 +182,7 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
 
             mesh_terms = [m.text.lower() for m in article.find_all("DescriptorName")]
 
-            date_tag = article.find("PubDate")
-            pub_date = datetime.today()
-            if date_tag:
-                y = date_tag.Year.text if date_tag.find("Year") else "2024"
-                m = date_tag.Month.text if date_tag.find("Month") else "01"
-                d = date_tag.Day.text if date_tag.find("Day") else "01"
-                try:
-                    pub_date = datetime.strptime(f"{y}-{m}-{d}", "%Y-%m-%d")
-                except Exception:
-                    pass
+            pub_date = _parse_pubmed_date(article)
 
             papers.append(
                 {
@@ -124,10 +200,6 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
     return papers
 
 
-
 def fetch_pubmed_papers() -> list[dict]:
-    """
-    Convenience wrapper used by lc_scraper.py.
-    """
     pmids = fetch_pubmed_pmids()
     return fetch_pubmed_details(pmids)
