@@ -340,6 +340,22 @@ body.dark .source-badge {
     color: #ea580c;
 }
 
+.source-patientresearchcovid19 {
+    border-color: #8e44ad;
+    color: #7d3c98;
+}
+
+.source-recover {
+    border-color: #0ea5e9;   /* lichtblauw (NIH-stijl) */
+    color: #0284c7;          /* donkerder blauw */
+}
+
+.source-europepmc {
+    border-color: #14b8a6;   /* teal */
+    color: #0d9488;          /* iets donkerder teal */
+}
+
+
 /* =========================================================
    SUBJECT BADGE
    ========================================================= */

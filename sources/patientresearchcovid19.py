@@ -2,72 +2,68 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-PRC_BASE_URL = "https://patientresearchcovid19.com"
-PRC_PUBLICATIONS_URL = f"{PRC_BASE_URL}/publications/"
+BASE_URL = "https://patientresearchcovid19.com"
+PRC_URL = f"{BASE_URL}/research/"
 
 def fetch_patientresearchcovid19_papers(max_results: int = 200) -> list[dict]:
-    """
-    Scrape Patient Led Research Collaborative (patientresearchcovid19.com) publications.
-    Returns normalized dicts compatible met de main scraper.
-    """
-
     print("[PatientResearch] Fetching Patient Led Research Collaborative publications...")
 
     try:
-        r = requests.get(PRC_PUBLICATIONS_URL, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+        r = requests.get(PRC_URL, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
         r.raise_for_status()
     except Exception as e:
         print(f"[PatientResearch] ERROR fetching page: {e}")
         return []
 
     soup = BeautifulSoup(r.text, "html.parser")
-    results: list[dict] = []
+    results = []
 
-    # De publications-pagina gebruikt article-blokken voor individuele publicaties
-    articles = soup.find_all("article")
-    if not articles:
-        # fallback: probeer generieke selectors
-        articles = soup.select("div.post, div.entry, li a[href]")
-        if not articles:
-            print("[PatientResearch] No publication items found.")
-            return []
+    # Elke publicatie staat in <div class="post">
+    posts = soup.select("div.post")
+    if not posts:
+        print("[PatientResearch] No publication items found.")
+        return []
 
-    for a in articles[:max_results]:
+    for post in posts[:max_results]:
         try:
             # Titel
-            title_tag = a.find("h3") or a.find("h2") or a.find("h1")
-            title = title_tag.get_text(strip=True) if title_tag else ""
+            title_el = post.select_one("h2.entry-title a")
+            if not title_el:
+                continue
 
-            # URL (link naar paper of detailpagina)
-            link_tag = a.find("a", href=True)
-            url = ""
-            if link_tag:
-                url = link_tag["href"]
-                if url and not url.startswith("http"):
-                    url = PRC_BASE_URL + url
+            title = title_el.get_text(strip=True)
+            url = title_el.get("href")
 
-            # Abstract/snippet (kort stukje tekst)
+            if url and not url.startswith("http"):
+                url = BASE_URL + url
+
+            # Detailpagina ophalen
             abstract = ""
-            # eerst een <p> binnen het article
-            p_tag = a.find("p")
-            if p_tag:
-                abstract = p_tag.get_text(strip=True)
-            # fallback: als we alleen een <li> hebben
-            if not abstract and isinstance(a, BeautifulSoup):
-                abstract = a.get_text(strip=True)
-
-            # Datum
             pub_date = datetime.today()
-            time_tag = a.find("time")
-            if time_tag:
-                dt_raw = time_tag.get("datetime") or time_tag.get_text(strip=True)
-                if dt_raw:
-                    try:
-                        pub_date = datetime.strptime(dt_raw[:10], "%Y-%m-%d")
-                    except Exception:
-                        pass
 
-            # ID
+            try:
+                detail = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+                detail.raise_for_status()
+                dsoup = BeautifulSoup(detail.text, "html.parser")
+
+                # Abstract
+                body = dsoup.select_one("div.entry-content")
+                if body:
+                    abstract = body.get_text(strip=True)
+
+                # Datum
+                time_tag = dsoup.find("time")
+                if time_tag:
+                    dt = time_tag.get("datetime") or time_tag.get_text(strip=True)
+                    if dt:
+                        try:
+                            pub_date = datetime.strptime(dt[:10], "%Y-%m-%d")
+                        except Exception:
+                            pass
+
+            except Exception as e:
+                print(f"[PatientResearch] WARNING: Could not fetch detail page: {e}")
+
             paper_id = f"patientresearch-{title[:40].replace(' ', '-')}".lower()
 
             results.append(
@@ -83,7 +79,7 @@ def fetch_patientresearchcovid19_papers(max_results: int = 200) -> list[dict]:
             )
 
         except Exception as e:
-            print(f"[PatientResearch] ERROR parsing article: {e}")
+            print(f"[PatientResearch] ERROR parsing item: {e}")
             continue
 
     print(f"[PatientResearch] Parsed papers: {len(results)}")
