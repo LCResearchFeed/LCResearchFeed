@@ -22,7 +22,6 @@ from sources.litcovid import fetch_litcovid_papers
 from sources.longcovidweb import fetch_longcovidweb_papers
 from sources.recover import fetch_recover_papers
 from sources.rki import fetch_rki_papers
-from sources.scienceopen import fetch_scienceopen_papers
 
 # AI classifier
 from ai.classifier import classify_paper
@@ -244,7 +243,6 @@ def main() -> None:
         "longcovidweb": fetch_longcovidweb_papers(),
         "recover": fetch_recover_papers(),
         "rki": fetch_rki_papers(),
-        "scienceopen": fetch_scienceopen_papers(),
     }
 
     for name, papers in sources.items():

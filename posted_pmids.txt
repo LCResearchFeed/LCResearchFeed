@@ -49,3 +49,4 @@ europepmc-10.3904/kjim.2025.179
 https://www.nature.com/articles/s41467-022-29513-z
 https://www.nature.com/articles/s41467-026-72224-y
 https://www.nature.com/articles/s41598-026-51787-2
+recover-rationale-and-design-of-recover-energize

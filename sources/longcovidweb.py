@@ -2,18 +2,14 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-LCWEB_URL = "https://longcovidweb.com/published-studies"
+BASE_URL = "https://www.longcovidweb.ca"
+PAPERS_URL = f"{BASE_URL}/research"   # dit is de pagina met alle studies
 
 def fetch_longcovidweb_papers(max_results: int = 200) -> list[dict]:
-    """
-    Scrape LongCovidWeb curated LC publications.
-    Returns normalized dicts compatible with the main scraper.
-    """
-
     print("[LongCovidWeb] Fetching LongCovidWeb publications...")
 
     try:
-        r = requests.get(LCWEB_URL, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+        r = requests.get(PAPERS_URL, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
         r.raise_for_status()
     except Exception as e:
         print(f"[LongCovidWeb] ERROR fetching page: {e}")
@@ -22,21 +18,26 @@ def fetch_longcovidweb_papers(max_results: int = 200) -> list[dict]:
     soup = BeautifulSoup(r.text, "html.parser")
     results = []
 
-    # LongCovidWeb uses <li> or <div class="study-item"> blocks
-    items = soup.select("li a[href], div.study-item a[href]")
+    # Nieuwe structuur: elke studie staat in een <div class="views-row">
+    items = soup.select("div.views-row")
     if not items:
         print("[LongCovidWeb] No publication items found.")
         return []
 
     for item in items[:max_results]:
         try:
-            title = item.get_text(strip=True)
-            url = item.get("href")
+            # Titel
+            title_el = item.select_one("h3 a")
+            if not title_el:
+                continue
+
+            title = title_el.get_text(strip=True)
+            url = title_el.get("href")
 
             if url and not url.startswith("http"):
-                url = "https://longcovidweb.com" + url
+                url = BASE_URL + url
 
-            # Fetch detail page for abstract/snippet
+            # Detailpagina ophalen
             abstract = ""
             pub_date = datetime.today()
 
@@ -46,12 +47,12 @@ def fetch_longcovidweb_papers(max_results: int = 200) -> list[dict]:
                 dsoup = BeautifulSoup(detail.text, "html.parser")
 
                 # Abstract/snippet
-                ptag = dsoup.find("p")
+                ptag = dsoup.select_one("div.field--name-body p")
                 if ptag:
                     abstract = ptag.get_text(strip=True)
 
-                # Date (if present)
-                date_tag = dsoup.find("time")
+                # Datum (indien aanwezig)
+                date_tag = dsoup.select_one("time")
                 if date_tag:
                     dt = date_tag.get("datetime") or date_tag.get_text(strip=True)
                     if dt:

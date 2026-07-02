@@ -2,14 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-RKI_URL = "https://www.rki.de/EN/Content/infections/epidemiology/long_covid/long_covid_node.html"
+BASE_URL = "https://www.rki.de"
+RKI_URL = f"{BASE_URL}/EN/Content/infections/COVID-19/Long_COVID/Long_COVID_node.html"
 
 def fetch_rki_papers(max_results: int = 200) -> list[dict]:
-    """
-    Scrape RKI Long-Covid publications.
-    Returns normalized dicts compatible with the main scraper.
-    """
-
     print("[RKI] Fetching RKI Long-Covid publications...")
 
     try:
@@ -22,8 +18,8 @@ def fetch_rki_papers(max_results: int = 200) -> list[dict]:
     soup = BeautifulSoup(r.text, "html.parser")
     results = []
 
-    # RKI uses <li> blocks inside publication lists
-    items = soup.select("li a[href]")
+    # Nieuwe structuur: alle links staan in content-blokken
+    items = soup.select("div.text a[href]")
     if not items:
         print("[RKI] No publication items found.")
         return []
@@ -33,32 +29,40 @@ def fetch_rki_papers(max_results: int = 200) -> list[dict]:
             title = item.get_text(strip=True)
             url = item.get("href")
 
-            if url and not url.startswith("http"):
-                url = "https://www.rki.de" + url
+            if not title or not url:
+                continue
 
-            # Fetch detail page for abstract/snippet
+            # Relative → absolute
+            if url.startswith("/"):
+                url = BASE_URL + url
+
+            # Abstract + datum uit detailpagina (indien HTML)
             abstract = ""
             pub_date = datetime.today()
 
             try:
-                detail = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
-                detail.raise_for_status()
-                dsoup = BeautifulSoup(detail.text, "html.parser")
+                # PDF's kunnen niet geparsed worden → skip abstract
+                if url.lower().endswith(".pdf"):
+                    abstract = "PDF document (no abstract available)"
+                else:
+                    detail = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+                    detail.raise_for_status()
+                    dsoup = BeautifulSoup(detail.text, "html.parser")
 
-                # Abstract/snippet
-                ptag = dsoup.find("p")
-                if ptag:
-                    abstract = ptag.get_text(strip=True)
+                    # Abstract/snippet
+                    ptag = dsoup.select_one("p")
+                    if ptag:
+                        abstract = ptag.get_text(strip=True)
 
-                # Date
-                time_tag = dsoup.find("time")
-                if time_tag:
-                    dt = time_tag.get("datetime") or time_tag.get_text(strip=True)
-                    if dt:
-                        try:
-                            pub_date = datetime.strptime(dt[:10], "%Y-%m-%d")
-                        except Exception:
-                            pass
+                    # Date
+                    time_tag = dsoup.find("time")
+                    if time_tag:
+                        dt = time_tag.get("datetime") or time_tag.get_text(strip=True)
+                        if dt:
+                            try:
+                                pub_date = datetime.strptime(dt[:10], "%Y-%m-%d")
+                            except Exception:
+                                pass
 
             except Exception as e:
                 print(f"[RKI] WARNING: Could not fetch detail page: {e}")
