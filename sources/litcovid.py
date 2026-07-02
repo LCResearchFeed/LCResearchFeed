@@ -7,8 +7,7 @@ def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
     print("[LitCovid] Fetching LitCovid papers...")
 
     params = {
-        # LitCovid ondersteunt GEEN boolean queries zoals PubMed
-        # Je moet één zoekterm gebruiken, anders krijg je HTML terug
+        # LitCovid ondersteunt GEEN boolean queries → anders HTML response
         "query": "long covid",
         "page": 1,
         "pageSize": max_results,
@@ -19,11 +18,11 @@ def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
             API_URL,
             params=params,
             timeout=20,
-            headers={"Accept": "application/json"}  # forceer JSON
+            headers={"Accept": "application/json"}
         )
 
         # NIH stuurt HTML bij errors → detecteer dat
-        if "html" in r.text.lower():
+        if not r.text.strip().startswith("{"):
             raise ValueError("LitCovid returned HTML instead of JSON")
 
         data = r.json()
@@ -42,7 +41,7 @@ def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
 
             link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/" if pmid else ""
 
-            date_raw = item.get("publish_time") or ""
+            date_raw = item.get("publish_time") or item.get("date") or ""
             pub_date = datetime.today()
             if date_raw:
                 try:
