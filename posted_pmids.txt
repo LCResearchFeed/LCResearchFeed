@@ -46,7 +46,6 @@ europepmc-10.21203/rs.3.rs-8302624/v1
 europepmc-10.21203/rs.3.rs-8628117/v1
 europepmc-10.3389/fneur.2025.1704801
 europepmc-10.3904/kjim.2025.179
-europepmc-Candidate treatments for long COVID: a n
 europepmc-Candidate_treatments_for_long_COVID:_a_n
 https://www.nature.com/articles/s41467-022-29513-z
 https://www.nature.com/articles/s41467-026-72224-y
