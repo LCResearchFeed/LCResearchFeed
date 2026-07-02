@@ -103,6 +103,17 @@ body {
     color: var(--muted);
     font-size: 0.95rem;
 }
+.header-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.header-graphic {
+    width: 54px;
+    height: 54px;
+    opacity: 0.9;
+}
 
 /* =========================================================
    CONTROLS

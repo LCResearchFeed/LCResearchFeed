@@ -1,17 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
+from utils.date_normalizer import normalize_date
 
 BASE_NATURE = "https://www.nature.com"
 
-# ---------------------------------------------------------
-# Nature: HTML scraping
-# ---------------------------------------------------------
 
 def fetch_nature_papers(max_results: int = 50) -> list[dict]:
     """
     Scrape Nature search results for Long COVID.
-    Returns standardized paper dictionaries.
+    Returns standardized paper dictionaries with normalized dates.
     """
 
     url = f"{BASE_NATURE}/search?q=long+covid&order=date"
@@ -22,10 +19,8 @@ def fetch_nature_papers(max_results: int = 50) -> list[dict]:
             headers={"User-Agent": "Mozilla/5.0"},
             timeout=20
         )
+        r.raise_for_status()
     except Exception:
-        return []
-
-    if r.status_code != 200:
         return []
 
     soup = BeautifulSoup(r.text, "html.parser")
@@ -40,7 +35,10 @@ def fetch_nature_papers(max_results: int = 50) -> list[dict]:
     results = []
 
     for a in articles[:max_results]:
-        # Title
+
+        # -----------------------------
+        # TITLE + URL
+        #-----------------------------
         title_tag = (
             a.select_one("h3 a")
             or a.select_one("h2 a")
@@ -56,28 +54,33 @@ def fetch_nature_papers(max_results: int = 50) -> list[dict]:
 
         link = href if href.startswith("http") else BASE_NATURE + href
 
-        # Snippet / abstract preview
+        # -----------------------------
+        # SNIPPET / ABSTRACT PREVIEW
+        #-----------------------------
         snippet_tag = (
             a.select_one("p")
             or a.select_one("[data-testid='search-snippet']")
         )
         snippet = snippet_tag.get_text(strip=True) if snippet_tag else ""
 
-        # Date
-        pub_date = datetime.today()
+        # -----------------------------
+        # DATE (robust)
+        # Nature formats:
+        #   <time datetime="2024-07-01">
+        #   <time>2024-07-01</time>
+        #   <time datetime="2024-07-01T12:00:00Z">
+        # -----------------------------
+        raw_date = None
         date_tag = a.select_one("time")
 
         if date_tag:
-            dt = date_tag.get("datetime") or date_tag.get_text(strip=True)
-            if dt:
-                # Try multiple formats
-                for fmt in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%S"):
-                    try:
-                        pub_date = datetime.strptime(dt[:len(fmt)], fmt)
-                        break
-                    except Exception:
-                        continue
+            raw_date = date_tag.get("datetime") or date_tag.get_text(strip=True)
 
+        pub_date = normalize_date(raw_date)
+
+        # -----------------------------
+        # BUILD PAPER DICT
+        #-----------------------------
         results.append({
             "id": link,
             "title": title,

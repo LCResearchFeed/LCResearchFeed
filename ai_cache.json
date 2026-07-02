@@ -5170,5 +5170,41 @@
     "review": false,
     "summary": "",
     "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-Phenotyping_Pediatric_Long_COVID:_Sympto": {
+    "score": 20,
+    "category": "Irrelevant",
+    "long_covid": true,
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-P-1662._Post-Acute_Sequelae_of_COVID-19_": {
+    "score": 70,
+    "category": "Mechanism",
+    "long_covid": false,
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-Candidate_treatments_for_long_COVID:_a_n": {
+    "score": 70,
+    "category": "Treatment",
+    "long_covid": true,
+    "mechanism": false,
+    "treatment": true,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
   }
 }

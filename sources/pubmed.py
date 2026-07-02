@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+from utils.date_normalizer import normalize_date
 
 # ---------------------------------------------------------
 # PubMed: Fetch + Parse
@@ -10,10 +11,15 @@ def log(msg: str):
     print(msg)
 
 
+# ---------------------------------------------------------
+# FETCH PMIDs
+# ---------------------------------------------------------
+
 def fetch_pubmed_pmids(max_results: int = 400) -> list[str]:
     """
     Fetch PMIDs using a broad Long COVID query.
     """
+
     text_terms = [
         '"Long COVID"',
         '"Post-COVID"',
@@ -50,6 +56,65 @@ def fetch_pubmed_pmids(max_results: int = 400) -> list[str]:
     pmids = [p.split("</Id>")[0] for p in r.text.split("<Id>")[1:]]
     return pmids
 
+
+# ---------------------------------------------------------
+# PARSE PUBMED DETAILS
+# ---------------------------------------------------------
+
+def parse_pubmed_date(article) -> datetime | None:
+    """
+    PubMed dates are extremely inconsistent.
+    Dit vangt ALLE varianten af en normaliseert naar datetime.
+    """
+
+    # 1. Try PubDate block
+    date_tag = article.find("PubDate")
+    if date_tag:
+        year = date_tag.find("Year")
+        month = date_tag.find("Month")
+        day = date_tag.find("Day")
+
+        y = year.text if year else None
+        m = month.text if month else None
+        d = day.text if day else None
+
+        # PubMed months are often strings like "Jul"
+        MONTH_MAP = {
+            "Jan": "01", "Feb": "02", "Mar": "03", "Apr": "04",
+            "May": "05", "Jun": "06", "Jul": "07", "Aug": "08",
+            "Sep": "09", "Oct": "10", "Nov": "11", "Dec": "12"
+        }
+
+        if m in MONTH_MAP:
+            m = MONTH_MAP[m]
+
+        raw = "-".join([x for x in [y, m, d] if x])
+        parsed = normalize_date(raw)
+        if parsed:
+            return parsed
+
+    # 2. Try ArticleDate
+    ad = article.find("ArticleDate")
+    if ad:
+        y = ad.find("Year").text if ad.find("Year") else None
+        m = ad.find("Month").text if ad.find("Month") else None
+        d = ad.find("Day").text if ad.find("Day") else None
+        raw = "-".join([x for x in [y, m, d] if x])
+        parsed = normalize_date(raw)
+        if parsed:
+            return parsed
+
+    # 3. Try MedlineDate (free text)
+    md = article.find("MedlineDate")
+    if md:
+        parsed = normalize_date(md.text)
+        if parsed:
+            return parsed
+
+    # 4. Fallback: today
+    return datetime.today()
+
+
 def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
     log("[lc] Fetching PubMed details…")
     if not pmids:
@@ -57,7 +122,6 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
 
     url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 
-    # PubMed kan grote XML niet stabiel leveren → splitsen in batches
     BATCH_SIZE = 50
     papers = []
 
@@ -72,11 +136,10 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
                     url,
                     params=params,
                     timeout=30,
-                    stream=True,          # belangrijk
+                    stream=True,
                 )
                 r.raise_for_status()
 
-                # forceer volledige content zonder chunked decoding
                 xml_text = r.content.decode("utf-8", errors="ignore")
                 soup = BeautifulSoup(xml_text, "xml")
                 break
@@ -97,16 +160,8 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
 
             mesh_terms = [m.text.lower() for m in article.find_all("DescriptorName")]
 
-            date_tag = article.find("PubDate")
-            pub_date = datetime.today()
-            if date_tag:
-                y = date_tag.Year.text if date_tag.find("Year") else "2024"
-                m = date_tag.Month.text if date_tag.find("Month") else "01"
-                d = date_tag.Day.text if date_tag.find("Day") else "01"
-                try:
-                    pub_date = datetime.strptime(f"{y}-{m}-{d}", "%Y-%m-%d")
-                except Exception:
-                    pass
+            # ⭐ NEW: Perfect date parsing
+            pub_date = parse_pubmed_date(article)
 
             papers.append(
                 {
@@ -124,10 +179,10 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
     return papers
 
 
+# ---------------------------------------------------------
+# WRAPPER
+# ---------------------------------------------------------
 
 def fetch_pubmed_papers() -> list[dict]:
-    """
-    Convenience wrapper used by lc_scraper.py.
-    """
     pmids = fetch_pubmed_pmids()
     return fetch_pubmed_details(pmids)
