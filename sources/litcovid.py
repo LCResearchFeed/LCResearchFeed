@@ -1,13 +1,13 @@
 import requests
 from datetime import datetime
 
-API_URL = "https://www.ncbi.nlm.nih.gov/research/litcovid/api/records"
+API_URL = "https://www.ncbi.nlm.nih.gov/research/coronavirus/api/records"
 
 def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
     print("[LitCovid] Fetching LitCovid papers...")
 
     params = {
-        "query": "long covid OR post-acute sequelae OR PASC OR post covid",
+        "query": "litcovid AND (long covid OR post-acute sequelae OR PASC OR post covid)",
         "page": 1,
         "pageSize": max_results,
     }
@@ -20,15 +20,23 @@ def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
         print(f"[LitCovid] ERROR fetching data: {e}")
         return []
 
+    records = data.get("records", [])
     results = []
-    for item in data.get("records", []):
+
+    for item in records:
         try:
+            # PMID / UID
             pmid = item.get("pmid") or item.get("uid")
+
+            # Title / Abstract
             title = item.get("title") or ""
             abstract = item.get("abstract") or ""
-            link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/" if pmid else ""
 
-            date_raw = item.get("publish_time") or ""
+            # Link
+            link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/" if pmid else item.get("url", "")
+
+            # Date
+            date_raw = item.get("publish_time") or item.get("date") or ""
             pub_date = datetime.today()
             if date_raw:
                 try:
@@ -43,10 +51,11 @@ def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
                     "abstract": abstract,
                     "url": link,
                     "source": "litcovid",
-                    "mesh": [],
+                    "mesh": item.get("mesh", []),
                     "date": pub_date,
                 }
             )
+
         except Exception as e:
             print(f"[LitCovid] ERROR parsing item: {e}")
             continue
