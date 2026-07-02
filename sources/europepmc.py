@@ -1,27 +1,30 @@
 import requests
 from datetime import datetime
+from typing import Optional, List, Dict
 
 API_URL = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
 
 
-def _parse_europepmc_date(raw: str) -> datetime:
+# ---------------------------------------------------------
+# Robust EuropePMC date parser (NO fallback to today)
+# ---------------------------------------------------------
+def parse_europepmc_date(raw: Optional[str]) -> Optional[datetime]:
     """
-    Robust parser for EuropePMC date formats.
-    Supports:
-        - "2024"
-        - "2024-07"
-        - "2024-07-01"
-        - "2024-07-01T00:00:00Z"
-        - "2024-07-01T00:00:00"
-        - "2024-07-01T00:00:00+01:00"
+    Parse EuropePMC date formats.
+    Returns None if the date cannot be parsed.
+    Supported formats:
+        - YYYY
+        - YYYY-MM
+        - YYYY-MM-DD
+        - ISO timestamps with Z or timezone
     """
 
     if not raw:
-        return datetime.today()
+        return None
 
     raw = raw.strip()
 
-    # ISO formats with time
+    # ISO formats
     iso_formats = [
         "%Y-%m-%dT%H:%M:%SZ",
         "%Y-%m-%dT%H:%M:%S",
@@ -33,7 +36,7 @@ def _parse_europepmc_date(raw: str) -> datetime:
         except Exception:
             pass
 
-    # YYYY-MM-DD (truncate time)
+    # YYYY-MM-DD
     try:
         return datetime.strptime(raw[:10], "%Y-%m-%d")
     except Exception:
@@ -53,11 +56,13 @@ def _parse_europepmc_date(raw: str) -> datetime:
         except Exception:
             pass
 
-    # Fallback
-    return datetime.today()
+    return None
 
 
-def fetch_europepmc_papers(max_results: int = 200) -> list[dict]:
+# ---------------------------------------------------------
+# Main fetcher
+# ---------------------------------------------------------
+def fetch_europepmc_papers(max_results: int = 200) -> List[Dict]:
     print("[EuropePMC] Fetching EuropePMC papers...")
 
     query = 'LONG COVID OR "post-acute sequelae" OR PASC'
@@ -76,8 +81,9 @@ def fetch_europepmc_papers(max_results: int = 200) -> list[dict]:
         return []
 
     results = []
+    items = data.get("resultList", {}).get("result", [])
 
-    for item in data.get("resultList", {}).get("result", []):
+    for item in items:
         try:
             title = (item.get("title") or "").strip()
             abstract = (item.get("abstractText") or "").strip()
@@ -98,7 +104,7 @@ def fetch_europepmc_papers(max_results: int = 200) -> list[dict]:
                 link = f"https://doi.org/{doi}"
 
             # -----------------------------
-            # DATE extraction (robust)
+            # DATE extraction (no fallback)
             # -----------------------------
             raw_date = (
                 item.get("firstPublicationDate")
@@ -106,7 +112,12 @@ def fetch_europepmc_papers(max_results: int = 200) -> list[dict]:
                 or item.get("pubYear")
             )
 
-            pub_date = _parse_europepmc_date(raw_date)
+            pub_date = parse_europepmc_date(raw_date)
+
+            # Skip papers without valid date
+            if pub_date is None:
+                print(f"[EuropePMC] Skipping paper without valid date: {title[:50]}")
+                continue
 
             # -----------------------------
             # ID construction

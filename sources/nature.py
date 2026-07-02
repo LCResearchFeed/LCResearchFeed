@@ -1,27 +1,30 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+from typing import Optional, List, Dict
 
 BASE_NATURE = "https://www.nature.com"
 
 
-def _parse_nature_date(raw: str) -> datetime:
+# ---------------------------------------------------------
+# Robust Nature date parser (NO fallback)
+# ---------------------------------------------------------
+def parse_nature_date(raw: Optional[str]) -> Optional[datetime]:
     """
-    Robust parser for Nature date formats.
-    Supports:
-        - "2024-07-01"
-        - "2024-07-01T00:00:00Z"
-        - "2024-07-01T00:00:00"
-        - "2024-07-01T00:00:00+01:00"
-        - fallback: today
+    Parse Nature date formats.
+    Returns None if the date cannot be parsed.
+    Supported:
+        - YYYY-MM-DD
+        - YYYY-MM-DDT00:00:00Z
+        - YYYY-MM-DDT00:00:00
+        - YYYY-MM-DDT00:00:00+01:00
     """
 
     if not raw:
-        return datetime.today()
+        return None
 
     raw = raw.strip()
 
-    # ISO formats with time
     iso_formats = [
         "%Y-%m-%dT%H:%M:%SZ",
         "%Y-%m-%dT%H:%M:%S",
@@ -33,20 +36,20 @@ def _parse_nature_date(raw: str) -> datetime:
         except Exception:
             pass
 
-    # YYYY-MM-DD (truncate time)
+    # YYYY-MM-DD
     try:
         return datetime.strptime(raw[:10], "%Y-%m-%d")
     except Exception:
         pass
 
-    return datetime.today()
+    return None
 
 
-def fetch_nature_papers(max_results: int = 50) -> list[dict]:
-    """
-    Scrape Nature search results for Long COVID.
-    Returns standardized paper dictionaries.
-    """
+# ---------------------------------------------------------
+# Main fetcher
+# ---------------------------------------------------------
+def fetch_nature_papers(max_results: int = 50) -> List[Dict]:
+    print("[Nature] Fetching Nature papers...")
 
     url = f"{BASE_NATURE}/search?q=long+covid&order=date"
 
@@ -57,10 +60,8 @@ def fetch_nature_papers(max_results: int = 50) -> list[dict]:
             timeout=20
         )
         r.raise_for_status()
-    except Exception:
-        return []
-
-    if r.status_code != 200:
+    except Exception as e:
+        print(f"[Nature] ERROR fetching data: {e}")
         return []
 
     soup = BeautifulSoup(r.text, "html.parser")
@@ -105,12 +106,17 @@ def fetch_nature_papers(max_results: int = 50) -> list[dict]:
         # -----------------------------
         # Date
         # -----------------------------
-        pub_date = datetime.today()
         date_tag = a.select_one("time")
-
         if date_tag:
             raw_date = date_tag.get("datetime") or date_tag.get_text(strip=True)
-            pub_date = _parse_nature_date(raw_date)
+            pub_date = parse_nature_date(raw_date)
+        else:
+            pub_date = None
+
+        # Skip papers without valid date
+        if pub_date is None:
+            print(f"[Nature] Skipping paper without valid date: {title[:50]}")
+            continue
 
         # -----------------------------
         # Build paper dict
@@ -127,4 +133,5 @@ def fetch_nature_papers(max_results: int = 50) -> list[dict]:
 
     # Deduplicate by URL
     final = list({item["id"]: item for item in results}.values())
+    print(f"[Nature] Parsed papers: {len(final)}")
     return final

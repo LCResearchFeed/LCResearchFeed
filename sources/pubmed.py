@@ -1,25 +1,30 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+from typing import Optional, List, Dict
+
 
 # ---------------------------------------------------------
-# PubMed: Fetch + Parse
+# Logging helper
 # ---------------------------------------------------------
-
 def log(msg: str):
     print(msg)
 
 
-def _parse_pubmed_date(article) -> datetime:
+# ---------------------------------------------------------
+# Robust PubMed date parser (NO fallback)
+# ---------------------------------------------------------
+def parse_pubmed_date(article) -> Optional[datetime]:
     """
-    Robust PubMed date parser.
+    Parse PubMed XML date fields.
+    Returns None if no valid date is found.
     Supports:
-        - <PubDate>
-        - <ArticleDate>
-        - <DateCreated>
-        - <DateCompleted>
-        - <DateRevised>
-        - MedlineDate (text)
+        - PubDate
+        - ArticleDate (ISO)
+        - MedlineDate ("2024 Feb 14", "2024 Feb", "2024")
+        - DateCreated
+        - DateCompleted
+        - DateRevised
     """
 
     # 1. PubDate (preferred)
@@ -29,9 +34,9 @@ def _parse_pubmed_date(article) -> datetime:
         m = pub.find("Month")
         d = pub.find("Day")
         if y:
-            year = y.text
-            month = m.text if m else "01"
-            day = d.text if d else "01"
+            year = y.text.strip()
+            month = (m.text.strip() if m else "01")
+            day = (d.text.strip() if d else "01")
             try:
                 return datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d")
             except Exception:
@@ -41,74 +46,67 @@ def _parse_pubmed_date(article) -> datetime:
     ad = article.find("ArticleDate")
     if ad:
         raw = ad.text.strip()
-        for fmt in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S"):
+        iso_formats = [
+            "%Y-%m-%d",
+            "%Y-%m-%dT%H:%M:%SZ",
+            "%Y-%m-%dT%H:%M:%S",
+        ]
+        for fmt in iso_formats:
             try:
                 return datetime.strptime(raw[:len(fmt)], fmt)
             except Exception:
                 pass
 
-    # 3. MedlineDate (text like "2024 Feb 14")
+    # 3. MedlineDate ("2024 Feb 14", "2024 Feb", "2024")
     md = article.find("MedlineDate")
     if md:
         raw = md.text.strip()
-        try:
-            return datetime.strptime(raw, "%Y %b %d")
-        except Exception:
+        for fmt in ("%Y %b %d", "%Y %b", "%Y"):
             try:
-                return datetime.strptime(raw, "%Y %b")
+                return datetime.strptime(raw, fmt)
             except Exception:
-                try:
-                    return datetime.strptime(raw, "%Y")
-                except Exception:
-                    pass
+                pass
+
+    # Helper for DateCreated / DateCompleted / DateRevised
+    def parse_three(tag):
+        if not tag:
+            return None
+        y = tag.find("Year")
+        m = tag.find("Month")
+        d = tag.find("Day")
+        if y and m and d:
+            try:
+                return datetime.strptime(
+                    f"{y.text.strip()}-{m.text.strip()}-{d.text.strip()}",
+                    "%Y-%m-%d"
+                )
+            except Exception:
+                return None
+        return None
 
     # 4. DateCreated
-    dc = article.find("DateCreated")
+    dc = parse_three(article.find("DateCreated"))
     if dc:
-        y = dc.find("Year")
-        m = dc.find("Month")
-        d = dc.find("Day")
-        if y:
-            try:
-                return datetime.strptime(
-                    f"{y.text}-{m.text}-{d.text}", "%Y-%m-%d"
-                )
-            except Exception:
-                pass
+        return dc
 
     # 5. DateCompleted
-    comp = article.find("DateCompleted")
+    comp = parse_three(article.find("DateCompleted"))
     if comp:
-        y = comp.find("Year")
-        m = comp.find("Month")
-        d = comp.find("Day")
-        if y:
-            try:
-                return datetime.strptime(
-                    f"{y.text}-{m.text}-{d.text}", "%Y-%m-%d"
-                )
-            except Exception:
-                pass
+        return comp
 
     # 6. DateRevised
-    rev = article.find("DateRevised")
+    rev = parse_three(article.find("DateRevised"))
     if rev:
-        y = rev.find("Year")
-        m = rev.find("Month")
-        d = rev.find("Day")
-        if y:
-            try:
-                return datetime.strptime(
-                    f"{y.text}-{m.text}-{d.text}", "%Y-%m-%d"
-                )
-            except Exception:
-                pass
+        return rev
 
-    # Fallback
-    return datetime.today()
+    # No valid date found
+    return None
 
 
-def fetch_pubmed_pmids(max_results: int = 400) -> list[str]:
+# ---------------------------------------------------------
+# Fetch PMIDs
+# ---------------------------------------------------------
+def fetch_pubmed_pmids(max_results: int = 400) -> List[str]:
     text_terms = [
         '"Long COVID"',
         '"Post-COVID"',
@@ -142,12 +140,14 @@ def fetch_pubmed_pmids(max_results: int = 400) -> list[str]:
     r = requests.get(url, params=params, timeout=20)
     r.raise_for_status()
 
-    pmids = [p.split("</Id>")[0] for p in r.text.split("<Id>")[1:]]
-    return pmids
+    return [p.split("</Id>")[0] for p in r.text.split("<Id>")[1:]]
 
 
-def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
-    log("[lc] Fetching PubMed details…")
+# ---------------------------------------------------------
+# Fetch details
+# ---------------------------------------------------------
+def fetch_pubmed_details(pmids: List[str]) -> List[Dict]:
+    log("[PubMed] Fetching PubMed details…")
     if not pmids:
         return []
 
@@ -160,6 +160,7 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
         batch = pmids[i:i+BATCH_SIZE]
         params = {"db": "pubmed", "id": ",".join(batch), "retmode": "xml"}
 
+        # Retry mechanism
         for attempt in range(3):
             try:
                 r = requests.get(url, params=params, timeout=30, stream=True)
@@ -168,7 +169,7 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
                 soup = BeautifulSoup(xml_text, "xml")
                 break
             except Exception as e:
-                log(f"[lc] PubMed batch retry {attempt+1}/3 failed: {e}")
+                log(f"[PubMed] Batch retry {attempt+1}/3 failed: {e}")
                 if attempt == 2:
                     continue
 
@@ -182,7 +183,12 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
 
             mesh_terms = [m.text.lower() for m in article.find_all("DescriptorName")]
 
-            pub_date = _parse_pubmed_date(article)
+            pub_date = parse_pubmed_date(article)
+
+            # Skip papers without valid date
+            if pub_date is None:
+                log(f"[PubMed] Skipping paper without valid date: {title[:50]}")
+                continue
 
             papers.append(
                 {
@@ -196,10 +202,13 @@ def fetch_pubmed_details(pmids: list[str]) -> list[dict]:
                 }
             )
 
-    log(f"[lc] Fetched PubMed papers: {len(papers)}")
+    log(f"[PubMed] Parsed papers: {len(papers)}")
     return papers
 
 
-def fetch_pubmed_papers() -> list[dict]:
+# ---------------------------------------------------------
+# Convenience wrapper
+# ---------------------------------------------------------
+def fetch_pubmed_papers() -> List[Dict]:
     pmids = fetch_pubmed_pmids()
     return fetch_pubmed_details(pmids)

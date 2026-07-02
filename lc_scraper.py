@@ -14,7 +14,7 @@ LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
 from storage.seen import load_seen, save_seen
 from storage.cache import load_ai_cache, save_ai_cache
 
-# Uniform source modules
+# Uniform source modules (all now skip papers without date)
 from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
 from sources.europepmc import fetch_europepmc_papers
@@ -26,6 +26,7 @@ from sources.scienceopen import fetch_scienceopen_papers
 
 # AI classifier
 from ai.classifier import classify_paper
+
 
 # ---------------------------------------------------------
 # LOGGING
@@ -39,8 +40,8 @@ def log(msg: str) -> None:
         with open(LOG_PATH, "a", encoding="utf-8") as f:
             f.write(line + "\n")
     except Exception:
-        # logging mag nooit het script breken
         pass
+
 
 # ---------------------------------------------------------
 # PREFILTER
@@ -107,6 +108,10 @@ def is_valid_candidate_generic(p: dict) -> bool:
 
 
 def is_valid_candidate(p: dict) -> bool:
+    # Skip papers without date (your new rule)
+    if not isinstance(p.get("date"), datetime):
+        return False
+
     source = (p.get("source") or "").lower()
 
     if source in ("pubmed", "nature"):
@@ -116,36 +121,14 @@ def is_valid_candidate(p: dict) -> bool:
     else:
         return is_valid_candidate_generic(p)
 
+
 # ---------------------------------------------------------
 # HTML CARD GENERATION
 # ---------------------------------------------------------
 
-def _source_display_name(source: str) -> str:
-    s = (source or "").lower()
-    if s == "pubmed":
-        return "PubMed"
-    if s == "nature":
-        return "Nature"
-    if s == "europepmc":
-        return "EuropePMC"
-    if s == "litcovid":
-        return "LitCovid"
-    if s == "longcovidweb":
-        return "LongCovidWeb"
-    if s == "recover":
-        return "RECOVER"
-    if s == "rki":
-        return "RKI"
-    if s == "scienceopen":
-        return "ScienceOpen"
-    return "Other"
-
-
 def build_card_html(p: dict) -> str:
-    # Bron
     source = (p.get("source", "other") or "other").lower()
 
-    # Bron-naam voor badge
     def _source_display_name(s: str) -> str:
         mapping = {
             "pubmed": "PubMed",
@@ -161,20 +144,14 @@ def build_card_html(p: dict) -> str:
 
     source_name = _source_display_name(source)
 
-    # Onderwerp / categorie
     category_raw = p.get("ai_category", "") or ""
     category = category_raw.lower()
 
-    # Abstract + summary escaping
     full_abstract = (p.get("abstract", "") or "").replace('"', '&quot;').replace("'", "&#39;")
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
-    # Datum
     date_obj = p.get("date")
-    if isinstance(date_obj, datetime):
-        date_str = date_obj.strftime("%Y-%m-%d")
-    else:
-        date_str = str(date_obj) if date_obj else ""
+    date_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, datetime) else ""
 
     return f"""
 <div class="paper-card" data-source="{source}" data-category="{category}">
@@ -205,7 +182,6 @@ def build_card_html(p: dict) -> str:
 """.strip()
 
 
-
 def inject_cards_into_index(cards_html: str) -> None:
     log("[HTML] Injecting cards into index.html...")
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
@@ -224,6 +200,7 @@ def inject_cards_into_index(cards_html: str) -> None:
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(new_html)
+
 
 # ---------------------------------------------------------
 # GIT
@@ -247,6 +224,7 @@ def commit_and_push() -> None:
     run_git(["add", "."])
     run_git(["commit", "-m", "Update LC papers", "--allow-empty"])
     run_git(["push", "origin", "main"])
+
 
 # ---------------------------------------------------------
 # MAIN
@@ -272,16 +250,17 @@ def main() -> None:
     for name, papers in sources.items():
         log(f"[FETCH] {name}: {len(papers)} papers")
 
-    all_raw: list[dict] = []
+    all_raw = []
     for papers in sources.values():
         all_raw.extend(papers)
 
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
+    # Skip papers without date (your new rule)
     candidates = [p for p in all_raw if is_valid_candidate(p)]
     log(f"[PREFILTER] Candidates: {len(candidates)}")
 
-    enriched: list[dict] = []
+    enriched = []
     total = len(candidates)
 
     for idx, p in enumerate(candidates, start=1):
@@ -329,7 +308,7 @@ def main() -> None:
 
     cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
     inject_cards_into_index(cards_html)
-    
+
     # ---------------------------------------------------------
     # SECOND PASS: POST RELEVANT PAPERS FROM ai_cache.json
     # ---------------------------------------------------------
@@ -339,28 +318,23 @@ def main() -> None:
     cached_new = []
 
     for paper_id, ai in ai_cache.items():
-        # Skip if already posted
         if paper_id in seen:
             continue
-
-        # Skip if AI says not long covid
         if not ai.get("long_covid"):
             continue
-
-        # Skip irrelevant categories
         if ai.get("category") in ("Irrelevant", "Epidemiology"):
             continue
-
-        # Skip low score
         if ai.get("score", 0) < 70:
             continue
 
-        # We need the original paper data from all_raw
         original = next((p for p in all_raw if p.get("id") == paper_id), None)
         if not original:
             continue
 
-        # Attach AI fields
+        # Skip papers without date
+        if not isinstance(original.get("date"), datetime):
+            continue
+
         original["ai_score"] = ai["score"]
         original["ai_category"] = ai["category"]
         original["ai_summary"] = ai["summary"]
@@ -379,7 +353,6 @@ def main() -> None:
     save_seen(seen)
 
     log(f"[CACHE] Added {len(cached_new)} cached relevant papers.")
-
 
     for p in new_papers:
         if "id" in p:
