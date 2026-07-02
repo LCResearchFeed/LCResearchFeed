@@ -14,7 +14,7 @@ LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
 from storage.seen import load_seen, save_seen
 from storage.cache import load_ai_cache, save_ai_cache
 
-# Uniform source modules (all now skip papers without date)
+# Source modules
 from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
 from sources.europepmc import fetch_europepmc_papers
@@ -22,6 +22,7 @@ from sources.litcovid import fetch_litcovid_papers
 from sources.longcovidweb import fetch_longcovidweb_papers
 from sources.recover import fetch_recover_papers
 from sources.rki import fetch_rki_papers
+from sources.patientresearchcovid19 import fetch_patientresearchcovid19_papers
 
 # AI classifier
 from ai.classifier import classify_paper
@@ -59,17 +60,12 @@ def _contains_any(text: str, terms: list[str]) -> bool:
 
 
 def is_valid_candidate_pubmed_nature(p: dict) -> bool:
-    title = (p.get("title") or "").lower()
-    abstract = (p.get("abstract") or "").lower()
-    combo = title + " " + abstract
+    combo = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
 
-    if not _contains_any(combo, LC_TERMS):
-        if "covid" not in combo:
-            return False
+    if not _contains_any(combo, LC_TERMS) and "covid" not in combo:
+        return False
 
-    mech = _contains_any(combo, MECH_TERMS)
-    treat = _contains_any(combo, TREAT_TERMS)
-    if not (mech or treat):
+    if not (_contains_any(combo, MECH_TERMS) or _contains_any(combo, TREAT_TERMS)):
         return False
 
     if _contains_any(combo, NOISE_TERMS):
@@ -79,9 +75,7 @@ def is_valid_candidate_pubmed_nature(p: dict) -> bool:
 
 
 def is_valid_candidate_europepmc(p: dict) -> bool:
-    title = (p.get("title") or "").lower()
-    abstract = (p.get("abstract") or "").lower()
-    combo = title + " " + abstract
+    combo = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
 
     if not _contains_any(combo, LC_TERMS) and "covid" not in combo:
         return False
@@ -93,9 +87,7 @@ def is_valid_candidate_europepmc(p: dict) -> bool:
 
 
 def is_valid_candidate_generic(p: dict) -> bool:
-    title = (p.get("title") or "").lower()
-    abstract = (p.get("abstract") or "").lower()
-    combo = title + " " + abstract
+    combo = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
 
     if not _contains_any(combo, LC_TERMS) and "covid" not in combo:
         return False
@@ -107,7 +99,7 @@ def is_valid_candidate_generic(p: dict) -> bool:
 
 
 def is_valid_candidate(p: dict) -> bool:
-    # Skip papers without date (your new rule)
+    # Skip papers without date
     if not isinstance(p.get("date"), datetime):
         return False
 
@@ -134,10 +126,10 @@ def build_card_html(p: dict) -> str:
             "nature": "Nature",
             "europepmc": "EuropePMC",
             "litcovid": "LitCovid",
-            "scienceopen": "ScienceOpen",
             "longcovidweb": "LongCovidWeb",
             "recover": "RECOVER",
             "rki": "RKI",
+            "patientresearchcovid19": "PatientResearch",
         }
         return mapping.get(s.lower(), "Other")
 
@@ -243,6 +235,7 @@ def main() -> None:
         "longcovidweb": fetch_longcovidweb_papers(),
         "recover": fetch_recover_papers(),
         "rki": fetch_rki_papers(),
+        "patientresearchcovid19": fetch_patientresearchcovid19_papers(),
     }
 
     for name, papers in sources.items():
@@ -254,7 +247,6 @@ def main() -> None:
 
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
-    # Skip papers without date (your new rule)
     candidates = [p for p in all_raw if is_valid_candidate(p)]
     log(f"[PREFILTER] Candidates: {len(candidates)}")
 
@@ -329,7 +321,6 @@ def main() -> None:
         if not original:
             continue
 
-        # Skip papers without date
         if not isinstance(original.get("date"), datetime):
             continue
 
