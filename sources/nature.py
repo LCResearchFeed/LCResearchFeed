@@ -4,9 +4,43 @@ from datetime import datetime
 
 BASE_NATURE = "https://www.nature.com"
 
-# ---------------------------------------------------------
-# Nature: HTML scraping
-# ---------------------------------------------------------
+
+def _parse_nature_date(raw: str) -> datetime:
+    """
+    Robust parser for Nature date formats.
+    Supports:
+        - "2024-07-01"
+        - "2024-07-01T00:00:00Z"
+        - "2024-07-01T00:00:00"
+        - "2024-07-01T00:00:00+01:00"
+        - fallback: today
+    """
+
+    if not raw:
+        return datetime.today()
+
+    raw = raw.strip()
+
+    # ISO formats with time
+    iso_formats = [
+        "%Y-%m-%dT%H:%M:%SZ",
+        "%Y-%m-%dT%H:%M:%S",
+        "%Y-%m-%dT%H:%M:%S%z",
+    ]
+    for fmt in iso_formats:
+        try:
+            return datetime.strptime(raw, fmt)
+        except Exception:
+            pass
+
+    # YYYY-MM-DD (truncate time)
+    try:
+        return datetime.strptime(raw[:10], "%Y-%m-%d")
+    except Exception:
+        pass
+
+    return datetime.today()
+
 
 def fetch_nature_papers(max_results: int = 50) -> list[dict]:
     """
@@ -22,6 +56,7 @@ def fetch_nature_papers(max_results: int = 50) -> list[dict]:
             headers={"User-Agent": "Mozilla/5.0"},
             timeout=20
         )
+        r.raise_for_status()
     except Exception:
         return []
 
@@ -40,7 +75,9 @@ def fetch_nature_papers(max_results: int = 50) -> list[dict]:
     results = []
 
     for a in articles[:max_results]:
+        # -----------------------------
         # Title
+        # -----------------------------
         title_tag = (
             a.select_one("h3 a")
             or a.select_one("h2 a")
@@ -56,28 +93,28 @@ def fetch_nature_papers(max_results: int = 50) -> list[dict]:
 
         link = href if href.startswith("http") else BASE_NATURE + href
 
+        # -----------------------------
         # Snippet / abstract preview
+        # -----------------------------
         snippet_tag = (
             a.select_one("p")
             or a.select_one("[data-testid='search-snippet']")
         )
         snippet = snippet_tag.get_text(strip=True) if snippet_tag else ""
 
+        # -----------------------------
         # Date
+        # -----------------------------
         pub_date = datetime.today()
         date_tag = a.select_one("time")
 
         if date_tag:
-            dt = date_tag.get("datetime") or date_tag.get_text(strip=True)
-            if dt:
-                # Try multiple formats
-                for fmt in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%S"):
-                    try:
-                        pub_date = datetime.strptime(dt[:len(fmt)], fmt)
-                        break
-                    except Exception:
-                        continue
+            raw_date = date_tag.get("datetime") or date_tag.get_text(strip=True)
+            pub_date = _parse_nature_date(raw_date)
 
+        # -----------------------------
+        # Build paper dict
+        # -----------------------------
         results.append({
             "id": link,
             "title": title,
