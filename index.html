@@ -34,7 +34,7 @@
 
             <div class="control-group">
                 <label for="source">Source</label>
-                <select id="source">
+                <select id="source" onchange="filterCards()">
 					<option value="">All sources</option>
 					<option value="pubmed">PubMed</option>
 					<option value="nature">Nature</option>
@@ -45,6 +45,7 @@
 					<option value="rki">RKI</option>
 					<option value="patientresearchcovid19">PatientResearch</option>
 				</select>
+
 
 
             </div>
@@ -1484,8 +1485,9 @@
             cards.forEach(card => {
                 const title = card.querySelector("h2").textContent.toLowerCase();
                 const abstract = card.querySelector(".abstract")?.textContent.toLowerCase() || "";
-                const cardSource = card.dataset.source.toLowerCase();
-                const cardCategory = card.dataset.category.toLowerCase();
+                const cardSource = (card.dataset.source || "").toLowerCase();
+                const cardCategory = (card.dataset.category || "").toLowerCase();
+
 
                 let visible = true;
 
@@ -1538,6 +1540,7 @@
             });
 
             sorted.forEach(card => container.appendChild(card));
+			filterCards();
         }
 
         /* =========================================================
