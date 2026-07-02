@@ -94,14 +94,22 @@ def fetch_europepmc_papers(max_results: int = 200) -> List[Dict]:
             # -----------------------------
             # URL extraction
             # -----------------------------
-            link = ""
+            # URL extraction (skip papers without any valid link)
+            link = None
             full_urls = item.get("fullTextUrlList", {}).get("fullTextUrl", [])
+
             if full_urls:
                 link = full_urls[0].get("url", "")
             elif pmid:
                 link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
             elif doi:
                 link = f"https://doi.org/{doi}"
+
+            # Skip papers without any usable link
+            if not link:
+                print(f"[EuropePMC] Skipping paper without valid link: {title[:50]}")
+                continue
+
 
             # -----------------------------
             # DATE extraction (no fallback)
