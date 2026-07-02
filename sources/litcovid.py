@@ -1,42 +1,48 @@
 import requests
 from datetime import datetime
 
-API_URL = "https://www.ncbi.nlm.nih.gov/research/coronavirus/api/records"
+API_URL = "https://www.ncbi.nlm.nih.gov/research/litcovid/api/records"
 
 def fetch_litcovid_papers(max_results: int = 200) -> list[dict]:
     print("[LitCovid] Fetching LitCovid papers...")
 
     params = {
-        "query": "litcovid AND (long covid OR post-acute sequelae OR PASC OR post covid)",
+        # LitCovid ondersteunt GEEN boolean queries zoals PubMed
+        # Je moet één zoekterm gebruiken, anders krijg je HTML terug
+        "query": "long covid",
         "page": 1,
         "pageSize": max_results,
     }
 
     try:
-        r = requests.get(API_URL, params=params, timeout=20)
-        r.raise_for_status()
+        r = requests.get(
+            API_URL,
+            params=params,
+            timeout=20,
+            headers={"Accept": "application/json"}  # forceer JSON
+        )
+
+        # NIH stuurt HTML bij errors → detecteer dat
+        if "html" in r.text.lower():
+            raise ValueError("LitCovid returned HTML instead of JSON")
+
         data = r.json()
+
     except Exception as e:
         print(f"[LitCovid] ERROR fetching data: {e}")
         return []
 
-    records = data.get("records", [])
     results = []
 
-    for item in records:
+    for item in data.get("records", []):
         try:
-            # PMID / UID
             pmid = item.get("pmid") or item.get("uid")
-
-            # Title / Abstract
             title = item.get("title") or ""
             abstract = item.get("abstract") or ""
 
-            # Link
-            link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/" if pmid else item.get("url", "")
+            link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/" if pmid else ""
 
-            # Date
-            date_raw = item.get("publish_time") or item.get("date") or ""
+            date_raw = item.get("publish_time") or ""
             pub_date = datetime.today()
             if date_raw:
                 try:
