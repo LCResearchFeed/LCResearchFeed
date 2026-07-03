@@ -40,11 +40,9 @@ europepmc-10.1038/s41380-026-03471-0
 europepmc-10.1080/10408363.2025.2583083
 europepmc-10.1111/imm.70110
 europepmc-10.1371/journal.pmed.1004711
-europepmc-10.20944/preprints202509.0387.v1
 europepmc-10.20944/preprints202509.0387.v7
 europepmc-10.21203/rs.3.rs-8302624/v1
 europepmc-10.21203/rs.3.rs-8628117/v1
-europepmc-10.3389/fneur.2025.1704801
 europepmc-10.3904/kjim.2025.179
 europepmc-10.64898/2025.12.04.25341650
 https://www.nature.com/articles/s41467-022-29513-z
