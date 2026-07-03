@@ -18,7 +18,6 @@ def fetch_rki_papers(max_results: int = 200) -> list[dict]:
     soup = BeautifulSoup(r.text, "html.parser")
     results = []
 
-    # Nieuwe structuur: alle links staan in content-blokken
     items = soup.select("div.text a[href]")
     if not items:
         print("[RKI] No publication items found.")
@@ -32,16 +31,13 @@ def fetch_rki_papers(max_results: int = 200) -> list[dict]:
             if not title or not url:
                 continue
 
-            # Relative → absolute
             if url.startswith("/"):
                 url = BASE_URL + url
 
-            # Abstract + datum uit detailpagina (indien HTML)
             abstract = ""
             pub_date = datetime.today()
 
             try:
-                # PDF's kunnen niet geparsed worden → skip abstract
                 if url.lower().endswith(".pdf"):
                     abstract = "PDF document (no abstract available)"
                 else:
@@ -49,12 +45,12 @@ def fetch_rki_papers(max_results: int = 200) -> list[dict]:
                     detail.raise_for_status()
                     dsoup = BeautifulSoup(detail.text, "html.parser")
 
-                    # Abstract/snippet
-                    ptag = dsoup.select_one("p")
-                    if ptag:
-                        abstract = ptag.get_text(strip=True)
+                    # Abstract: alle p-tags samenvoegen
+                    ps = dsoup.select("p")
+                    if ps:
+                        abstract = " ".join(p.get_text(strip=True) for p in ps)
 
-                    # Date
+                    # Datum: time-tag of Duitse notatie
                     time_tag = dsoup.find("time")
                     if time_tag:
                         dt = time_tag.get("datetime") or time_tag.get_text(strip=True)
@@ -62,7 +58,10 @@ def fetch_rki_papers(max_results: int = 200) -> list[dict]:
                             try:
                                 pub_date = datetime.strptime(dt[:10], "%Y-%m-%d")
                             except Exception:
-                                pass
+                                try:
+                                    pub_date = datetime.strptime(dt, "%d.%m.%Y")
+                                except Exception:
+                                    pass
 
             except Exception as e:
                 print(f"[RKI] WARNING: Could not fetch detail page: {e}")

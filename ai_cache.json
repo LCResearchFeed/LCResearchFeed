@@ -5314,5 +5314,53 @@
     "review": false,
     "summary": "Search",
     "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-10.64898/2026.02.24.26346989": {
+    "score": 20,
+    "category": "Irrelevant",
+    "long_covid": true,
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-10.64898/2026.02.19.26346546": {
+    "score": 20,
+    "category": "Irrelevant",
+    "long_covid": false,
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-10.64898/2025.12.04.25341650": {
+    "score": 70,
+    "category": "Treatment",
+    "long_covid": true,
+    "mechanism": false,
+    "treatment": true,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "recover-school-difficulties-and-long-covid-in-ch": {
+    "score": 20,
+    "category": "Irrelevant",
+    "long_covid": true,
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "Search",
+    "reason": "Fallback classification due to AI failure or timeout."
   }
 }

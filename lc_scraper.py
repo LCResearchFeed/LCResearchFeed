@@ -18,11 +18,11 @@ from storage.cache import load_ai_cache, save_ai_cache
 from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
 from sources.europepmc import fetch_europepmc_papers
-from sources.litcovid import fetch_litcovid_papers
 from sources.longcovidweb import fetch_longcovidweb_papers
 from sources.recover import fetch_recover_papers
 from sources.rki import fetch_rki_papers
-from sources.patientresearchcovid19 import fetch_patientresearchcovid19_papers
+from sources.litcovid import fetch_litcovid_html_long_covid
+from sources.patientresearchcovid19 import fetch_plrc_papers
 
 # AI classifier
 from ai.classifier import classify_paper
@@ -231,11 +231,11 @@ def main() -> None:
         "pubmed": fetch_pubmed_papers(),
         "nature": fetch_nature_papers(),
         "europepmc": fetch_europepmc_papers(),
-        "litcovid": fetch_litcovid_papers(),
+        "litcovid": fetch_litcovid_html_long_covid(),
         "longcovidweb": fetch_longcovidweb_papers(),
         "recover": fetch_recover_papers(),
         "rki": fetch_rki_papers(),
-        "patientresearchcovid19": fetch_patientresearchcovid19_papers(),
+        "patientresearchcovid19": fetch_plrc_papers(),
     }
 
     for name, papers in sources.items():

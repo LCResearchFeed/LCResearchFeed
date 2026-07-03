@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 BASE_URL = "https://www.longcovidweb.ca"
-PAPERS_URL = f"{BASE_URL}/research"   # dit is de pagina met alle studies
+PAPERS_URL = f"{BASE_URL}/research"
 
 def fetch_longcovidweb_papers(max_results: int = 200) -> list[dict]:
     print("[LongCovidWeb] Fetching LongCovidWeb publications...")
@@ -18,7 +18,6 @@ def fetch_longcovidweb_papers(max_results: int = 200) -> list[dict]:
     soup = BeautifulSoup(r.text, "html.parser")
     results = []
 
-    # Nieuwe structuur: elke studie staat in een <div class="views-row">
     items = soup.select("div.views-row")
     if not items:
         print("[LongCovidWeb] No publication items found.")
@@ -26,7 +25,7 @@ def fetch_longcovidweb_papers(max_results: int = 200) -> list[dict]:
 
     for item in items[:max_results]:
         try:
-            # Titel
+            # Titel + link
             title_el = item.select_one("h3 a")
             if not title_el:
                 continue
@@ -46,12 +45,12 @@ def fetch_longcovidweb_papers(max_results: int = 200) -> list[dict]:
                 detail.raise_for_status()
                 dsoup = BeautifulSoup(detail.text, "html.parser")
 
-                # Abstract/snippet
-                ptag = dsoup.select_one("div.field--name-body p")
-                if ptag:
-                    abstract = ptag.get_text(strip=True)
+                # Abstract: alle <p> binnen body
+                body = dsoup.select_one("div.field--name-body")
+                if body:
+                    abstract = " ".join(p.get_text(strip=True) for p in body.select("p"))
 
-                # Datum (indien aanwezig)
+                # Datum
                 date_tag = dsoup.select_one("time")
                 if date_tag:
                     dt = date_tag.get("datetime") or date_tag.get_text(strip=True)

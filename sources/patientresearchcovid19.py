@@ -3,31 +3,31 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 BASE_URL = "https://patientresearchcovid19.com"
-PRC_URL = f"{BASE_URL}/research/"
+PAPERS_URL = f"{BASE_URL}/research/"
 
-def fetch_patientresearchcovid19_papers(max_results: int = 200) -> list[dict]:
-    print("[PatientResearch] Fetching Patient Led Research Collaborative publications...")
+def fetch_plrc_papers(max_results: int = 200) -> list[dict]:
+    print("[PLRC] Fetching Patient-Led Research Collaborative publications...")
 
     try:
-        r = requests.get(PRC_URL, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+        r = requests.get(PAPERS_URL, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
         r.raise_for_status()
     except Exception as e:
-        print(f"[PatientResearch] ERROR fetching page: {e}")
+        print(f"[PLRC] ERROR fetching page: {e}")
         return []
 
     soup = BeautifulSoup(r.text, "html.parser")
     results = []
 
-    # Elke publicatie staat in <div class="post">
-    posts = soup.select("div.post")
-    if not posts:
-        print("[PatientResearch] No publication items found.")
+    # Elke studie staat in <div class="post">
+    items = soup.select("div.post")
+    if not items:
+        print("[PLRC] No publication items found.")
         return []
 
-    for post in posts[:max_results]:
+    for item in items[:max_results]:
         try:
-            # Titel
-            title_el = post.select_one("h2.entry-title a")
+            # Titel + link
+            title_el = item.select_one("h2.entry-title a")
             if not title_el:
                 continue
 
@@ -46,15 +46,15 @@ def fetch_patientresearchcovid19_papers(max_results: int = 200) -> list[dict]:
                 detail.raise_for_status()
                 dsoup = BeautifulSoup(detail.text, "html.parser")
 
-                # Abstract
-                body = dsoup.select_one("div.entry-content")
-                if body:
-                    abstract = body.get_text(strip=True)
+                # Abstract/snippet
+                content = dsoup.select_one("div.entry-content")
+                if content:
+                    abstract = " ".join(p.get_text(strip=True) for p in content.select("p"))
 
                 # Datum
-                time_tag = dsoup.find("time")
-                if time_tag:
-                    dt = time_tag.get("datetime") or time_tag.get_text(strip=True)
+                date_tag = dsoup.select_one("time")
+                if date_tag:
+                    dt = date_tag.get("datetime") or date_tag.get_text(strip=True)
                     if dt:
                         try:
                             pub_date = datetime.strptime(dt[:10], "%Y-%m-%d")
@@ -62,9 +62,9 @@ def fetch_patientresearchcovid19_papers(max_results: int = 200) -> list[dict]:
                             pass
 
             except Exception as e:
-                print(f"[PatientResearch] WARNING: Could not fetch detail page: {e}")
+                print(f"[PLRC] WARNING: Could not fetch detail page: {e}")
 
-            paper_id = f"patientresearch-{title[:40].replace(' ', '-')}".lower()
+            paper_id = f"plrc-{title[:40].replace(' ', '-')}".lower()
 
             results.append(
                 {
@@ -72,15 +72,15 @@ def fetch_patientresearchcovid19_papers(max_results: int = 200) -> list[dict]:
                     "title": title,
                     "abstract": abstract,
                     "url": url,
-                    "source": "patientresearchcovid19",
+                    "source": "plrc",
                     "mesh": [],
                     "date": pub_date,
                 }
             )
 
         except Exception as e:
-            print(f"[PatientResearch] ERROR parsing item: {e}")
+            print(f"[PLRC] ERROR parsing item: {e}")
             continue
 
-    print(f"[PatientResearch] Parsed papers: {len(results)}")
+    print(f"[PLRC] Parsed papers: {len(results)}")
     return results
