@@ -427,5 +427,33 @@ body.dark .subject-badge {
 }
 
 .content {
-    margin-top: 500px; /* hoogte van je sticky-header */
+    margin-top: 200px; /* hoogte van je sticky-header */
+}
+
+.header-top {
+    display: flex;
+    flex-direction: row;      /* naast elkaar */
+    align-items: center;
+    gap: 1.2rem;              /* ruimte tussen statistieken */
+    margin-bottom: 0.8rem;    /* ruimte tussen stats en titel */
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.9;
+    white-space: nowrap;      /* voorkomt afbreken */
+}
+
+/* Elk statistiek-item */
+.header-top .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem; 
+}
+
+.stats-badge {
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e5e7eb;
+    font-size: 0.9rem;
 }

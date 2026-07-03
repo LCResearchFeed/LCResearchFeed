@@ -194,6 +194,68 @@ def inject_cards_into_index(cards_html: str) -> None:
 
 
 # ---------------------------------------------------------
+# NEW: STATISTICS
+# ---------------------------------------------------------
+
+def compute_stats(papers):
+    stats = {
+        "total": len(papers),
+        "vp": 0,
+        "ai": 0,
+        "da": 0,
+        "mv": 0,
+        "mito": 0,
+    }
+
+    for p in papers:
+        cat = (p.get("ai_category") or "").lower()
+
+        if "viral" in cat or "persist" in cat:
+            stats["vp"] += 1
+        elif "auto" in cat:
+            stats["ai"] += 1
+        elif "dysaut" in cat:
+            stats["da"] += 1
+        elif "micro" in cat or "vascular" in cat:
+            stats["mv"] += 1
+        elif "mito" in cat:
+            stats["mito"] += 1
+
+    return stats
+
+
+def inject_stats_into_index(stats):
+    log("[HTML] Injecting statistics into index.html...")
+
+    with open(INDEX_PATH, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    # datum voor badge
+    today_str = datetime.now().strftime("%Y-%m-%d")
+
+    replacements = {
+        "stat-total": stats["total"],
+        "stat-vp": stats["vp"],
+        "stat-ai": stats["ai"],
+        "stat-da": stats["da"],
+        "stat-mv": stats["mv"],
+        "stat-mito": stats["mito"],
+        "stat-total-badge": stats["total"],
+        "stat-updated": today_str,
+    }
+
+    for span_id, value in replacements.items():
+        html = html.replace(
+            f'id="{span_id}">',
+            f'id="{span_id}">{value}'
+        )
+
+    with open(INDEX_PATH, "w", encoding="utf-8") as f:
+        f.write(html)
+
+
+
+# ---------------------------------------------------------
 # GIT
 # ---------------------------------------------------------
 
@@ -288,6 +350,15 @@ def main() -> None:
     top = [p for p in ranked if p["ai_score"] >= 70]
     log(f"[RANK] Top papers: {len(top)}")
 
+    # NEW: compute + inject stats
+    stats = compute_stats(top)
+    inject_stats_into_index(stats)
+    
+    log(
+    f"[STATS] TOTAL={stats['total']} "
+    f"VP={stats['vp']} AI={stats['ai']} DA={stats['da']} "
+    f"MV={stats['mv']} MITO={stats['mito']}"
+)
     new_papers = [p for p in top if p.get("id") not in seen]
     log(f"[NEW] New papers: {len(new_papers)}")
 
