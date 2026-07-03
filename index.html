@@ -9,74 +9,74 @@
 
 <body>
 
-        <!-- Right-side buttons -->
-        <div class="topbar-buttons">
-            <button class="lang-btn" onclick="toggleTheme()">Dark mode</button>
+	<div class="sticky-header">
+		<div class="topbar-buttons">
+			<button class="lang-btn" onclick="toggleTheme()">Dark mode</button>
 			<button class="lang-btn" id="lang-toggle" style="right: 20px;">Nederlands</button>
-        </div>
-
-	<header class="header">
-
-		<div class="header-row">
-
-			<h1>Long Covid Research Feed</h1>
-
 		</div>
 
-		<p class="subtitle">Automatically updated daily with new peer‑reviewed research</p>
+		<header class="header">
 
-	</header>
+			<div class="header-row">
 
-        <!-- Controls -->
-        <section class="controls">
+				<h1>Long Covid Research Feed</h1>
 
-            <div class="controls-row">
-                <div class="control-group">
-                    <label for="search">Search</label>
-                    <input type="text" id="search" placeholder="Search titles or abstracts..." oninput="filterCards()" />
-                </div>
+			</div>
 
-                <div class="control-group">
-                    <label for="source">Source</label>
-                    <select id="source" onchange="filterCards()">
-                        <option value="">All sources</option>
-                        <option value="pubmed">PubMed</option>
-                        <option value="nature">Nature</option>
-                        <option value="litcovid">LitCovid</option>
-                        <option value="europepmc">EuropePMC</option>
-                        <option value="longcovidweb">LongCovidWeb</option>
-                        <option value="recover">RECOVER</option>
-                        <option value="rki">RKI</option>
-                        <option value="patientresearchcovid19">PatientResearch</option>
-                    </select>
-                </div>
+			<p class="subtitle">Automatically updated daily with new peer‑reviewed research</p>
 
-                <div class="control-group">
-                    <label for="sort">Sort</label>
-                    <select id="sort" onchange="sortCards()">
-                        <option value="newest">Newest first</option>
-                        <option value="oldest">Oldest first</option>
-                        <option value="score-high">Highest AI score</option>
-                        <option value="score-low">Lowest AI score</option>
-                        <option value="source-az">Source A → Z</option>
-                        <option value="source-za">Source Z → A</option>
-                    </select>
-                </div>
-            </div>
+		</header>
 
-            <div class="controls-row">
-                <div class="control-group">
-                    <span class="control-label">Categories</span>
-                    <div class="chip-group" id="category-chips">
-                        <div class="chip" onclick="toggleChip(this)">Mechanism</div>
-                        <div class="chip" onclick="toggleChip(this)">Treatment</div>
-                        <div class="chip" onclick="toggleChip(this)">Drug</div>
-                        <div class="chip" onclick="toggleChip(this)">Lifestyle</div>
-                        <div class="chip" onclick="toggleChip(this)">Review</div>
-                    </div>
-                </div>
-            </div>
+			<!-- Controls -->
+			<section class="controls">
 
+				<div class="controls-row">
+					<div class="control-group">
+						<label for="search">Search</label>
+						<input type="text" id="search" placeholder="Search titles or abstracts..." oninput="filterCards()" />
+					</div>
+
+					<div class="control-group">
+						<label for="source">Source</label>
+						<select id="source" onchange="filterCards()">
+							<option value="">All sources</option>
+							<option value="pubmed">PubMed</option>
+							<option value="nature">Nature</option>
+							<option value="litcovid">LitCovid</option>
+							<option value="europepmc">EuropePMC</option>
+							<option value="longcovidweb">LongCovidWeb</option>
+							<option value="recover">RECOVER</option>
+							<option value="rki">RKI</option>
+							<option value="patientresearchcovid19">PatientResearch</option>
+						</select>
+					</div>
+
+					<div class="control-group">
+						<label for="sort">Sort</label>
+						<select id="sort" onchange="sortCards()">
+							<option value="newest">Newest first</option>
+							<option value="oldest">Oldest first</option>
+							<option value="score-high">Highest AI score</option>
+							<option value="score-low">Lowest AI score</option>
+							<option value="source-az">Source A → Z</option>
+							<option value="source-za">Source Z → A</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="controls-row">
+					<div class="control-group">
+						<span class="control-label">Categories</span>
+						<div class="chip-group" id="category-chips">
+							<div class="chip" onclick="toggleChip(this)">Mechanism</div>
+							<div class="chip" onclick="toggleChip(this)">Treatment</div>
+							<div class="chip" onclick="toggleChip(this)">Drug</div>
+							<div class="chip" onclick="toggleChip(this)">Lifestyle</div>
+							<div class="chip" onclick="toggleChip(this)">Review</div>
+						</div>
+					</div>
+				</div>
+			</div>
         </section>
     </div>
 
@@ -1554,7 +1554,7 @@
         }
 
         async function switchToDutch() {
-            const summaries = document.querySelectorAll(".ai-summary");
+            const summaries = document.querySelectorAll(".ai-summary:not(:has(button))");
             const abstracts = document.querySelectorAll(".abstract");
             const categories = document.querySelectorAll(".ai-category");
             const readLinks = document.querySelectorAll("a[target='_blank']");

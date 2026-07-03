@@ -419,3 +419,13 @@ body.dark .subject-badge {
         padding-right: 1rem;
     }
 }
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #111827;
+}
+
+.content {
+    margin-top: 500px; /* hoogte van je sticky-header */
+}
