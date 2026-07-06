@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 BASE_URL = "https://www.rki.de"
-RKI_URL = f"{BASE_URL}/EN/Content/infections/COVID-19/Long_COVID/Long_COVID_node.html"
+RKI_URL = f"{BASE_URL}/EN/News/Publications/Publications-in-scientific-journals/publications-in-scientific-journals-node.html"
 
 def fetch_rki_papers(max_results: int = 200) -> list[dict]:
     print("[RKI] Fetching RKI Long-Covid publications...")

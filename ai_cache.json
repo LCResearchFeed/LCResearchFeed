@@ -5362,5 +5362,53 @@
     "review": false,
     "summary": "Search",
     "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "42399536": {
+    "score": 70,
+    "category": "Mechanism",
+    "long_covid": false,
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "Guillain-Barré syndrome (GBS) is an acute immune-mediated neuropathy triggered by infections, with poorly understood pathophysiological diversity. COVID-19-associated GBS (COVID-GBS) is a rare but severe post-infectious condition, and its immune mechanisms remain unclear. We profiled immune mediators in cerebrospinal fluid (CSF) and serum from COVID-GBS patients, comparing them to non-COVID GBS (C",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "https://www.nature.com/articles/s41598-026-56663-7": {
+    "score": 70,
+    "category": "Mechanism",
+    "long_covid": false,
+    "mechanism": true,
+    "treatment": true,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "https://www.nature.com/articles/s41598-026-59934-5": {
+    "score": 70,
+    "category": "Mechanism",
+    "long_covid": false,
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-10.1016/j.clinsp.2026.101046": {
+    "score": 20,
+    "category": "Irrelevant",
+    "long_covid": true,
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
   }
 }

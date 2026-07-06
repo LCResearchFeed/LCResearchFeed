@@ -4,12 +4,12 @@ import requests
 from ai.prompts import build_classification_prompt
 
 # ---------------------------------------------------------
-# Ollama API call (met harde timeout + veilige fallback)
+# Ollama API call (Qwen2.5-Coder-14B)
 # ---------------------------------------------------------
 
 def call_ollama(prompt: str) -> str:
     """
-    Call the local Ollama model llama3.1:8b.
+    Call the local Ollama model qwen2.5-coder:14b.
     Returns raw text from the model, or empty string on failure.
     """
 
@@ -17,44 +17,67 @@ def call_ollama(prompt: str) -> str:
         resp = requests.post(
             "http://localhost:11434/api/generate",
             json={
-                "model": "llama3.1:8b",
+                "model": "gemma:7b-instruct",
                 "prompt": prompt,
-                "stream": False
+                "stream": True
             },
-            timeout=10,  # harde timeout
+            timeout=45,
         )
         resp.raise_for_status()
         data = resp.json()
         return data.get("response", "")
     except Exception:
-        # Bij elke fout (timeout, connectie, JSON) → lege string
         return ""
 
 
+# ---------------------------------------------------------
+# JSON extraction (robust)
+# ---------------------------------------------------------
+
 def extract_json(raw: str) -> dict:
-    """
-    Extract the first {...} JSON block from the model output.
-    If parsing fails, return {}.
-    """
+    if not raw:
+        return {}
+
+    start = raw.find("{")
+    end = raw.rfind("}")
+    if start == -1 or end == -1 or end <= start:
+        return {}
+
+    json_str = raw[start:end + 1]
+
+    # First attempt
+    try:
+        return json.loads(json_str)
+    except Exception:
+        pass
+
+    # Cleanup
+    cleaned = (
+        json_str
+        .replace("\n", " ")
+        .replace("\r", " ")
+        .replace("\t", " ")
+    )
+
+    # Remove markdown fences
+    import re
+    cleaned = re.sub(r"```.*?```", "", cleaned, flags=re.DOTALL)
+
+    # Remove trailing commas
+    cleaned = re.sub(r",\s*}", "}", cleaned)
+    cleaned = re.sub(r",\s*]", "]", cleaned)
 
     try:
-        start = raw.find("{")
-        end = raw.rfind("}")
-        if start == -1 or end == -1 or end <= start:
-            return {}
-
-        json_str = raw[start:end + 1]
-        return json.loads(json_str)
-
+        return json.loads(cleaned)
     except Exception:
         return {}
 
 
-def fallback_classification(p: dict) -> dict:
-    """
-    If AI fails, return a minimal keyword-based classification.
-    """
+# ---------------------------------------------------------
+# Fallback classification
+# ---------------------------------------------------------
 
+def fallback_classification(p: dict) -> dict:
     abstract = p["abstract"].lower()
     title = p["title"].lower()
 
@@ -81,12 +104,11 @@ def fallback_classification(p: dict) -> dict:
     }
 
 
-def classify_paper(p: dict, cache: dict) -> dict:
-    """
-    Classify a paper using llama3.1:8b.
-    Uses cache to avoid reprocessing.
-    """
+# ---------------------------------------------------------
+# Main classifier
+# ---------------------------------------------------------
 
+def classify_paper(p: dict, cache: dict) -> dict:
     cache_key = p["id"]
 
     # Cache hit
@@ -100,22 +122,25 @@ def classify_paper(p: dict, cache: dict) -> dict:
         url=p["url"]
     )
 
-    # AI-call met harde timeout
+    # First AI call
     raw = call_ollama(prompt)
-
-    if not raw:
-        result = fallback_classification(p)
-        cache[cache_key] = result
-        return result
-
     parsed = extract_json(raw)
 
+    # Retry ONLY if JSON is completely empty
+    if not parsed:
+        print(f"Retrying classification for {cache_key}...")
+        raw_retry = call_ollama(prompt)
+        parsed_retry = extract_json(raw_retry)
+        if parsed_retry:
+            parsed = parsed_retry
+
+    # Fallback if still empty
     if not parsed:
         result = fallback_classification(p)
         cache[cache_key] = result
         return result
 
-    # Defaults afdwingen
+    # Enforce defaults
     parsed.setdefault("score", 0)
     parsed.setdefault("category", "Irrelevant")
     parsed.setdefault("long_covid", False)
