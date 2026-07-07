@@ -6,11 +6,8 @@ from ai.prompts import build_classification_prompt
 
 
 # ---------------------------------------------------------
-# Generic AI agent call (vervang endpoint + payload)
+# AI agent call
 # ---------------------------------------------------------
-
-
-
 
 def call_agent(prompt: str) -> str:
     print("\n--- API CALL START ---")
@@ -48,10 +45,8 @@ def call_agent(prompt: str) -> str:
         print("--- API CALL FAILED ---\n")
         return ""
 
-
-
 # ---------------------------------------------------------
-# JSON extraction (robust)
+# JSON extraction
 # ---------------------------------------------------------
 
 def extract_json(raw: str) -> dict:
@@ -89,7 +84,7 @@ def extract_json(raw: str) -> dict:
 
 
 # ---------------------------------------------------------
-# Fallback classification (identiek, maar met ALLE velden)
+# Fallback classification
 # ---------------------------------------------------------
 
 def fallback_classification(p: dict) -> dict:
@@ -138,9 +133,8 @@ def fallback_classification(p: dict) -> dict:
         "reason": "Fallback classification due to AI failure or timeout."
     }
 
-
 # ---------------------------------------------------------
-# Main classifier (identiek)
+# Main classifier
 # ---------------------------------------------------------
 
 def classify_paper(p: dict, cache: dict) -> dict:

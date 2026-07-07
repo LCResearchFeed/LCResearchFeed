@@ -7,10 +7,10 @@ Classify the paper.
 Rules:
 - long_covid = true if symptoms, mechanisms, or effects occur weeks or months after SARS-CoV-2 infection.
 - Choose ONE category:
-  Viral Persistence, Autoimmunity, Dysautonomia, Microvascular, Mitochondrial,
+  Mechanism, Treatment, Drug, Lifestyle, Review,
   Treatment, Irrelevant, Epidemiology
 - mechanistic_group = ONE of:
-  Viral Persistence, Autoimmunity, Dysautonomia, Microvascular, Mitochondrial
+  Viral Persistence, Autoimmunity, Dysautonomia, Microvascular, Mitochondrial, Non-mechanistic
 - mechanism = true if the paper describes biological mechanisms.
 - treatment = true if the paper describes interventions or therapies.
 - drug = true if specific drugs are discussed.
@@ -24,7 +24,7 @@ Return ONLY valid JSON with EXACTLY these fields:
 
 {{
   "score": 0,
-  "category": "Viral Persistence",
+  "category": "Treatment",
   "long_covid": true,
   "mechanistic_group": "Viral Persistence",
   "mechanism": false,
