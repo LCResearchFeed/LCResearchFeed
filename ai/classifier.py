@@ -1,33 +1,53 @@
 import json
 import requests
+import time
 
 from ai.prompts import build_classification_prompt
 
+
 # ---------------------------------------------------------
-# Ollama API call (Qwen2.5-Coder-14B)
+# Generic AI agent call (vervang endpoint + payload)
 # ---------------------------------------------------------
 
-def call_ollama(prompt: str) -> str:
-    """
-    Call the local Ollama model qwen2.5-coder:14b.
-    Returns raw text from the model, or empty string on failure.
-    """
+
+
+
+def call_agent(prompt: str) -> str:
+    print("\n--- API CALL START ---")
+    print("Timestamp:", time.strftime("%Y-%m-%d %H:%M:%S"))
+    print("Prompt sent:")
+    print(prompt)
+    print("---")
 
     try:
         resp = requests.post(
-            "http://localhost:11434/api/generate",
+            "http://127.0.0.1:1234/v1/chat/completions",
             json={
-                "model": "gemma:7b-instruct",
-                "prompt": prompt,
-                "stream": True
+                "model": "qwen2.5-7b-instruct",
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0,
             },
-            timeout=45,
+            timeout=120,
         )
+
+        print("Status code:", resp.status_code)
+
         resp.raise_for_status()
-        data = resp.json()
-        return data.get("response", "")
-    except Exception:
+        content = resp.json()["choices"][0]["message"]["content"]
+
+        print("Response received:")
+        print(content)
+        print("--- API CALL END ---\n")
+
+        return content
+
+    except Exception as e:
+        print("API ERROR:", e)
+        print("--- API CALL FAILED ---\n")
         return ""
+
 
 
 # ---------------------------------------------------------
@@ -45,13 +65,11 @@ def extract_json(raw: str) -> dict:
 
     json_str = raw[start:end + 1]
 
-    # First attempt
     try:
         return json.loads(json_str)
     except Exception:
         pass
 
-    # Cleanup
     cleaned = (
         json_str
         .replace("\n", " ")
@@ -59,11 +77,8 @@ def extract_json(raw: str) -> dict:
         .replace("\t", " ")
     )
 
-    # Remove markdown fences
     import re
     cleaned = re.sub(r"```.*?```", "", cleaned, flags=re.DOTALL)
-
-    # Remove trailing commas
     cleaned = re.sub(r",\s*}", "}", cleaned)
     cleaned = re.sub(r",\s*]", "]", cleaned)
 
@@ -74,7 +89,7 @@ def extract_json(raw: str) -> dict:
 
 
 # ---------------------------------------------------------
-# Fallback classification
+# Fallback classification (identiek, maar met ALLE velden)
 # ---------------------------------------------------------
 
 def fallback_classification(p: dict) -> dict:
@@ -87,31 +102,50 @@ def fallback_classification(p: dict) -> dict:
     mechanism = any(k in abstract or k in title for k in mech_keywords)
     treatment = any(k in abstract or k in title for k in treat_keywords)
 
-    category = "Mechanism" if mechanism else "Treatment" if treatment else "Irrelevant"
-    score = 70 if mechanism or treatment else 20
+    if "viral" in abstract or "persistent" in abstract:
+        mechanistic_group = "Viral Persistence"
+    elif "auto" in abstract or "immune" in abstract:
+        mechanistic_group = "Autoimmunity"
+    elif "pots" in abstract or "dysaut" in abstract:
+        mechanistic_group = "Dysautonomia"
+    elif "micro" in abstract or "vascular" in abstract:
+        mechanistic_group = "Microvascular"
+    elif "mito" in abstract:
+        mechanistic_group = "Mitochondrial"
+    else:
+        mechanistic_group = "Irrelevant"
+
+    if mechanism:
+        category = mechanistic_group
+    elif treatment:
+        category = "Treatment"
+    else:
+        category = "Irrelevant"
+
+    score = 75 if mechanism or treatment else 20
 
     return {
         "score": score,
         "category": category,
         "long_covid": "long covid" in abstract or "long covid" in title,
+        "mechanistic_group": mechanistic_group,
         "mechanism": mechanism,
         "treatment": treatment,
-        "drug": False,
-        "lifestyle": False,
-        "review": False,
+        "drug": "drug" in abstract,
+        "lifestyle": "lifestyle" in abstract,
+        "review": "review" in abstract,
         "summary": p["abstract"][:400],
         "reason": "Fallback classification due to AI failure or timeout."
     }
 
 
 # ---------------------------------------------------------
-# Main classifier
+# Main classifier (identiek)
 # ---------------------------------------------------------
 
 def classify_paper(p: dict, cache: dict) -> dict:
     cache_key = p["id"]
 
-    # Cache hit
     if cache_key in cache:
         return cache[cache_key]
 
@@ -122,33 +156,33 @@ def classify_paper(p: dict, cache: dict) -> dict:
         url=p["url"]
     )
 
-    # First AI call
-    raw = call_ollama(prompt)
+    raw = call_agent(prompt)
     parsed = extract_json(raw)
 
-    # Retry ONLY if JSON is completely empty
     if not parsed:
         print(f"Retrying classification for {cache_key}...")
-        raw_retry = call_ollama(prompt)
+        raw_retry = call_agent(prompt)
         parsed_retry = extract_json(raw_retry)
         if parsed_retry:
             parsed = parsed_retry
 
-    # Fallback if still empty
     if not parsed:
         result = fallback_classification(p)
         cache[cache_key] = result
         return result
 
-    # Enforce defaults
+    # Enforce ALL fields
     parsed.setdefault("score", 0)
     parsed.setdefault("category", "Irrelevant")
     parsed.setdefault("long_covid", False)
+    parsed.setdefault("mechanistic_group", "Irrelevant")
+
     parsed.setdefault("mechanism", False)
     parsed.setdefault("treatment", False)
     parsed.setdefault("drug", False)
     parsed.setdefault("lifestyle", False)
     parsed.setdefault("review", False)
+
     parsed.setdefault("summary", p["abstract"][:400])
     parsed.setdefault("reason", "")
 

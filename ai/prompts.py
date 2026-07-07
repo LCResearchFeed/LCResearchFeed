@@ -2,46 +2,32 @@ def build_classification_prompt(title: str, abstract: str, source: str, url: str
     return f"""
 You are a medical researcher specializing in Long COVID.
 
-Classify the paper strictly according to the rules below.
+Classify the paper.
 
-A paper is Long-COVID relevant if it includes ANY of the following:
-- post-infectious biological mechanisms,
-- immune dysregulation or autoimmunity,
-- viral persistence or viral reservoirs,
-- mitochondrial dysfunction,
-- neurological or autonomic dysfunction (including dysautonomia or POTS),
-- endothelial or microvascular injury,
-- chronic inflammation,
-- post-viral syndromes similar to Long COVID (ME/CFS),
-- organ damage or dysfunction after SARS-CoV-2 infection,
-- symptoms or sequelae weeks or months after infection.
-
-Your tasks:
-1. Determine whether the paper is Long-COVID relevant (true/false).
-2. Assign ONE main category:
-   - Mechanism
-   - Treatment
-   - Drug
-   - Lifestyle
-   - Review
-   - Epidemiology
-3. Set the boolean flags:
-   - mechanism
-   - treatment
-   - drug
-   - lifestyle
-   - review
-4. Give a relevance score (0–100).
-5. Provide a short 2–4 sentence summary.
-6. Provide a short reason explaining your classification.
+Rules:
+- long_covid = true if symptoms, mechanisms, or effects occur weeks or months after SARS-CoV-2 infection.
+- Choose ONE category:
+  Viral Persistence, Autoimmunity, Dysautonomia, Microvascular, Mitochondrial,
+  Treatment, Irrelevant, Epidemiology
+- mechanistic_group = ONE of:
+  Viral Persistence, Autoimmunity, Dysautonomia, Microvascular, Mitochondrial
+- mechanism = true if the paper describes biological mechanisms.
+- treatment = true if the paper describes interventions or therapies.
+- drug = true if specific drugs are discussed.
+- lifestyle = true if lifestyle interventions are discussed.
+- review = true if the paper is a review article.
+- score = relevance 0–100.
+- summary = 2–4 sentences.
+- reason = short explanation.
 
 Return ONLY valid JSON with EXACTLY these fields:
 
 {{
   "score": 0,
-  "category": "Mechanism",
+  "category": "Viral Persistence",
   "long_covid": true,
-  "mechanism": true,
+  "mechanistic_group": "Viral Persistence",
+  "mechanism": false,
   "treatment": false,
   "drug": false,
   "lifestyle": false,
@@ -50,11 +36,6 @@ Return ONLY valid JSON with EXACTLY these fields:
   "reason": "string"
 }}
 
-Do NOT add fields.
-Do NOT remove fields.
-Do NOT rename fields.
-Do NOT include any text outside the JSON.
-
 Paper:
 Title: {title}
 Source: {source}
@@ -62,4 +43,6 @@ URL: {url}
 
 Abstract:
 {abstract}
+
+Respond ONLY with JSON.
 """.strip()

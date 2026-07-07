@@ -2,6 +2,7 @@ import sys
 sys.stdout.reconfigure(encoding="utf-8")
 
 import os
+import re
 import subprocess
 from datetime import datetime
 
@@ -223,14 +224,12 @@ def compute_stats(papers):
 
     return stats
 
-
 def inject_stats_into_index(stats):
     log("[HTML] Injecting statistics into index.html...")
 
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # datum voor badge
     today_str = datetime.now().strftime("%Y-%m-%d")
 
     replacements = {
@@ -245,14 +244,15 @@ def inject_stats_into_index(stats):
     }
 
     for span_id, value in replacements.items():
-        html = html.replace(
-            f'id="{span_id}">',
-            f'id="{span_id}">{value}'
+        # vervang de inhoud tussen > en </span>
+        html = re.sub(
+            rf'<span id="{span_id}">.*?</span>',
+            f'<span id="{span_id}">{value}</span>',
+            html
         )
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(html)
-
 
 
 # ---------------------------------------------------------
