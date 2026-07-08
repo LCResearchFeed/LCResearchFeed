@@ -386,7 +386,7 @@ body.dark .subject-badge {
     }
 
     .header-top {
-        flex-direction: wrap;
+        flex-wrap: wrap;
         align-items: flex-start;
         white-space: normal;
     }
