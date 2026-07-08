@@ -88,6 +88,7 @@ body {
 .header-top {
     display: flex;
     justify-content: space-between;
+	flex-wrap: wrap;
     align-items: center;
     gap: 1rem;
 }
@@ -200,10 +201,12 @@ select:hover {
    BUTTONS
    ========================================================= */
 
+.topbar-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
 .lang-btn {
-    position: absolute;
-    top: 70px;
-    right: 110px;
     padding: 8px 14px;
     background-color: #333;
     color: #fff;
@@ -211,7 +214,6 @@ select:hover {
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    z-index: 9999;
 }
 
 .lang-btn:hover {
@@ -456,4 +458,12 @@ body.dark .subject-badge {
     background: #1e293b;
     color: #e5e7eb;
     font-size: 0.9rem;
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* mobiel: knoppen onder titel */
+    gap: 1rem;
 }
