@@ -70,7 +70,7 @@ def extract_json(raw: str) -> dict:
 
 
 # ---------------------------------------------------------
-# Fallback classification
+# Fallback classification (FIXED)
 # ---------------------------------------------------------
 
 def fallback_classification(p: dict) -> dict:
@@ -83,25 +83,36 @@ def fallback_classification(p: dict) -> dict:
     mechanism = any(k in abstract or k in title for k in mech_keywords)
     treatment = any(k in abstract or k in title for k in treat_keywords)
 
-    if "viral" in abstract or "persistent" in abstract:
-        mechanistic_group = "Viral Persistence"
-    elif "auto" in abstract or "immune" in abstract:
-        mechanistic_group = "Autoimmunity"
-    elif "pots" in abstract or "dysaut" in abstract:
-        mechanistic_group = "Dysautonomia"
-    elif "micro" in abstract or "vascular" in abstract:
-        mechanistic_group = "Microvascular"
-    elif "mito" in abstract:
-        mechanistic_group = "Mitochondrial"
-    else:
-        mechanistic_group = "Irrelevant"
-
+    # Mechanistic group (strict)
     if mechanism:
-        category = mechanistic_group
+        if "viral" in abstract or "persistent" in abstract:
+            mechanistic_group = "Viral Persistence"
+        elif "auto" in abstract or "immune" in abstract:
+            mechanistic_group = "Autoimmunity"
+        elif "pots" in abstract or "dysaut" in abstract:
+            mechanistic_group = "Dysautonomia"
+        elif "micro" in abstract or "vascular" in abstract:
+            mechanistic_group = "Microvascular"
+        elif "mito" in abstract:
+            mechanistic_group = "Mitochondrial"
+        else:
+            mechanistic_group = "Non-mechanistic"
+    else:
+        mechanistic_group = "Non-mechanistic"
+
+    # Category (strict)
+    if "review" in abstract:
+        category = "Review"
+    elif "lifestyle" in abstract:
+        category = "Lifestyle"
+    elif "drug" in abstract:
+        category = "Drug"
     elif treatment:
         category = "Treatment"
+    elif mechanism:
+        category = "Mechanism"
     else:
-        category = "Irrelevant"
+        category = "Mechanism"
 
     score = 75 if mechanism or treatment else 20
 
@@ -121,7 +132,7 @@ def fallback_classification(p: dict) -> dict:
 
 
 # ---------------------------------------------------------
-# Main classifier (single paper)
+# Main classifier (single paper) — FULLY FIXED
 # ---------------------------------------------------------
 
 def classify_paper(p: dict, cache: dict) -> dict:
@@ -151,17 +162,46 @@ def classify_paper(p: dict, cache: dict) -> dict:
         cache[cache_key] = result
         return result
 
-    parsed.setdefault("score", 0)
-    parsed.setdefault("category", "Irrelevant")
-    parsed.setdefault("long_covid", False)
-    parsed.setdefault("mechanistic_group", "Irrelevant")
+    # -----------------------------
+    # VALIDATION LAYER (NEW)
+    # -----------------------------
 
+    valid_categories = {"Mechanism", "Treatment", "Drug", "Lifestyle", "Review"}
+    valid_groups = {
+        "Viral Persistence", "Autoimmunity", "Dysautonomia",
+        "Microvascular", "Mitochondrial", "Non-mechanistic"
+    }
+
+    # Fix category
+    if parsed.get("category") not in valid_categories:
+        if parsed.get("review"):
+            parsed["category"] = "Review"
+        elif parsed.get("lifestyle"):
+            parsed["category"] = "Lifestyle"
+        elif parsed.get("drug"):
+            parsed["category"] = "Drug"
+        elif parsed.get("treatment"):
+            parsed["category"] = "Treatment"
+        elif parsed.get("mechanism"):
+            parsed["category"] = "Mechanism"
+        else:
+            parsed["category"] = "Mechanism"
+
+    # Fix mechanistic_group
+    if parsed.get("mechanistic_group") not in valid_groups:
+        if parsed.get("mechanism"):
+            parsed["mechanistic_group"] = "Non-mechanistic"
+        else:
+            parsed["mechanistic_group"] = "Non-mechanistic"
+
+    # Ensure all fields exist
+    parsed.setdefault("score", 0)
+    parsed.setdefault("long_covid", False)
     parsed.setdefault("mechanism", False)
     parsed.setdefault("treatment", False)
     parsed.setdefault("drug", False)
     parsed.setdefault("lifestyle", False)
     parsed.setdefault("review", False)
-
     parsed.setdefault("summary", p["abstract"][:400])
     parsed.setdefault("reason", "")
 
@@ -170,7 +210,7 @@ def classify_paper(p: dict, cache: dict) -> dict:
 
 
 # ---------------------------------------------------------
-# Parallel classification (NEW)
+# Parallel classification
 # ---------------------------------------------------------
 
 def classify_parallel(papers: list, cache: dict, workers: int = 6) -> dict:

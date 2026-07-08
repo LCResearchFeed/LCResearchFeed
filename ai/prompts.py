@@ -1,63 +1,139 @@
 def build_classification_prompt(title: str, abstract: str, source: str, url: str) -> str:
     return f"""
-You are a medical researcher specializing in Long COVID.
+You are a medical researcher specializing in Long COVID.  
+Your task is to classify the paper strictly according to the rules below and return ONLY valid JSON.
 
-Classify the paper strictly according to the rules below.
+========================================================
+LONG COVID RULE
+========================================================
+long_covid = true  
+If the paper describes symptoms, mechanisms, biological findings, or clinical effects occurring weeks or months after SARS‑CoV‑2 infection.
 
-RULES:
+If unclear, infer based on:
+- “persistent”
+- “post‑acute”
+- “post‑infectious”
+- “long-term”
+- “months after infection”
+- “PASC”
+Otherwise: long_covid = false.
 
-1. long_covid = true  
-   If symptoms, mechanisms, or effects occur weeks or months after SARS-CoV-2 infection.
+========================================================
+CATEGORY (choose EXACTLY one)
+========================================================
+Categories:
+- Mechanism
+- Treatment
+- Drug
+- Lifestyle
+- Review
 
-2. Choose ONE category (exactly one):
-   - Mechanism
-   - Treatment
-   - Drug
-   - Lifestyle
-   - Review
+Rules:
+1. If review = true → category = "Review"
+2. Else if lifestyle = true → category = "Lifestyle"
+3. Else if drug = true → category = "Drug"
+4. Else if treatment = true → category = "Treatment"
+5. Else if mechanism = true → category = "Mechanism"
+6. Else → category = "Mechanism" (default)
 
-3. Choose ONE mechanistic_group (exactly one):
-   - Viral Persistence
-   - Autoimmunity
-   - Dysautonomia
-   - Microvascular
-   - Mitochondrial
-   - Non-mechanistic
+========================================================
+MECHANISM FLAG
+========================================================
+mechanism = true  
+If the paper describes biological mechanisms, including:
+- immune dysregulation
+- autoimmunity
+- autoantibodies
+- viral persistence
+- antigen persistence
+- endothelial dysfunction
+- microclots
+- mitochondrial dysfunction
+- metabolic abnormalities
+- neuroinflammation
+- dysautonomia
+- cytokine abnormalities
 
-4. mechanism = true  
-   If the paper describes biological mechanisms.
+Otherwise: mechanism = false.
 
-5. treatment = true  
-   If the paper describes interventions or therapies.
+========================================================
+TREATMENT FLAG
+========================================================
+treatment = true  
+If the paper describes:
+- interventions
+- therapies
+- rehabilitation
+- clinical trials
+- RCTs
+- monoclonal antibodies
+- HBOT
+- LDN
+- supplements used as treatment
 
-6. drug = true  
-   If specific drugs are discussed.
+========================================================
+DRUG FLAG
+========================================================
+drug = true  
+If specific drugs are discussed (e.g., naltrexone, Paxlovid, anticoagulants).
 
-7. lifestyle = true  
-   If lifestyle interventions are discussed.
+========================================================
+LIFESTYLE FLAG
+========================================================
+lifestyle = true  
+If lifestyle interventions are discussed (exercise, pacing, diet, sleep, etc.)
 
-8. review = true  
-   If the paper is a review article.
+========================================================
+REVIEW FLAG
+========================================================
+review = true  
+If the paper is a review, meta-analysis, scoping review, narrative review.
 
-CATEGORY LOGIC (strict):
-- If review = true → category = "Review"
-- Else if lifestyle = true → category = "Lifestyle"
-- Else if drug = true → category = "Drug"
-- Else if treatment = true → category = "Treatment"
-- Else if mechanism = true → category = "Mechanism"
-- Else → category = "Mechanism" (default)
+========================================================
+MECHANISTIC GROUP (choose EXACTLY one)
+========================================================
+If mechanism = true → choose one mechanistic_group:
 
-MECHANISTIC GROUP LOGIC (strict):
-- If mechanism = true → choose one mechanistic_group based on content.
-- If mechanism = false → mechanistic_group = "Non-mechanistic"
+- Viral Persistence  
+- Autoimmunity  
+- Dysautonomia  
+- Microvascular  
+- Mitochondrial  
 
-OUTPUT RULES:
-- Return ONLY valid JSON.
-- EXACTLY these fields, no more, no less.
-- All values must follow the rules above.
+If mechanism = false → mechanistic_group = "Non-mechanistic".
 
-JSON FORMAT TO RETURN:
+IMPORTANT:
+If mechanistic_group != "Non-mechanistic", mechanism MUST be true.
 
+========================================================
+SCORE (0–100)
+========================================================
+Score reflects biological relevance to Long COVID.
+
+Strong mechanistic evidence → 80–100  
+Moderate mechanistic evidence → 70–79  
+Weak mechanistic evidence → 60–69  
+
+Treatment / Drug papers → 60–85  
+Lifestyle → 40–60  
+Review → 30–50  
+Irrelevant → 0–20
+
+IMPORTANT:
+Score MUST follow this scale.  
+Never return 0 unless the paper is irrelevant.
+
+========================================================
+OUTPUT RULES
+========================================================
+Return ONLY valid JSON.
+No text before or after JSON.
+No markdown.
+No comments.
+
+========================================================
+JSON FORMAT
+========================================================
 {{
   "score": 0,
   "category": "Mechanism",
@@ -72,7 +148,9 @@ JSON FORMAT TO RETURN:
   "reason": "string"
 }}
 
-PAPER:
+========================================================
+PAPER
+========================================================
 Title: {title}
 Source: {source}
 URL: {url}

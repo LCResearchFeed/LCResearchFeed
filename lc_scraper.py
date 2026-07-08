@@ -48,6 +48,7 @@ def log(msg: str) -> None:
 # ---------------------------------------------------------
 # PREFILTER
 # ---------------------------------------------------------
+
 LC_TERMS = [
     "long covid", "post covid", "post-covid", "pasc",
     "post-acute", "post-acute sequelae", "sequelae",
@@ -57,33 +58,21 @@ LC_TERMS = [
 ]
 
 MECH_TERMS = [
-    # Immune / inflammation
     "immune", "immunity", "inflammation", "cytokine", "interferon",
     "autoimmune", "autoimmunity", "autoantibody",
     "t-cell", "b-cell", "innate", "adaptive",
-
-    # Viral persistence / reservoir
     "viral", "virus", "persistent", "persistence", "reservoir",
     "reactivation", "latency",
-
-    # Neurological / neuroimmune
     "neurological", "neuro", "neuroinflammation", "neuroimmune",
     "microglia", "glial",
-
-    # Endothelial / vascular / microclots
     "endothelial", "endothelium", "microclots", "microvascular",
     "coagulation", "thrombosis", "vascular",
-
-    # Mitochondria / metabolism
     "mitochondria", "mitochondrial", "oxidative stress",
     "metabolic", "metabolism"
 ]
 
 TREAT_TERMS = [
-    # General treatment
     "treatment", "therapy", "drug", "intervention", "rehabilitation",
-
-    # Trials
     "trial", "clinical trial", "clinical study",
     "randomized", "controlled", "rct",
     "phase", "phase 1", "phase 2", "phase 3", "phase 4",
@@ -93,16 +82,13 @@ TREAT_TERMS = [
     "placebo", "placebo-controlled", "sham-controlled",
     "prospective", "retrospective", "observational study",
     "efficacy", "evaluation", "feasibility",
-
-    # LDN / specific treatments
     "naltrexone", "ldn", "low-dose naltrexone"
 ]
 
 NOISE_TERMS = [
     "survey", "protocol", "quality of life", "burden",
     "opinion", "editorial", "review", "meta-analysis",
-    "scoping review", "narrative review",
-    "prevalence", "incidence", "cross-sectional", "cohort"
+    "scoping review", "narrative review"
 ]
 
 def _contains_any(text: str, terms: list[str]) -> bool:
@@ -223,28 +209,8 @@ def build_card_html(p: dict) -> str:
 """.strip()
 
 
-def inject_cards_into_index(cards_html: str) -> None:
-    log("[HTML] Injecting cards into index.html...")
-    with open(INDEX_PATH, "r", encoding="utf-8") as f:
-        html = f.read()
-
-    start = "<!-- SCRAPER_INJECT_START -->"
-    end = "<!-- SCRAPER_INJECT_END -->"
-
-    if start not in html or end not in html:
-        raise RuntimeError("Inject markers not found in index.html")
-
-    before, _ = html.split(start, 1)
-    _, after = html.split(end, 1)
-
-    new_html = before + start + "\n" + cards_html + "\n" + end + after
-
-    with open(INDEX_PATH, "w", encoding="utf-8") as f:
-        f.write(new_html)
-
-
 # ---------------------------------------------------------
-# STATISTICS
+# STATISTICS (FIXED FOR MECHANISTIC GROUP)
 # ---------------------------------------------------------
 
 def compute_stats(papers):
@@ -258,17 +224,17 @@ def compute_stats(papers):
     }
 
     for p in papers:
-        cat = (p.get("ai_category") or "").lower()
+        group = (p.get("ai_mechanistic_group") or "").lower()
 
-        if "viral" in cat or "persist" in cat:
+        if group == "viral persistence":
             stats["vp"] += 1
-        elif "auto" in cat:
+        elif group == "autoimmunity":
             stats["ai"] += 1
-        elif "dysaut" in cat:
+        elif group == "dysautonomia":
             stats["da"] += 1
-        elif "micro" in cat or "vascular" in cat:
+        elif group == "microvascular":
             stats["mv"] += 1
-        elif "mito" in cat:
+        elif group == "mitochondrial":
             stats["mito"] += 1
 
     return stats
@@ -367,7 +333,7 @@ def main() -> None:
         return
 
     # ---------------------------------------------------------
-    # PARALLEL AI CLASSIFICATION WITH PROGRESS (OPTIE B)
+    # PARALLEL AI CLASSIFICATION
     # ---------------------------------------------------------
 
     log(f"[AI] Running parallel classification on {len(candidates)} papers...")
@@ -408,6 +374,7 @@ def main() -> None:
 
         p["ai_score"] = ai.get("score", 0)
         p["ai_category"] = ai.get("category", "Irrelevant")
+        p["ai_mechanistic_group"] = ai.get("mechanistic_group", "Non-mechanistic")
         p["ai_summary"] = ai.get("summary", p.get("abstract", "")[:400])
         p["ai_reason"] = ai.get("reason", "")
 
@@ -476,6 +443,7 @@ def main() -> None:
 
         original["ai_score"] = ai["score"]
         original["ai_category"] = ai["category"]
+        original["ai_mechanistic_group"] = ai.get("mechanistic_group", "Non-mechanistic")
         original["ai_summary"] = ai["summary"]
         original["ai_reason"] = ai["reason"]
 
