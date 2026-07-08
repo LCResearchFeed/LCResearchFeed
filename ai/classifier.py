@@ -12,7 +12,7 @@ MODEL_NAME = "qwen2.5-7b-instruct"
 
 
 # ---------------------------------------------------------
-# AI agent call
+# AI agent call — FULLY FIXED
 # ---------------------------------------------------------
 
 def call_agent(prompt: str) -> str:
@@ -27,31 +27,43 @@ def call_agent(prompt: str) -> str:
             timeout=120,
         )
         resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"]
-    except Exception:
+
+        data = resp.json()
+
+        # Extract ONLY the assistant content
+        return data["choices"][0]["message"]["content"]
+
+    except Exception as e:
+        print("AI ERROR:", e)
         return ""
 
 
 # ---------------------------------------------------------
-# JSON extraction
+# JSON extraction — FULLY FIXED
 # ---------------------------------------------------------
 
 def extract_json(raw: str) -> dict:
     if not raw:
         return {}
 
-    start = raw.find("{")
-    end = raw.rfind("}")
-    if start == -1 or end == -1 or end <= start:
+    # Remove markdown fences if present
+    raw = raw.replace("```json", "").replace("```", "").strip()
+
+    # Find first { and last }
+    try:
+        start = raw.index("{")
+        end = raw.rindex("}") + 1
+        json_str = raw[start:end]
+    except ValueError:
         return {}
 
-    json_str = raw[start:end + 1]
-
+    # Try direct JSON load
     try:
         return json.loads(json_str)
     except Exception:
         pass
 
+    # Cleanup fallback
     cleaned = (
         json_str
         .replace("\n", " ")
@@ -59,7 +71,6 @@ def extract_json(raw: str) -> dict:
         .replace("\t", " ")
     )
 
-    cleaned = re.sub(r"```.*?```", "", cleaned, flags=re.DOTALL)
     cleaned = re.sub(r",\s*}", "}", cleaned)
     cleaned = re.sub(r",\s*]", "]", cleaned)
 
@@ -70,7 +81,7 @@ def extract_json(raw: str) -> dict:
 
 
 # ---------------------------------------------------------
-# Fallback classification (FIXED)
+# Fallback classification (unchanged)
 # ---------------------------------------------------------
 
 def fallback_classification(p: dict) -> dict:
@@ -83,7 +94,6 @@ def fallback_classification(p: dict) -> dict:
     mechanism = any(k in abstract or k in title for k in mech_keywords)
     treatment = any(k in abstract or k in title for k in treat_keywords)
 
-    # Mechanistic group (strict)
     if mechanism:
         if "viral" in abstract or "persistent" in abstract:
             mechanistic_group = "Viral Persistence"
@@ -100,7 +110,6 @@ def fallback_classification(p: dict) -> dict:
     else:
         mechanistic_group = "Non-mechanistic"
 
-    # Category (strict)
     if "review" in abstract:
         category = "Review"
     elif "lifestyle" in abstract:
@@ -132,7 +141,7 @@ def fallback_classification(p: dict) -> dict:
 
 
 # ---------------------------------------------------------
-# Main classifier (single paper) — FULLY FIXED
+# Main classifier — FULLY FIXED
 # ---------------------------------------------------------
 
 def classify_paper(p: dict, cache: dict) -> dict:
@@ -162,17 +171,12 @@ def classify_paper(p: dict, cache: dict) -> dict:
         cache[cache_key] = result
         return result
 
-    # -----------------------------
-    # VALIDATION LAYER (NEW)
-    # -----------------------------
-
     valid_categories = {"Mechanism", "Treatment", "Drug", "Lifestyle", "Review"}
     valid_groups = {
         "Viral Persistence", "Autoimmunity", "Dysautonomia",
         "Microvascular", "Mitochondrial", "Non-mechanistic"
     }
 
-    # Fix category
     if parsed.get("category") not in valid_categories:
         if parsed.get("review"):
             parsed["category"] = "Review"
@@ -187,14 +191,9 @@ def classify_paper(p: dict, cache: dict) -> dict:
         else:
             parsed["category"] = "Mechanism"
 
-    # Fix mechanistic_group
     if parsed.get("mechanistic_group") not in valid_groups:
-        if parsed.get("mechanism"):
-            parsed["mechanistic_group"] = "Non-mechanistic"
-        else:
-            parsed["mechanistic_group"] = "Non-mechanistic"
+        parsed["mechanistic_group"] = "Non-mechanistic"
 
-    # Ensure all fields exist
     parsed.setdefault("score", 0)
     parsed.setdefault("long_covid", False)
     parsed.setdefault("mechanism", False)
