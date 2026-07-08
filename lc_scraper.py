@@ -48,14 +48,62 @@ def log(msg: str) -> None:
 # ---------------------------------------------------------
 # PREFILTER
 # ---------------------------------------------------------
+LC_TERMS = [
+    "long covid", "post covid", "post-covid", "pasc",
+    "post-acute", "post-acute sequelae", "sequelae",
+    "post-viral", "post-infectious", "post-infection",
+    "post-sars-cov-2", "chronic covid", "long-term covid",
+    "sars-cov-2", "covid-19", "covid 19"
+]
 
-LC_TERMS = ["long covid", "post covid", "post-covid", "pasc", "post-acute",
-            "sars-cov-2", "covid-19", "covid 19"]
-MECH_TERMS = ["immune", "immunity", "inflammation", "mitochondria", "mitochondrial",
-              "viral", "virus", "persistent", "reservoir", "neurological", "neuro"]
-TREAT_TERMS = ["treatment", "therapy", "drug", "trial", "intervention", "rehabilitation"]
-NOISE_TERMS = ["survey", "protocol", "quality of life", "burden", "opinion", "editorial"]
+MECH_TERMS = [
+    # Immune / inflammation
+    "immune", "immunity", "inflammation", "cytokine", "interferon",
+    "autoimmune", "autoimmunity", "autoantibody",
+    "t-cell", "b-cell", "innate", "adaptive",
 
+    # Viral persistence / reservoir
+    "viral", "virus", "persistent", "persistence", "reservoir",
+    "reactivation", "latency",
+
+    # Neurological / neuroimmune
+    "neurological", "neuro", "neuroinflammation", "neuroimmune",
+    "microglia", "glial",
+
+    # Endothelial / vascular / microclots
+    "endothelial", "endothelium", "microclots", "microvascular",
+    "coagulation", "thrombosis", "vascular",
+
+    # Mitochondria / metabolism
+    "mitochondria", "mitochondrial", "oxidative stress",
+    "metabolic", "metabolism"
+]
+
+TREAT_TERMS = [
+    # General treatment
+    "treatment", "therapy", "drug", "intervention", "rehabilitation",
+
+    # Trials
+    "trial", "clinical trial", "clinical study",
+    "randomized", "controlled", "rct",
+    "phase", "phase 1", "phase 2", "phase 3", "phase 4",
+    "phase iib", "dose-ranging",
+    "pilot", "pilot trial", "open-label", "double-blind",
+    "single-blind", "double-masked", "multi-center",
+    "placebo", "placebo-controlled", "sham-controlled",
+    "prospective", "retrospective", "observational study",
+    "efficacy", "evaluation", "feasibility",
+
+    # LDN / specific treatments
+    "naltrexone", "ldn", "low-dose naltrexone"
+]
+
+NOISE_TERMS = [
+    "survey", "protocol", "quality of life", "burden",
+    "opinion", "editorial", "review", "meta-analysis",
+    "scoping review", "narrative review",
+    "prevalence", "incidence", "cross-sectional", "cohort"
+]
 
 def _contains_any(text: str, terms: list[str]) -> bool:
     t = text.lower()

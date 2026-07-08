@@ -413,3 +413,13 @@ body.dark .subject-badge {
         white-space: nowrap;
     }
 }
+
+.category-link {
+    cursor: pointer;
+    user-select: none;
+}
+
+.category-link:hover {
+    opacity: 0.7;
+}
+

@@ -14,17 +14,17 @@
 		<header class="header">
 		
 			<div class="header-top">
-				<div class="stat">📚 Papers: <span id="stat-total">42</span></div>
-				<div class="stat">🦠 Viral Persistence: <span id="stat-vp">28</span></div>
-				<div class="stat">🧬 Autoimmunity: <span id="stat-ai">3</span></div>
-				<div class="stat">⚡ Dysautonomia: <span id="stat-da">0</span></div>
-				<div class="stat">💗 Microvascular: <span id="stat-mv">0</span></div>
-				<div class="stat">🔋 Mitochondria: <span id="stat-mito">0</span></div>
+				<div class="stat category-link" data-cat="">📚 Papers: <span id="stat-total">21</span></div>
+				<div class="stat category-link" data-cat="viral persistence">🦠 Viral Persistence: <span id="stat-vp">13</span></div>
+				<div class="stat category-link" data-cat="autoimmunity">🧬 Autoimmunity: <span id="stat-ai">1</span></div>
+				<div class="stat category-link" data-cat="dysautonomia">⚡ Dysautonomia: <span id="stat-da">0</span></div>
+				<div class="stat category-link" data-cat="microvascular">💗 Microvascular: <span id="stat-mv">0</span></div>
+				<div class="stat category-link" data-cat="mitochondrial">🔋 Mitochondria: <span id="stat-mito">0</span></div>
 			</div>
-			
+
 			<div class="stats-badge">
 				📊 Updated: <span id="stat-updated">2026-07-08</span> —
-				Total papers: <span id="stat-total-badge">42</span>
+				Total papers: <span id="stat-total-badge">21</span>
 			</div>
 
 			<div class="header-row">
@@ -1361,6 +1361,27 @@
             }
         });
     </script>
+	
+	<script>
+	function applyFilters() {
+		const source = document.getElementById("source")?.value || "";
+		const category = window.selectedCategory || "";
+
+		document.querySelectorAll(".paper-card").forEach(card => {
+			const matchSource = !source || card.dataset.source === source;
+			const matchCategory = !category || card.dataset.category === category;
+
+			card.style.display = (matchSource && matchCategory) ? "" : "none";
+		});
+	}
+
+	document.querySelectorAll(".category-link").forEach(el => {
+		el.addEventListener("click", () => {
+			window.selectedCategory = el.dataset.cat;
+			applyFilters();
+		});
+	});
+	</script>
 
 </body>
 </html>
