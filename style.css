@@ -411,6 +411,10 @@ body.dark .subject-badge {
         align-items: flex-start;
     }
 
+	.sticky-header {
+		position: static;
+	}
+		
     .controls {
         padding-left: 1rem;
         padding-right: 1rem;
