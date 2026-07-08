@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 from datetime import datetime
+import concurrent.futures
 
 # Absolute path to your repo
 REPO_PATH = r"C:\Users\mkoni\LCResearchFeed"
@@ -48,7 +49,8 @@ def log(msg: str) -> None:
 # PREFILTER
 # ---------------------------------------------------------
 
-LC_TERMS = ["long covid", "post covid", "post-covid", "pasc", "post-acute", "sars-cov-2", "covid-19", "covid 19"]
+LC_TERMS = ["long covid", "post covid", "post-covid", "pasc", "post-acute",
+            "sars-cov-2", "covid-19", "covid 19"]
 MECH_TERMS = ["immune", "immunity", "inflammation", "mitochondria", "mitochondrial",
               "viral", "virus", "persistent", "reservoir", "neurological", "neuro"]
 TREAT_TERMS = ["treatment", "therapy", "drug", "trial", "intervention", "rehabilitation"]
@@ -100,7 +102,6 @@ def is_valid_candidate_generic(p: dict) -> bool:
 
 
 def is_valid_candidate(p: dict) -> bool:
-    # Skip papers without date
     if not isinstance(p.get("date"), datetime):
         return False
 
@@ -195,7 +196,7 @@ def inject_cards_into_index(cards_html: str) -> None:
 
 
 # ---------------------------------------------------------
-# NEW: STATISTICS
+# STATISTICS
 # ---------------------------------------------------------
 
 def compute_stats(papers):
@@ -224,6 +225,7 @@ def compute_stats(papers):
 
     return stats
 
+
 def inject_stats_into_index(stats):
     log("[HTML] Injecting statistics into index.html...")
 
@@ -244,7 +246,6 @@ def inject_stats_into_index(stats):
     }
 
     for span_id, value in replacements.items():
-        # vervang de inhoud tussen > en </span>
         html = re.sub(
             rf'<span id="{span_id}">.*?</span>',
             f'<span id="{span_id}">{value}</span>',
@@ -312,13 +313,43 @@ def main() -> None:
     candidates = [p for p in all_raw if is_valid_candidate(p)]
     log(f"[PREFILTER] Candidates: {len(candidates)}")
 
-    enriched = []
+    if not candidates:
+        log("[AI] No candidates after prefilter.")
+        print("\n================ LC SCRAPER END ================\n")
+        return
+
+    # ---------------------------------------------------------
+    # PARALLEL AI CLASSIFICATION WITH PROGRESS (OPTIE B)
+    # ---------------------------------------------------------
+
+    log(f"[AI] Running parallel classification on {len(candidates)} papers...")
+
+    results = {}
+    completed = 0
     total = len(candidates)
 
-    for idx, p in enumerate(candidates, start=1):
-        title_preview = p.get("title", "")[:80]
-        log(f"[AI] ({idx}/{total}) Classifying: {title_preview}")
-        ai = classify_paper(p, ai_cache)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+        future_map = {
+            executor.submit(classify_paper, p, ai_cache): p
+            for p in candidates
+        }
+
+        for future in concurrent.futures.as_completed(future_map):
+            p = future_map[future]
+            ai = future.result()
+            results[p["id"]] = ai
+
+            completed += 1
+            title_preview = p.get("title", "")[:80]
+            log(f"[AI] ({completed}/{total}) Done: {title_preview}")
+
+    # ---------------------------------------------------------
+    # FILTERING
+    # ---------------------------------------------------------
+
+    enriched = []
+    for p in candidates:
+        ai = results.get(p.get("id"), {})
 
         if not ai.get("long_covid"):
             continue
@@ -327,10 +358,10 @@ def main() -> None:
         if ai.get("score", 0) < 70:
             continue
 
-        p["ai_score"] = ai["score"]
-        p["ai_category"] = ai["category"]
-        p["ai_summary"] = ai["summary"]
-        p["ai_reason"] = ai["reason"]
+        p["ai_score"] = ai.get("score", 0)
+        p["ai_category"] = ai.get("category", "Irrelevant")
+        p["ai_summary"] = ai.get("summary", p.get("abstract", "")[:400])
+        p["ai_reason"] = ai.get("reason", "")
 
         enriched.append(p)
 
@@ -339,6 +370,8 @@ def main() -> None:
 
     if not enriched:
         log("[DONE] No enriched papers.")
+        commit_and_push()
+        print("\n================ LC SCRAPER END ================\n")
         return
 
     ranked = sorted(
@@ -350,30 +383,28 @@ def main() -> None:
     top = [p for p in ranked if p["ai_score"] >= 70]
     log(f"[RANK] Top papers: {len(top)}")
 
-    # NEW: compute + inject stats
+    # STATS
     stats = compute_stats(top)
     inject_stats_into_index(stats)
-    
     log(
-    f"[STATS] TOTAL={stats['total']} "
-    f"VP={stats['vp']} AI={stats['ai']} DA={stats['da']} "
-    f"MV={stats['mv']} MITO={stats['mito']}"
-)
+        f"[STATS] TOTAL={stats['total']} "
+        f"VP={stats['vp']} AI={stats['ai']} DA={stats['da']} "
+        f"MV={stats['mv']} MITO={stats['mito']}"
+    )
+
     new_papers = [p for p in top if p.get("id") not in seen]
     log(f"[NEW] New papers: {len(new_papers)}")
 
     if not new_papers:
         log("[DONE] No new papers to inject.")
         commit_and_push()
+        print("\n================ LC SCRAPER END ================\n")
         return
 
     cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
     inject_cards_into_index(cards_html)
 
-    # ---------------------------------------------------------
     # SECOND PASS: POST RELEVANT PAPERS FROM ai_cache.json
-    # ---------------------------------------------------------
-
     log("[CACHE] Checking cached papers for missed relevant items...")
 
     cached_new = []

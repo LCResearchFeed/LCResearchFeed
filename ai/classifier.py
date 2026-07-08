@@ -1,8 +1,14 @@
 import json
-import requests
 import time
+import requests
+import concurrent.futures
+import re
 
 from ai.prompts import build_classification_prompt
+
+
+API_URL = "http://127.0.0.1:1234/v1/chat/completions"
+MODEL_NAME = "qwen2.5-7b-instruct"
 
 
 # ---------------------------------------------------------
@@ -10,40 +16,21 @@ from ai.prompts import build_classification_prompt
 # ---------------------------------------------------------
 
 def call_agent(prompt: str) -> str:
-    print("\n--- API CALL START ---")
-    print("Timestamp:", time.strftime("%Y-%m-%d %H:%M:%S"))
-    print("Prompt sent:")
-    print(prompt)
-    print("---")
-
     try:
         resp = requests.post(
-            "http://127.0.0.1:1234/v1/chat/completions",
+            API_URL,
             json={
-                "model": "qwen2.5-7b-instruct",
-                "messages": [
-                    {"role": "user", "content": prompt}
-                ],
+                "model": MODEL_NAME,
+                "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0,
             },
             timeout=120,
         )
-
-        print("Status code:", resp.status_code)
-
         resp.raise_for_status()
-        content = resp.json()["choices"][0]["message"]["content"]
-
-        print("Response received:")
-        print(content)
-        print("--- API CALL END ---\n")
-
-        return content
-
-    except Exception as e:
-        print("API ERROR:", e)
-        print("--- API CALL FAILED ---\n")
+        return resp.json()["choices"][0]["message"]["content"]
+    except Exception:
         return ""
+
 
 # ---------------------------------------------------------
 # JSON extraction
@@ -72,7 +59,6 @@ def extract_json(raw: str) -> dict:
         .replace("\t", " ")
     )
 
-    import re
     cleaned = re.sub(r"```.*?```", "", cleaned, flags=re.DOTALL)
     cleaned = re.sub(r",\s*}", "}", cleaned)
     cleaned = re.sub(r",\s*]", "]", cleaned)
@@ -133,8 +119,9 @@ def fallback_classification(p: dict) -> dict:
         "reason": "Fallback classification due to AI failure or timeout."
     }
 
+
 # ---------------------------------------------------------
-# Main classifier
+# Main classifier (single paper)
 # ---------------------------------------------------------
 
 def classify_paper(p: dict, cache: dict) -> dict:
@@ -154,7 +141,6 @@ def classify_paper(p: dict, cache: dict) -> dict:
     parsed = extract_json(raw)
 
     if not parsed:
-        print(f"Retrying classification for {cache_key}...")
         raw_retry = call_agent(prompt)
         parsed_retry = extract_json(raw_retry)
         if parsed_retry:
@@ -165,7 +151,6 @@ def classify_paper(p: dict, cache: dict) -> dict:
         cache[cache_key] = result
         return result
 
-    # Enforce ALL fields
     parsed.setdefault("score", 0)
     parsed.setdefault("category", "Irrelevant")
     parsed.setdefault("long_covid", False)
@@ -182,3 +167,26 @@ def classify_paper(p: dict, cache: dict) -> dict:
 
     cache[cache_key] = parsed
     return parsed
+
+
+# ---------------------------------------------------------
+# Parallel classification (NEW)
+# ---------------------------------------------------------
+
+def classify_parallel(papers: list, cache: dict, workers: int = 6) -> dict:
+    results = {}
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
+        future_map = {
+            executor.submit(classify_paper, p, cache): p["id"]
+            for p in papers
+        }
+
+        for future in concurrent.futures.as_completed(future_map):
+            pid = future_map[future]
+            try:
+                results[pid] = future.result()
+            except Exception as e:
+                results[pid] = {"error": str(e)}
+
+    return results
