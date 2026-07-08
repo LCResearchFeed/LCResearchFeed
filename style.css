@@ -76,8 +76,15 @@ body {
 }
 
 /* =========================================================
-   HEADER
+   HEADER (sticky desktop)
    ========================================================= */
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--bg);
+}
 
 .header {
     padding: 1.8rem 1.5rem 1rem;
@@ -85,12 +92,39 @@ body {
     margin: 0 auto;
 }
 
-.header-top {
+.header-row {
     display: flex;
     justify-content: space-between;
-	flex-wrap: wrap;
     align-items: center;
+    flex-wrap: wrap;
     gap: 1rem;
+}
+
+.header-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.9;
+    white-space: nowrap; /* desktop */
+}
+
+.header-top .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.stats-badge {
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: #1e293b;
+    color: #e5e7eb;
+    font-size: 0.9rem;
 }
 
 .header h1 {
@@ -139,7 +173,7 @@ body {
 }
 
 /* =========================================================
-   INPUTS & SELECTS (including sort dropdown)
+   INPUTS & SELECTS
    ========================================================= */
 
 input[type="text"],
@@ -289,24 +323,7 @@ select:hover {
 }
 
 /* =========================================================
-   READ TIME
-   ========================================================= */
-
-.read-time {
-    display: block;
-    text-align: right;
-    margin-top: 0.3rem;
-    font-size: 0.8rem;
-    color: var(--muted);
-    opacity: 0.9;
-}
-
-.read-time::before {
-    content: "⏱ ";
-}
-
-/* =========================================================
-   SOURCE BADGES
+   BADGES
    ========================================================= */
 
 .source-badge {
@@ -327,41 +344,6 @@ body.dark .source-badge {
     background: rgba(15, 23, 42, 0.9);
 }
 
-.source-pubmed {
-    border-color: #22c55e;
-    color: #16a34a;
-}
-
-.source-nature {
-    border-color: #2563eb;
-    color: #1d4ed8;
-}
-
-.source-science {
-    border-color: #f97316;
-    color: #ea580c;
-}
-
-.source-patientresearchcovid19 {
-    border-color: #8e44ad;
-    color: #7d3c98;
-}
-
-.source-recover {
-    border-color: #0ea5e9;   /* lichtblauw (NIH-stijl) */
-    color: #0284c7;          /* donkerder blauw */
-}
-
-.source-europepmc {
-    border-color: #14b8a6;   /* teal */
-    color: #0d9488;          /* iets donkerder teal */
-}
-
-
-/* =========================================================
-   SUBJECT BADGE
-   ========================================================= */
-
 .subject-badge {
     position: absolute;
     top: 0.6rem;
@@ -381,14 +363,6 @@ body.dark .subject-badge {
 }
 
 /* =========================================================
-   UTILITY
-   ========================================================= */
-
-.hidden {
-    display: none;
-}
-
-/* =========================================================
    FOOTER
    ========================================================= */
 
@@ -401,74 +375,41 @@ body.dark .subject-badge {
     border-top: 1px solid var(--border);
 }
 
-.sticky-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: var(--bg);
-}
-
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE — MOBIEL VS DESKTOP
    ========================================================= */
 
 @media (max-width: 640px) {
+
+    .sticky-header {
+        position: static !important;
+    }
+
     .header-top {
         flex-direction: column;
         align-items: flex-start;
+        white-space: normal;
     }
 
-	.sticky-header {
-		position: static;
-	}
-		
-    .controls {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-
+    .controls,
     .container {
         padding-left: 1rem;
         padding-right: 1rem;
     }
+
+    .content {
+        margin-top: 0;
+    }
 }
 
-.content {
-    margin-top: 200px; /* hoogte van je sticky-header */
-}
+@media (min-width: 641px) {
+    .sticky-header {
+        position: sticky;
+        top: 0;
+    }
 
-.header-top {
-    display: flex;
-    flex-direction: row;      /* naast elkaar */
-    align-items: center;
-    gap: 1.2rem;              /* ruimte tussen statistieken */
-    margin-bottom: 0.8rem;    /* ruimte tussen stats en titel */
-    font-size: 0.85rem;
-    font-weight: 600;
-    opacity: 0.9;
-    white-space: nowrap;      /* voorkomt afbreken */
-}
-
-/* Elk statistiek-item */
-.header-top .stat {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem; 
-}
-
-.stats-badge {
-    margin-bottom: 10px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    background: #1e293b;
-    color: #e5e7eb;
-    font-size: 0.9rem;
-}
-
-.header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap; /* mobiel: knoppen onder titel */
-    gap: 1rem;
+    .header-top {
+        flex-direction: row;
+        white-space: nowrap;
+    }
 }
