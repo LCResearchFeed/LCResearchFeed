@@ -5679,5 +5679,18 @@
     "review": false,
     "summary": "Search",
     "reason": "Fallback classification due to AI failure or timeout."
+  },
+  "europepmc-10.1007/s11606-025-09383-z": {
+    "score": 20,
+    "category": "Irrelevant",
+    "long_covid": false,
+    "mechanistic_group": "Irrelevant",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "",
+    "reason": "Fallback classification due to AI failure or timeout."
   }
 }
