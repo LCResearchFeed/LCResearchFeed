@@ -401,6 +401,13 @@ body.dark .subject-badge {
     border-top: 1px solid var(--border);
 }
 
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--bg);
+}
+
 /* =========================================================
    RESPONSIVE
    ========================================================= */
@@ -424,12 +431,6 @@ body.dark .subject-badge {
         padding-left: 1rem;
         padding-right: 1rem;
     }
-}
-.sticky-header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: var(--bg);
 }
 
 .content {
