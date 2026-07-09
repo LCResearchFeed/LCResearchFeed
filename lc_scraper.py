@@ -154,6 +154,10 @@ def is_valid_candidate(p: dict) -> bool:
 # ---------------------------------------------------------
 
 def build_card_html(p: dict) -> str:
+    # Skip papers with missing critical fields
+    if not p.get("title") or not p.get("abstract") or not p.get("url"):
+        return ""
+
     source = (p.get("source", "other") or "other").lower()
 
     def _source_display_name(s: str) -> str:
@@ -196,9 +200,13 @@ def build_card_html(p: dict) -> str:
     <p class="ai-summary">{ai_summary}</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -207,6 +215,7 @@ def build_card_html(p: dict) -> str:
     <a href="{p.get('url','')}" target="_blank">Read paper</a>
 </div>
 """.strip()
+
 
 
 # ---------------------------------------------------------
