@@ -1,18 +1,5 @@
 {
-  "42421498": {
-    "score": 85,
-    "category": "Mechanism",
-    "long_covid": true,
-    "mechanistic_group": "Autoimmunity",
-    "mechanism": true,
-    "treatment": false,
-    "drug": false,
-    "lifestyle": false,
-    "review": false,
-    "summary": "The paper proposes a model of xenosialylation as a form of 'immunological chimerism' that may contribute to immune dysregulation following viral infections and vaccinations, including post-COVID-19 conditions. It suggests this process can lead to immune imbalance, autoantibody production, and chronic inflammatory sequelae.",
-    "reason": "The paper discusses a mechanism (xenosialylation) related to immune dysregulation in the context of long COVID, which is considered strong evidence."
-  },
-  "42399536": {
+  "42158815": {
     "score": 85,
     "category": "Mechanism",
     "long_covid": true,
@@ -22,34 +9,8 @@
     "drug": false,
     "lifestyle": false,
     "review": false,
-    "summary": "The study profiles immune mediators in CSF and serum from COVID-GBS patients, comparing them to non-COVID GBS (Control-GBS), COVID-19 patients without neurological complications (COVID-no-GBS) and non-inflammatory neuropathy controls (Neuropathy-no-GBS). It suggests that GBS involves myeloid-driven cytokine responses and local LIF signaling, with unique immune signatures in COVID-GBS.",
-    "reason": "The paper provides strong mechanistic insights into the inflammatory mechanisms of COVID-associated Guillain-Barré syndrome, focusing on neuroinflammation."
-  },
-  "42297430": {
-    "score": 85,
-    "category": "Mechanism",
-    "long_covid": true,
-    "mechanistic_group": "Neuroinflammation",
-    "mechanism": true,
-    "treatment": false,
-    "drug": false,
-    "lifestyle": false,
-    "review": false,
-    "summary": "A case report of painful tonic spasms (PTS) in a woman 2 weeks post-COVID-19 infection, attributed to post-infectious neuroinflammation. MRI showed a contrast-enhancing lesion in the cerebral peduncle which resolved with methylprednisolone and oxcarbazepine.",
-    "reason": "The case presents strong evidence of neuroinflammation as a mechanism for long-term symptoms following SARS-CoV-2 infection."
-  },
-  "42208499": {
-    "score": 85,
-    "category": "Mechanism",
-    "long_covid": true,
-    "mechanistic_group": "Autoimmunity",
-    "mechanism": true,
-    "treatment": false,
-    "drug": false,
-    "lifestyle": false,
-    "review": false,
-    "summary": "The study identifies a broad range of autoantibodies (AABs) in individuals with long COVID, particularly those with neurocognitive symptoms. These AABs react with CNS and peripheral nervous system proteins and can induce fatigue-like behavior, loss of balance/coordination, thermal hyperalgesia, small fiber nerve damage, and increased pain-related neuronal activity when transferred into mice.",
-    "reason": "The paper provides strong evidence linking autoantibodies to neurological symptoms in long COVID through mechanistic studies."
+    "summary": "The study found an increased risk of peripheral nervous system disorders, including Bell's palsy, Guillain-Barré syndrome, and myasthenia gravis, in individuals who experienced HZ reactivation after COVID-19. The risks were elevated early for Bell's palsy and delayed for GBS and MG.",
+    "reason": "The paper discusses the association between post-COVID-19 herpes zoster reactivation and peripheral nervous system disorders, indicating immune dysregulation and neuroinflammation as potential mechanisms."
   },
   "42191437": {
     "score": 85,
@@ -61,21 +22,21 @@
     "drug": true,
     "lifestyle": false,
     "review": false,
-    "summary": "The paper describes a case of post-COVID postural orthostatic tachycardia syndrome (POTS) with a hyperadrenergic phenotype, diagnosed through comprehensive autonomic testing. The patient was treated with ivabradine, leading to partial clinical improvement.",
-    "reason": "The study focuses on the treatment and diagnosis of POTS following SARS-CoV-2 infection, involving targeted therapy."
+    "summary": "The paper describes a case of post-COVID postural orthostatic tachycardia syndrome (POTS) in a 34-year-old woman who developed symptoms two weeks after mild COVID-19 infection. Comprehensive autonomic testing confirmed the diagnosis and identified a hyperadrenergic phenotype. Treatment with ivabradine led to partial clinical improvement.",
+    "reason": "The paper focuses on treatment of POTS, which is a form of dysautonomia associated with long COVID. It discusses the use of ivabradine as a targeted therapy."
   },
-  "42158815": {
+  "42421498": {
     "score": 85,
     "category": "Mechanism",
     "long_covid": true,
-    "mechanistic_group": "Neuroinflammation",
+    "mechanistic_group": "Autoimmunity",
     "mechanism": true,
     "treatment": false,
     "drug": false,
     "lifestyle": false,
     "review": false,
-    "summary": "The study found an increased risk of peripheral nervous system disorders, including Bell's palsy, Guillain-Barré syndrome, and myasthenia gravis, in individuals who experienced herpes zoster reactivation after COVID-19. The risks were elevated early for Bell's palsy and delayed for GBS and MG.",
-    "reason": "The paper discusses the association between post-COVID-19 herpes zoster reactivation and peripheral nervous system disorders, indicating immune dysregulation and neuroinflammation as potential mechanisms."
+    "summary": "The paper proposes a model of xenosialylation as a form of 'immunological chimerism' that may contribute to immune dysregulation following viral infections and vaccinations, including post-COVID-19 conditions. It suggests that interindividual differences in the extent and persistence of xenosialylation can influence susceptibility to exaggerated immune responses and proposes anti-Neu5Gc antibodies as biomarkers.",
+    "reason": "The paper discusses a mechanism (autoimmunity) related to long COVID, with strong evidence supporting its role."
   },
   "42138268": {
     "score": 75,
@@ -87,8 +48,8 @@
     "drug": false,
     "lifestyle": false,
     "review": false,
-    "summary": "The study examines the gut microbiome in long COVID patients and evaluates the impact of montelukast treatment. It reveals a significant reorganisation of the gut microbial community in long COVID patients, with specific shifts in Firmicutes and Verrucomicrobiota abundance. Montelukast treatment showed minimal impact on the microbial landscape.",
-    "reason": "The paper focuses on the impact of montelukast treatment on the gut microbiome in long COVID patients, which falls under the category of treatment."
+    "summary": "The study examines the gut microbiome in long COVID patients and evaluates the impact of montelukast treatment. It reveals a significant reorganization of the gut microbial community in long COVID patients, with montelukast showing minimal further impact on the microbial landscape.",
+    "reason": "The paper focuses on the treatment aspect by examining the effect of montelukast on the gut microbiome in long COVID patients. The mechanism is not strongly supported and is considered non-mechanistic."
   },
   "42079673": {
     "score": 75,
@@ -100,8 +61,8 @@
     "drug": false,
     "lifestyle": false,
     "review": false,
-    "summary": "A retrospective cohort study using the National Clinical Cohort Collaborative database evaluated the association between COVID-19 variants and vaccination status on venous thromboembolism (VTE) and mortality rates. The study found that patients with COVID-19 had an increased risk of VTE and mortality compared to those with acute respiratory infection, but this risk was attenuated later in the pandemic, especially among vaccinated individuals.",
-    "reason": "The paper discusses treatment interventions (vaccination) and their impact on outcomes such as VTE and mortality, which falls under the 'Treatment' category. It does not focus on mechanisms or long-term effects post-SARS-CoV-2 infection."
+    "summary": "A retrospective cohort study evaluated the impact of COVID-19 variants and vaccination on venous thromboembolism (VTE) and mortality rates. The study found that patients with COVID-19 had an increased risk of VTE and mortality compared to those with acute respiratory infection, but this risk was attenuated later in the pandemic, especially among vaccinated individuals.",
+    "reason": "The paper discusses treatment interventions (vaccination) and their impact on outcomes related to VTE and mortality, which falls under the 'Treatment' category."
   },
   "42069416": {
     "score": 65,
@@ -113,8 +74,8 @@
     "drug": false,
     "lifestyle": false,
     "review": true,
-    "summary": "The study analyzed the role of cognitive reserve in patients after SARS-CoV-2 infection, finding that post-COVID patients had significantly lower CRQ scores and MoCA scores compared to controls. The reduced utilization of cognitive reserve rather than loss of reserve capacity was observed.",
-    "reason": "The paper focuses on reviewing the impact of cognitive reserve on post-COVID cognitive impairments without delving into specific mechanisms, treatments, or lifestyle interventions."
+    "summary": "The study analyzed the role of cognitive reserve in patients after SARS-CoV-2 infection, finding that post-COVID patients had significantly lower CRQ scores and MoCA scores compared to controls. The reduced CRQ scores were primarily due to lower occupational cognitive complexity and diminished cognitively active lifestyle.",
+    "reason": "The paper focuses on the role of cognitive reserve in post-COVID cognitive impairment without delving into specific mechanisms, treatments, or lifestyle interventions."
   },
   "42025371": {
     "score": 85,
@@ -126,20 +87,189 @@
     "drug": false,
     "lifestyle": false,
     "review": false,
-    "summary": "The paper discusses the principles of how host organisms respond to viral stress, including key discoveries such as ACE2 as a receptor for SARS-CoV and innate-immune overactivation as a driver of fatal pathology. It also covers the establishment of data-driven infrastructures for personalized infection medicine.",
-    "reason": "While the paper does not specifically discuss long COVID, it provides strong mechanistic insights into viral infections that could be relevant to understanding post-infectious syndromes."
+    "summary": "The paper discusses the principles of host response to viral infections, including key discoveries such as ACE2 receptor identification and innate-immune overactivation. It does not specifically address long COVID.",
+    "reason": "While the paper provides strong mechanistic insights into viral infection processes, it does not focus on long-term effects post-infection."
   },
-  "42309258": {
-    "score": 75,
+  "41959563": {
+    "score": 85,
     "category": "Mechanism",
     "long_covid": true,
-    "mechanistic_group": "Immune Dysregulation",
+    "mechanistic_group": "Immune dysregulation",
     "mechanism": true,
     "treatment": false,
     "drug": false,
     "lifestyle": false,
     "review": false,
-    "summary": "The study identifies a distinct TLR2-associated immune signature in centenarians recovered from COVID-19, suggesting an age-related and recovery-specific innate immune remodeling.",
-    "reason": "The paper discusses the differential expression of TLR2 in post-COVID-19 centenarians compared to nonagenarians, indicating potential immune dysregulation mechanisms associated with long-term effects of SARS-CoV-2 infection."
+    "summary": "The study identifies a proteomic signature of persistent symptoms following SARS-CoV-2 vaccination or infection, characterized by immune dysregulation and coagulopathy. The findings suggest distinct differences between Post-Vaccination/Post-Infection Syndrome (PV/PIS) and Long COVID.",
+    "reason": "The paper provides strong mechanistic evidence for immune dysregulation in PV/PIS, which is a form of long-term condition following SARS-CoV-2 infection or vaccination."
+  },
+  "41918727": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper compares post-COVID and post-infectious Irritable Bowel Syndrome (PI-IBS), suggesting that PI-IBS can serve as a model for understanding post-COVID. It highlights the multifactorial nature of both conditions, their difficulty in diagnosis, and raises doubts about rapid treatment development.",
+    "reason": "The paper is primarily a review comparing two similar conditions without delving deeply into specific mechanisms or treatments."
+  },
+  "41901562": {
+    "score": 78,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Autoimmunity",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The study determined the incidence and characteristics of Post-COVID-19 syndrome (PCS) and Myalgic encephalomyelitis/Chronic fatigue syndrome (ME/CFS) in hospital employees with SARS-CoV-2 infections. It found that 11.8% reported persistent fatigue, with 3.2% diagnosed with ME/CFS. The study also identified potential pathogenic roles of increased GPCR autoantibodies and possible EBV reactivation.",
+    "reason": "The paper provides a review of the incidence and characteristics of Long COVID in a specific cohort, focusing on mechanisms such as autoimmunity."
+  },
+  "41881023": {
+    "score": 85,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Autoimmunity",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The study transfers IgG from long COVID patients into mice, inducing mechanical hypersensitivity. It supports a causal role for autoantibodies in long COVID pathogenesis and establishes a murine model.",
+    "reason": "Strong evidence of autoimmunity mechanisms linked to long COVID."
+  },
+  "41828537": {
+    "score": 60,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The study identifies potential biomarkers in extracellular vesicles (EVs) from plasma of post-COVID-19 Myalgic Encephalomyelitis/Chronic Fatigue Syndrome (ME/CFS) patients, focusing on protein and miRNA signatures.",
+    "reason": "While the paper discusses biological findings related to Long COVID, it primarily serves as a review or analysis of existing data rather than presenting new mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "41579008": {
+    "score": 75,
+    "category": "Mechanism",
+    "long_covid": false,
+    "mechanistic_group": "Dysautonomia",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "This case report discusses a patient who experienced autonomic dysfunction during the parainfectious phase of COVID-19, leading to a diagnosis of Guillain-Barre Syndrome (GBS) with dysautonomia. The patient exhibited signs of posterior reversible encephalopathy syndrome (PRES), euvolemic hyponatremia, and arterial blood pressure fluctuations.",
+    "reason": "The case report provides evidence for autonomic dysfunction as a mechanism related to COVID-19 infection, but it does not discuss long-term symptoms or mechanisms occurring weeks to months after SARS-CoV-2 infection."
+  },
+  "41576003": {
+    "score": 75,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Dysautonomia",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "This study compares Long COVID and pre-COVID ME/CFS patients, finding extensive similarities in autonomic dysfunction, including reduced orthostatic cerebral blood flow velocity, widespread autonomic failure, small fiber neuropathy, and postural tachycardia syndrome. Both conditions share dysregulation in cerebrovascular blood flow and autonomic reflexes.",
+    "reason": "The study provides evidence for shared pathophysiological mechanisms between Long COVID and ME/CFS, particularly focusing on dysautonomia."
+  },
+  "41549496": {
+    "score": 85,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Autoimmunity",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "A case report of a patient developing dual ANCA-positive pauci-immune glomerulonephritis following SARS-CoV-2 infection, highlighting the potential post-infectious autoimmune phenomenon and linking it to viral-induced neutrophil extracellular traps (NETs) formation.",
+    "reason": "The paper discusses the mechanism of autoimmunity triggered by SARS-CoV-2 infection leading to ANCA-associated vasculitis, which is a strong mechanistic finding."
+  },
+  "41498966": {
+    "score": 85,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Neuroinflammation",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The paper discusses choroid plexus (ChP) alterations in long COVID, linking them to interleukin-6 (IL-6) and white matter damage. It suggests that ChP changes are associated with persistent blood-cerebrospinal fluid barrier dysfunction and neuroinflammation.",
+    "reason": "The study provides strong mechanistic evidence for the role of IL-6 in affecting ChP permeability and contributing to ongoing neuroinflammation in long COVID."
+  },
+  "41466718": {
+    "score": 75,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper discusses complex chronic adverse events following immunization, including post-COVID-19 vaccination syndrome. It highlights the limitations in current vaccine safety systems and proposes a new framework for surveillance of such conditions.",
+    "reason": "The article is primarily a review that critiques existing vaccine pharmacovigilance frameworks and suggests reforms. While it mentions Long COVID, it does not delve into specific mechanisms or treatments."
+  },
+  "41455796": {
+    "score": 85,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Neuroinflammation",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The study investigates persistent cognitive symptoms following SARS-CoV-2 infection by combining EEG, diffusion MRI, and computational cognitive modeling. It reveals altered low-frequency oscillatory activity and reduced white matter integrity in specific long-range tracts among post-COVID participants, indicating neurocognitive phenotypes beyond binary classifications.",
+    "reason": "The paper provides strong mechanistic evidence linking neural oscillations and white matter integrity to cognitive dysfunction following SARS-CoV-2 infection."
+  },
+  "41316382": {
+    "score": 30,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "A retrospective, multicenter observational study in Italy analyzed pediatric invasive Group A Streptococcus infections from late 2022. The study identified factors associated with Pediatric Intensive Care Unit (PICU) admission and post-infectious sequelae or death.",
+    "reason": "The paper focuses on the clinical outcomes of pediatric invasive Group A Streptococcus infections without discussing Long COVID, mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "41305452": {
+    "score": 75,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Dysautonomia",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The study explores autonomic nervous system (ANS) dysfunction in post-COVID syndrome and chronic fatigue syndrome, comparing it with late-stage Lyme disease. It finds that ANS dysfunction is prevalent in these conditions and suggests a role for persistent infections in driving this dysfunction.",
+    "reason": "The paper discusses the mechanisms of ANS dysfunction in post-infectious syndromes, which aligns with the criteria for a strong mechanism."
+  },
+  "41164784": {
+    "score": 65,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This study used latent class trajectory modeling to analyze patient-reported outcome measures in a randomized, placebo-controlled trial of nirmatrelvir/ritonavir for Long COVID. It identified distinct symptom trajectories and highlighted the clinical heterogeneity of Long COVID but found no clear benefit from the treatment.",
+    "reason": "The paper focuses on analyzing PRO trajectories without delving into specific mechanisms or treatments."
   }
 }

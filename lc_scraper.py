@@ -360,7 +360,7 @@ def main() -> None:
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
     # TEST MODE — limit number of papers
-    all_raw = all_raw[:20]
+    all_raw = all_raw[:50]
     log(f"[TEST] Limiting to {len(all_raw)} papers for fast testing")
 
     candidates = [p for p in all_raw if is_valid_candidate(p)]
