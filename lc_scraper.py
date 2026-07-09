@@ -155,8 +155,11 @@ def is_valid_candidate(p: dict) -> bool:
 
 def build_card_html(p: dict) -> str:
     # Skip papers with missing critical fields
-    if not p.get("title") or not p.get("abstract") or not p.get("url"):
+    if not p.get("title") or not p.get("url"):
         return ""
+
+    abstract = p.get("abstract") or p.get("ai_summary") or "No abstract available."
+
 
     source = (p.get("source", "other") or "other").lower()
 
