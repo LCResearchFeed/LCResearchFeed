@@ -210,7 +210,7 @@ def build_card_html(p: dict) -> str:
 
 
 # ---------------------------------------------------------
-# STATISTICS (FIXED FOR MECHANISTIC GROUP)
+# STATISTICS (mechanistic groups)
 # ---------------------------------------------------------
 
 def compute_stats(papers):
@@ -295,6 +295,27 @@ def commit_and_push() -> None:
 
 
 # ---------------------------------------------------------
+# HTML injection for cards
+# ---------------------------------------------------------
+
+def inject_cards_into_index(cards_html: str) -> None:
+    log("[HTML] Injecting cards into index.html...")
+
+    with open(INDEX_PATH, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    marker = "<!-- LC PAPERS -->"
+    if marker not in html:
+        log("[HTML] Marker not found in index.html, skipping injection.")
+        return
+
+    html = html.replace(marker, marker + "\n\n" + cards_html)
+
+    with open(INDEX_PATH, "w", encoding="utf-8") as f:
+        f.write(html)
+
+
+# ---------------------------------------------------------
 # MAIN
 # ---------------------------------------------------------
 
@@ -324,6 +345,10 @@ def main() -> None:
 
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
+    # TEST MODE — limit number of papers
+    all_raw = all_raw[:20]
+    log(f"[TEST] Limiting to {len(all_raw)} papers for fast testing")
+
     candidates = [p for p in all_raw if is_valid_candidate(p)]
     log(f"[PREFILTER] Candidates: {len(candidates)}")
 
@@ -342,7 +367,7 @@ def main() -> None:
     completed = 0
     total = len(candidates)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         future_map = {
             executor.submit(classify_paper, p, ai_cache): p
             for p in candidates
@@ -363,15 +388,21 @@ def main() -> None:
 
     enriched = []
     for p in candidates:
-        ai = results.get(p.get("id"), {})
+        ai = results.get(p.get("id"))
 
-        if not ai.get("long_covid"):
+        # Skip AI failures (None)
+        if not isinstance(ai, dict):
             continue
+
+        # Skip irrelevant categories
         if ai.get("category") in ("Irrelevant", "Epidemiology"):
             continue
-        if ai.get("score", 0) < 70:
+
+        # Skip low scores
+        if ai.get("score", 0) < 60:
             continue
 
+        # Attach AI metadata
         p["ai_score"] = ai.get("score", 0)
         p["ai_category"] = ai.get("category", "Irrelevant")
         p["ai_mechanistic_group"] = ai.get("mechanistic_group", "Non-mechanistic")
@@ -431,7 +462,7 @@ def main() -> None:
             continue
         if ai.get("category") in ("Irrelevant", "Epidemiology"):
             continue
-        if ai.get("score", 0) < 70:
+        if ai.get("score", 0) < 60:
             continue
 
         original = next((p for p in all_raw if p.get("id") == paper_id), None)
