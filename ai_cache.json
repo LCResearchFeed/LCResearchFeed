@@ -128,5 +128,18 @@
     "review": false,
     "summary": "The paper discusses the principles of how host organisms respond to viral stress, including key discoveries such as ACE2 as a receptor for SARS-CoV and innate-immune overactivation as a driver of fatal pathology. It also covers the establishment of data-driven infrastructures for personalized infection medicine.",
     "reason": "While the paper does not specifically discuss long COVID, it provides strong mechanistic insights into viral infections that could be relevant to understanding post-infectious syndromes."
+  },
+  "42309258": {
+    "score": 75,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Immune Dysregulation",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The study identifies a distinct TLR2-associated immune signature in centenarians recovered from COVID-19, suggesting an age-related and recovery-specific innate immune remodeling.",
+    "reason": "The paper discusses the differential expression of TLR2 in post-COVID-19 centenarians compared to nonagenarians, indicating potential immune dysregulation mechanisms associated with long-term effects of SARS-CoV-2 infection."
   }
 }

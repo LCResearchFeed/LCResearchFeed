@@ -300,19 +300,22 @@ def commit_and_push() -> None:
 
 def inject_cards_into_index(cards_html: str) -> None:
     log("[HTML] Injecting cards into index.html...")
-
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
         html = f.read()
 
-    marker = "<!-- LC PAPERS -->"
-    if marker not in html:
-        log("[HTML] Marker not found in index.html, skipping injection.")
-        return
+    start = "<!-- SCRAPER_INJECT_START -->"
+    end = "<!-- SCRAPER_INJECT_END -->"
 
-    html = html.replace(marker, marker + "\n\n" + cards_html)
+    if start not in html or end not in html:
+        raise RuntimeError("Inject markers not found in index.html")
+
+    before, _ = html.split(start, 1)
+    _, after = html.split(end, 1)
+
+    new_html = before + start + "\n" + cards_html + "\n" + end + after
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
-        f.write(html)
+        f.write(new_html)
 
 
 # ---------------------------------------------------------

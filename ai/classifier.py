@@ -144,7 +144,7 @@ def classify_paper(p: dict, cache: dict) -> dict | None:
     valid_groups = {
         "Viral Persistence", "Autoimmunity", "Dysautonomia",
         "Microvascular", "Mitochondrial", "Neuroinflammation",
-        "Non-mechanistic"
+        "Non-mechanistic", "Immune Dysregulation"
     }
 
     if parsed["mechanistic_group"].lower() not in {g.lower() for g in valid_groups}:
@@ -157,7 +157,6 @@ def classify_paper(p: dict, cache: dict) -> dict | None:
 
     cache[cache_key] = parsed
     return parsed
-
 
 # ---------------------------------------------------------
 # Parallel classification
