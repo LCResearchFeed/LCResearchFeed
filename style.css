@@ -423,3 +423,6 @@ body.dark .subject-badge {
     opacity: 0.7;
 }
 
+.hidden {
+    display: none !important;
+}
