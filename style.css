@@ -426,3 +426,67 @@ body.dark .subject-badge {
 .hidden {
     display: none !important;
 }
+
+/* =========================================================
+   COMPACT HEADER (mechanism stats)
+   ========================================================= */
+
+#mechanism-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    padding: 0.4rem 0 0.2rem;
+    opacity: 0.95;
+}
+
+/* Stats badge (updated + total) */
+.stats-badge {
+    font-size: 0.85rem;
+    margin-top: 0.2rem;
+    opacity: 0.85;
+}
+
+/* Header row (title + buttons) */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.4rem;
+}
+
+/* Subtitle */
+.subtitle {
+    margin-top: 0.3rem;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Sticky header */
+.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--bg);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Mobile tweaks */
+@media (max-width: 640px) {
+    #mechanism-stats {
+        font-size: 0.85rem;
+        gap: 0.4rem;
+    }
+
+    .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+
+    .topbar-buttons {
+        align-self: flex-end;
+    }
+}

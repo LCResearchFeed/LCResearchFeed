@@ -177,6 +177,7 @@ def build_card_html(p: dict) -> str:
 
     category_raw = p.get("ai_category", "") or ""
     category = category_raw.lower()
+    group = (p.get("ai_mechanistic_group") or "").lower()
 
     full_abstract = (p.get("abstract", "") or "").replace('"', '&quot;').replace("'", "&#39;")
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
@@ -185,7 +186,7 @@ def build_card_html(p: dict) -> str:
     date_str = date_obj.strftime("%Y-%m-%d") if isinstance(date_obj, datetime) else ""
 
     return f"""
-<div class="paper-card" data-source="{source}" data-category="{category}">
+<div class="paper-card" data-source="{source}" data-category="{category}" data-mech="{group}">
     <span class="source-badge source-{source}">{source_name}</span>
     <span class="subject-badge">{category_raw}</span>
 
@@ -218,35 +219,45 @@ def build_card_html(p: dict) -> str:
 
 
 
+
 # ---------------------------------------------------------
 # STATISTICS (mechanistic groups)
 # ---------------------------------------------------------
 
 def compute_stats(papers):
-    stats = {
-        "total": len(papers),
-        "vp": 0,
-        "ai": 0,
-        "da": 0,
-        "mv": 0,
-        "mito": 0,
-    }
-
+    stats = {"total": len(papers)}
     for p in papers:
         group = (p.get("ai_mechanistic_group") or "").lower()
-
-        if group == "viral persistence":
-            stats["vp"] += 1
-        elif group == "autoimmunity":
-            stats["ai"] += 1
-        elif group == "dysautonomia":
-            stats["da"] += 1
-        elif group == "microvascular":
-            stats["mv"] += 1
-        elif group == "mitochondrial":
-            stats["mito"] += 1
-
+        if group not in stats:
+            stats[group] = 0
+        stats[group] += 1
     return stats
+
+    
+def build_compact_header(stats):
+    icons = {
+        "autoimmunity": "🧬",
+        "neuroinflammation": "🧠",
+        "immune dysregulation": "⚠️",
+        "dysautonomia": "⚡",
+        "viral persistence": "🔥",
+        "microvascular": "💉",
+        "mitochondrial": "🔋",
+        "non-mechanistic": "📄",
+    }
+
+    parts = []
+
+    for group, count in stats.items():
+        if group == "total":
+            continue
+
+        icon = icons.get(group, "🔎")
+        label = group.replace("-", " ").title()
+
+        parts.append(f"{icon} {label}: {count}")
+
+    return " &nbsp;•&nbsp; ".join(parts)
 
 
 def inject_stats_into_index(stats):
@@ -255,29 +266,17 @@ def inject_stats_into_index(stats):
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
         html = f.read()
 
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    header_html = build_compact_header(stats)
 
-    replacements = {
-        "stat-total": stats["total"],
-        "stat-vp": stats["vp"],
-        "stat-ai": stats["ai"],
-        "stat-da": stats["da"],
-        "stat-mv": stats["mv"],
-        "stat-mito": stats["mito"],
-        "stat-total-badge": stats["total"],
-        "stat-updated": today_str,
-    }
-
-    for span_id, value in replacements.items():
-        html = re.sub(
-            rf'<span id="{span_id}">.*?</span>',
-            f'<span id="{span_id}">{value}</span>',
-            html
-        )
+    html = re.sub(
+        r'<div id="mechanism-stats">.*?</div>',
+        f'<div id="mechanism-stats">{header_html}</div>',
+        html,
+        flags=re.DOTALL
+    )
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(html)
-
 
 # ---------------------------------------------------------
 # GIT
@@ -444,11 +443,7 @@ def main() -> None:
     # STATS
     stats = compute_stats(top)
     inject_stats_into_index(stats)
-    log(
-        f"[STATS] TOTAL={stats['total']} "
-        f"VP={stats['vp']} AI={stats['ai']} DA={stats['da']} "
-        f"MV={stats['mv']} MITO={stats['mito']}"
-    )
+    log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
 
     new_papers = [p for p in top if p.get("id") not in seen]
     log(f"[NEW] New papers: {len(new_papers)}")

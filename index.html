@@ -9,97 +9,92 @@
 
 <body>
 
-	<div class="sticky-header">
+<div class="sticky-header">
 
-		<header class="header">
-		
-			<div class="header-top">
-				<div class="stat category-link" data-cat="">📚 Papers: <span id="stat-total">10</span></div>
-				<div class="stat category-link" data-cat="viral persistence">🦠 Viral Persistence: <span id="stat-vp">0</span></div>
-				<div class="stat category-link" data-cat="autoimmunity">🧬 Autoimmunity: <span id="stat-ai">2</span></div>
-				<div class="stat category-link" data-cat="dysautonomia">⚡ Dysautonomia: <span id="stat-da">1</span></div>
-				<div class="stat category-link" data-cat="microvascular">💗 Microvascular: <span id="stat-mv">0</span></div>
-				<div class="stat category-link" data-cat="mitochondrial">🔋 Mitochondria: <span id="stat-mito">0</span></div>
-			</div>
+    <header class="header">
+    
+        <div id="mechanism-stats">🧬 Autoimmunity: 2 &nbsp;•&nbsp; 🧠 Neuroinflammation: 3 &nbsp;•&nbsp; 📄 Non Mechanistic: 3 &nbsp;•&nbsp; ⚡ Dysautonomia: 1 &nbsp;•&nbsp; ⚠️ Immune Dysregulation: 1</div>
 
-			<div class="stats-badge">
-				📊 Updated: <span id="stat-updated">2026-07-09</span> —
-				Total papers: <span id="stat-total-badge">10</span>
-			</div>
+        <div class="stats-badge">
+            📊 Updated: <span id="stat-updated">2026-07-09</span> —
+            Total papers: <span id="stat-total-badge">10</span>
+        </div>
 
-			<div class="header-row">
+        <div class="header-row">
 
-				<h1>Long Covid Research Feed</h1>
-				<div class="topbar-buttons">
-					<button class="lang-btn" onclick="toggleTheme()">Dark mode</button>
-					<button class="lang-btn" id="lang-toggle" style="right: 20px;">Nederlands</button>
-				</div>
+            <h1>Long Covid Research Feed</h1>
+            <div class="topbar-buttons">
+                <button class="lang-btn" onclick="toggleTheme()">Dark mode</button>
+                <button class="lang-btn" id="lang-toggle" style="right: 20px;">Nederlands</button>
+            </div>
 
-			</div>
+        </div>
 
-			<p class="subtitle">Automatically updated daily with new peer‑reviewed research</p>
+        <p class="subtitle">Automatically updated daily with new peer‑reviewed research</p>
 
-		</header>
+    </header>
 
-			<!-- Controls -->
-			<section class="controls">
+    <!-- Controls -->
+    <section class="controls">
 
-				<div class="controls-row">
-					<div class="control-group">
-						<label for="search">Search</label>
-						<input type="text" id="search" placeholder="Search titles or abstracts..." oninput="filterCards()" />
-					</div>
+        <div class="controls-row">
+            <div class="control-group">
+                <label for="search">Search</label>
+                <input type="text" id="search" placeholder="Search titles or abstracts..." oninput="filterCards()" />
+            </div>
 
-					<div class="control-group">
-						<label for="source">Source</label>
-						<select id="source" onchange="filterCards()">
-							<option value="">All sources</option>
-							<option value="pubmed">PubMed</option>
-							<option value="nature">Nature</option>
-							<option value="litcovid">LitCovid</option>
-							<option value="europepmc">EuropePMC</option>
-							<option value="longcovidweb">LongCovidWeb</option>
-							<option value="recover">RECOVER</option>
-							<option value="rki">RKI</option>
-							<option value="patientresearchcovid19">PatientResearch</option>
-						</select>
-					</div>
+            <div class="control-group">
+                <label for="source">Source</label>
+                <select id="source" onchange="filterCards()">
+                    <option value="">All sources</option>
+                    <option value="pubmed">PubMed</option>
+                    <option value="nature">Nature</option>
+                    <option value="litcovid">LitCovid</option>
+                    <option value="europepmc">EuropePMC</option>
+                    <option value="longcovidweb">LongCovidWeb</option>
+                    <option value="recover">RECOVER</option>
+                    <option value="rki">RKI</option>
+                    <option value="patientresearchcovid19">PatientResearch</option>
+                </select>
+            </div>
 
-					<div class="control-group">
-						<label for="sort">Sort</label>
-						<select id="sort" onchange="sortCards()">
-							<option value="newest">Newest first</option>
-							<option value="oldest">Oldest first</option>
-							<option value="score-high">Highest AI score</option>
-							<option value="score-low">Lowest AI score</option>
-							<option value="source-az">Source A → Z</option>
-							<option value="source-za">Source Z → A</option>
-						</select>
-					</div>
-				</div>
+            <div class="control-group">
+                <label for="sort">Sort</label>
+                <select id="sort" onchange="sortCards()">
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="score-high">Highest AI score</option>
+                    <option value="score-low">Lowest AI score</option>
+                    <option value="source-az">Source A → Z</option>
+                    <option value="source-za">Source Z → A</option>
+                </select>
+            </div>
+        </div>
 
-				<div class="controls-row">
-					<div class="control-group">
-						<span class="control-label">Categories</span>
-						<div class="chip-group" id="category-chips">
-							<div class="chip" onclick="toggleChip(this)">Mechanism</div>
-							<div class="chip" onclick="toggleChip(this)">Treatment</div>
-							<div class="chip" onclick="toggleChip(this)">Drug</div>
-							<div class="chip" onclick="toggleChip(this)">Lifestyle</div>
-							<div class="chip" onclick="toggleChip(this)">Review</div>
-						</div>
-					</div>
-				</div>
-			</div>
-        </section>
-    </div>
+        <div class="controls-row">
+            <div class="control-group">
+                <span class="control-label">Categories</span>
+                <div class="chip-group" id="category-chips">
+                    <div class="chip" onclick="toggleChip(this)">Mechanism</div>
+                    <div class="chip" onclick="toggleChip(this)">Treatment</div>
+                    <div class="chip" onclick="toggleChip(this)">Drug</div>
+                    <div class="chip" onclick="toggleChip(this)">Lifestyle</div>
+                    <div class="chip" onclick="toggleChip(this)">Review</div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
 
     <!-- Cards -->
     <main class="container">
         <div class="cards-grid" id="cards">
 
             <!-- SCRAPER_INJECT_START -->
-<div class="paper-card" data-source="pubmed" data-category="mechanism">
+<div class="paper-card" data-source="pubmed" data-category="mechanism" data-mech="autoimmunity">
     <span class="source-badge source-pubmed">PubMed</span>
     <span class="subject-badge">Mechanism</span>
 
@@ -114,9 +109,13 @@
     <p class="ai-summary">The paper proposes a model of xenosialylation as a form of &#39;immunological chimerism&#39; that may contribute to immune dysregulation following viral infections and vaccinations, including post-COVID-19 conditions. It suggests this process can lead to immune imbalance, autoantibody production, and chronic inflammatory sequelae.</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -125,7 +124,7 @@
     <a href="https://pubmed.ncbi.nlm.nih.gov/42421498/" target="_blank">Read paper</a>
 </div>
 
-<div class="paper-card" data-source="pubmed" data-category="mechanism">
+<div class="paper-card" data-source="pubmed" data-category="mechanism" data-mech="neuroinflammation">
     <span class="source-badge source-pubmed">PubMed</span>
     <span class="subject-badge">Mechanism</span>
 
@@ -140,9 +139,13 @@
     <p class="ai-summary">The study profiles immune mediators in CSF and serum from COVID-GBS patients, comparing them to non-COVID GBS (Control-GBS), COVID-19 patients without neurological complications (COVID-no-GBS) and non-inflammatory neuropathy controls (Neuropathy-no-GBS). It suggests that GBS involves myeloid-driven cytokine responses and local LIF signaling, with unique immune signatures in COVID-GBS.</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -151,7 +154,7 @@
     <a href="https://pubmed.ncbi.nlm.nih.gov/42399536/" target="_blank">Read paper</a>
 </div>
 
-<div class="paper-card" data-source="pubmed" data-category="mechanism">
+<div class="paper-card" data-source="pubmed" data-category="mechanism" data-mech="neuroinflammation">
     <span class="source-badge source-pubmed">PubMed</span>
     <span class="subject-badge">Mechanism</span>
 
@@ -166,9 +169,13 @@
     <p class="ai-summary">A case report of painful tonic spasms (PTS) in a woman 2 weeks post-COVID-19 infection, attributed to post-infectious neuroinflammation. MRI showed a contrast-enhancing lesion in the cerebral peduncle which resolved with methylprednisolone and oxcarbazepine.</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -177,7 +184,7 @@
     <a href="https://pubmed.ncbi.nlm.nih.gov/42297430/" target="_blank">Read paper</a>
 </div>
 
-<div class="paper-card" data-source="pubmed" data-category="mechanism">
+<div class="paper-card" data-source="pubmed" data-category="mechanism" data-mech="autoimmunity">
     <span class="source-badge source-pubmed">PubMed</span>
     <span class="subject-badge">Mechanism</span>
 
@@ -192,9 +199,13 @@
     <p class="ai-summary">The study identifies a broad range of autoantibodies (AABs) in individuals with long COVID, particularly those with neurocognitive symptoms. These AABs react with CNS and peripheral nervous system proteins and can induce fatigue-like behavior, loss of balance/coordination, thermal hyperalgesia, small fiber nerve damage, and increased pain-related neuronal activity when transferred into mice.</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -203,7 +214,7 @@
     <a href="https://pubmed.ncbi.nlm.nih.gov/42208499/" target="_blank">Read paper</a>
 </div>
 
-<div class="paper-card" data-source="pubmed" data-category="treatment">
+<div class="paper-card" data-source="pubmed" data-category="treatment" data-mech="dysautonomia">
     <span class="source-badge source-pubmed">PubMed</span>
     <span class="subject-badge">Treatment</span>
 
@@ -218,9 +229,13 @@
     <p class="ai-summary">The paper describes a case of post-COVID postural orthostatic tachycardia syndrome (POTS) with a hyperadrenergic phenotype, diagnosed through comprehensive autonomic testing. The patient was treated with ivabradine, leading to partial clinical improvement.</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -229,7 +244,7 @@
     <a href="https://pubmed.ncbi.nlm.nih.gov/42191437/" target="_blank">Read paper</a>
 </div>
 
-<div class="paper-card" data-source="pubmed" data-category="mechanism">
+<div class="paper-card" data-source="pubmed" data-category="mechanism" data-mech="neuroinflammation">
     <span class="source-badge source-pubmed">PubMed</span>
     <span class="subject-badge">Mechanism</span>
 
@@ -244,9 +259,13 @@
     <p class="ai-summary">The study found an increased risk of peripheral nervous system disorders, including Bell&#39;s palsy, Guillain-Barré syndrome, and myasthenia gravis, in individuals who experienced herpes zoster reactivation after COVID-19. The risks were elevated early for Bell&#39;s palsy and delayed for GBS and MG.</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -255,7 +274,7 @@
     <a href="https://pubmed.ncbi.nlm.nih.gov/42158815/" target="_blank">Read paper</a>
 </div>
 
-<div class="paper-card" data-source="pubmed" data-category="treatment">
+<div class="paper-card" data-source="pubmed" data-category="treatment" data-mech="non-mechanistic">
     <span class="source-badge source-pubmed">PubMed</span>
     <span class="subject-badge">Treatment</span>
 
@@ -270,9 +289,13 @@
     <p class="ai-summary">The study examines the gut microbiome in long COVID patients and evaluates the impact of montelukast treatment. It reveals a significant reorganisation of the gut microbial community in long COVID patients, with specific shifts in Firmicutes and Verrucomicrobiota abundance. Montelukast treatment showed minimal impact on the microbial landscape.</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -281,7 +304,7 @@
     <a href="https://pubmed.ncbi.nlm.nih.gov/42138268/" target="_blank">Read paper</a>
 </div>
 
-<div class="paper-card" data-source="pubmed" data-category="review">
+<div class="paper-card" data-source="pubmed" data-category="review" data-mech="non-mechanistic">
     <span class="source-badge source-pubmed">PubMed</span>
     <span class="subject-badge">Review</span>
 
@@ -296,9 +319,13 @@
     <p class="ai-summary">The study analyzed the role of cognitive reserve in patients after SARS-CoV-2 infection, finding that post-COVID patients had significantly lower CRQ scores and MoCA scores compared to controls. The reduced utilization of cognitive reserve rather than loss of reserve capacity was observed.</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -307,7 +334,7 @@
     <a href="https://pubmed.ncbi.nlm.nih.gov/42069416/" target="_blank">Read paper</a>
 </div>
 
-<div class="paper-card" data-source="pubmed" data-category="mechanism">
+<div class="paper-card" data-source="pubmed" data-category="mechanism" data-mech="immune dysregulation">
     <span class="source-badge source-pubmed">PubMed</span>
     <span class="subject-badge">Mechanism</span>
 
@@ -322,9 +349,13 @@
     <p class="ai-summary">The study identifies a distinct TLR2-associated immune signature in centenarians recovered from COVID-19, suggesting an age-related and recovery-specific innate immune remodeling.</p>
 
     <button class="toggle-abstract"
-        onclick="this.nextElementSibling.classList.toggle('hidden');
-                 this.textContent = this.nextElementSibling.classList.contains('hidden')
-                 ? 'Show abstract' : 'Hide abstract';">
+        onclick="
+            const abs = this.parentElement.querySelector('.abstract');
+            abs.classList.toggle('hidden');
+            this.textContent = abs.classList.contains('hidden')
+                ? 'Show abstract'
+                : 'Hide abstract';
+        ">
         Show abstract
     </button>
 
@@ -522,6 +553,31 @@
 			window.selectedCategory = el.dataset.cat;
 			applyFilters();
 		});
+	});
+	</script>
+	<script>
+	
+	function filterByMechanism(group) {
+		const cards = document.querySelectorAll(".paper-card");
+		group = group.toLowerCase();
+
+		cards.forEach(card => {
+			const mech = card.getAttribute("data-mech");
+			card.style.display = (!group || mech === group) ? "" : "none";
+		});
+	}
+
+	document.addEventListener("DOMContentLoaded", () => {
+		const container = document.getElementById("mechanism-stats");
+		if (!container) return;
+
+		const parts = container.innerHTML.split("•");
+
+		container.innerHTML = parts.map(part => {
+			const trimmed = part.trim();
+			const group = trimmed.split(":")[0].replace(/^[^\s]+\s/, "").trim();
+			return `<span class="mech-badge" onclick="filterByMechanism('${group}')">${trimmed}</span>`;
+		}).join(" • ");
 	});
 	</script>
 
