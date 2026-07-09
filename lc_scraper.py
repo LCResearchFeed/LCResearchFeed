@@ -309,14 +309,14 @@ def inject_cards_into_index(cards_html: str) -> None:
     if start not in html or end not in html:
         raise RuntimeError("Inject markers not found in index.html")
 
-    before, _ = html.split(start, 1)
-    _, after = html.split(end, 1)
+    # Split in één keer
+    before, middle_and_after = html.split(start, 1)
+    _, after = middle_and_after.split(end, 1)
 
     new_html = before + start + "\n" + cards_html + "\n" + end + after
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(new_html)
-
 
 # ---------------------------------------------------------
 # MAIN
