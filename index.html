@@ -13,11 +13,9 @@
 
     <header class="header">
     
-        <div id="mechanism-stats">📄 Non Mechanistic: 51 &nbsp;•&nbsp; 🔎 Viral Persistence: 22 &nbsp;•&nbsp; 🧠 Neuroinflammation: 40 &nbsp;•&nbsp; 🧬 Autoimmunity: 44 &nbsp;•&nbsp; ⚡ Dysautonomia: 12 &nbsp;•&nbsp; 💉 Microvascular: 17 &nbsp;•&nbsp; 🔎 Immune Dysregulation: 3 &nbsp;•&nbsp; 🔋 Mitochondrial: 2</div>
-
         <div class="stats-badge">
             📊 Updated: <span id="stat-updated">2026-07-10</span> —
-            Total papers: <span id="stat-total-badge">191</span>
+            Total papers: <span id="stat-total-badge">200</span>
         </div>
 
         <div class="header-row">
@@ -6283,39 +6281,6 @@
 			window.selectedCategory = el.dataset.cat;
 			applyFilters();
 		});
-	});
-	</script>
-	
-	<script>
-	function filterByMechanism(group) {
-		const cards = document.querySelectorAll(".paper-card");
-		group = group.toLowerCase();
-
-		cards.forEach(card => {
-			const mech = (card.getAttribute("data-mech") || "").toLowerCase();
-			card.style.display = (!group || mech === group) ? "" : "none";
-		});
-	}
-
-	document.addEventListener("DOMContentLoaded", () => {
-		const container = document.getElementById("mechanism-stats");
-		if (!container) return;
-
-		// Split op zowel &nbsp;•&nbsp; als gewone •
-		const parts = container.innerHTML.split(/&nbsp;•&nbsp;|•/);
-
-		container.innerHTML = parts.map(part => {
-			const trimmed = part.trim();
-			if (!trimmed) return "";
-
-			// Extract mechanistic group: emoji + spatie + group + :
-			const match = trimmed.match(/^\s*[^ ]+\s+([^:]+):/);
-			if (!match) return trimmed;
-
-			const group = match[1].trim().toLowerCase().replace(/ /g, "-");
-
-			return `<span class="mech-badge" onclick="filterByMechanism('${group}')">${trimmed}</span>`;
-		}).join(" • ");
 	});
 	</script>
 

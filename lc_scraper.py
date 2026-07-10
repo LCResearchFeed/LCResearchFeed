@@ -464,7 +464,13 @@ def inject_badge_stats(stats):
         html = f.read()
 
     updated_date = datetime.now().strftime("%Y-%m-%d")
-    total = stats.get("total", 0)
+    
+    # Tel ALLE kaarten in index.html
+    with open(INDEX_PATH, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    real_cards = re.findall(r'<div class="paper-card"[^>]*>', html)
+    total = len(real_cards)
 
     html = re.sub(
         r'<span id="stat-updated">.*?</span>',
@@ -716,7 +722,6 @@ def main() -> None:
     # STATS BASED ON VISIBLE CARDS ONLY
 
     stats = compute_stats(visible_cards)
-    inject_stats_into_index(stats)
     inject_badge_stats(stats)
 
     log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
