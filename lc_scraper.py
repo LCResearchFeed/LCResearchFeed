@@ -357,7 +357,7 @@ def main() -> None:
     for papers in sources.values():
         all_raw.extend(papers)
     
-    all_raw = all_raw[:50]
+    #all_raw = all_raw[:50]
 
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
