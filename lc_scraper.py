@@ -523,6 +523,45 @@ def inject_cards_into_index(cards_html: str) -> None:
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(new_html)
+        
+def rebuild_posted_pmids_from_html():
+    log("[CLEAN] Rebuilding posted_pmids.txt from index.html...")
+
+    with open(INDEX_PATH, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    # Zoek alle echte kaarten
+    cards = re.findall(
+        r'<div class="paper-card"[^>]*data-mech="[^"]*"[^>]*>',
+        html
+    )
+
+    log(f"[CLEAN] Found {len(cards)} real cards in HTML.")
+
+    # IDs extraheren uit de kaart HTML
+    ids = []
+    for card in cards:
+        # Zoek de URL in de kaart
+        m = re.search(r'href="([^"]+)"', card)
+        if not m:
+            continue
+        url = m.group(1)
+
+        # Paper ID afleiden uit URL
+        # (zelfde methode als jouw scraper gebruikt)
+        paper_id = url.split("/")[-1]
+        ids.append(paper_id)
+
+    # Unieke IDs
+    ids = sorted(set(ids))
+    log(f"[CLEAN] Extracted {len(ids)} unique paper IDs.")
+
+    # posted_pmids.txt opnieuw schrijven
+    with open(os.path.join(REPO_PATH, "posted_pmids.txt"), "w", encoding="utf-8") as f:
+        for pid in ids:
+            f.write(pid + "\n")
+
+    log("[CLEAN] posted_pmids.txt successfully rebuilt.")
 
 # MAIN
 
@@ -707,17 +746,19 @@ def main() -> None:
         cached_html = "\n\n".join(build_card_html(p) for p in cached_new)
         inject_cards_into_index(cached_html)
 
-    # UPDATE SEEN
+    # UPDATE SEEN — ONLY REAL CARDS
 
     for p in cached_new:
-        if build_card_html(p).strip():
+        if build_card_html(p).strip():      # only real cards
             seen.add(p["id"])
 
     for p in new_papers:
-        if "id" in p:
+        if build_card_html(p).strip():      # only real cards
             seen.add(p["id"])
 
     save_seen(seen)
+    
+    rebuild_posted_pmids_from_html()
 
     commit_and_push()
 

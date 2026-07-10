@@ -6043,5 +6043,44 @@
     "review": true,
     "summary": "This scoping review discusses therapeutic options for treating post-acute sequelae of COVID-19.",
     "reason": "The paper is a review focusing on treatment options without delving into specific mechanisms, biological findings, or discussing drugs, lifestyle interventions."
+  },
+  "https://www.nature.com/articles/s41467-026-72224-y": {
+    "score": 85,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Immune Dysregulation",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The study identifies immunometabolic subgroups in pediatric long COVID with structured trajectories over time, influenced by disease phase and EBV imprinting. Recovery-associated features are linked to milder impairment.",
+    "reason": "The paper provides strong mechanistic insights into the immune dysregulation aspects of long COVID in children."
+  },
+  "europepmc-10.1007/s11606-025-09383-z": {
+    "score": 55,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This review examines predictors of post-acute sequelae of COVID-19 in a diverse urban population.",
+    "reason": "The paper is categorized as a review and discusses predictors rather than mechanisms, treatments, or lifestyle interventions."
+  },
+  "europepmc-10.1001/jamanetworkopen.2026.14909": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper discusses gaps in surveillance and persistence of Long COVID across 58 US hospitals.",
+    "reason": "This article is a review that highlights the current state of surveillance and understanding of Long COVID, without delving into specific mechanisms, treatments, drugs, or lifestyle interventions."
   }
 }
