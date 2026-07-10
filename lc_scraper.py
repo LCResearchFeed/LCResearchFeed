@@ -524,44 +524,39 @@ def inject_cards_into_index(cards_html: str) -> None:
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(new_html)
         
-def rebuild_posted_pmids_from_html():
-    log("[CLEAN] Rebuilding posted_pmids.txt from index.html...")
+    def rebuild_posted_pmids_from_html():
+        log("[CLEAN] Rebuilding posted_pmids.txt from index.html...")
 
-    with open(INDEX_PATH, "r", encoding="utf-8") as f:
-        html = f.read()
+        with open(INDEX_PATH, "r", encoding="utf-8") as f:
+            html = f.read()
 
-    # Zoek alle echte kaarten
-    cards = re.findall(
-        r'<div class="paper-card"[^>]*data-mech="[^"]*"[^>]*>',
-        html
-    )
+        # Zoek alle echte kaarten
+        cards = re.findall(
+            r'<div class="paper-card"[^>]*>',
+            html
+        )
 
-    log(f"[CLEAN] Found {len(cards)} real cards in HTML.")
+        real_ids = set()
+        for card in cards:
+            m = re.search(r'href="([^"]+)"', card)
+            if not m:
+                continue
+            url = m.group(1)
+            paper_id = url.split("/")[-1]
+            real_ids.add(paper_id)
 
-    # IDs extraheren uit de kaart HTML
-    ids = []
-    for card in cards:
-        # Zoek de URL in de kaart
-        m = re.search(r'href="([^"]+)"', card)
-        if not m:
-            continue
-        url = m.group(1)
+        # posted_pmids = alle echte kaarten
+        cleaned = sorted(real_ids)
 
-        # Paper ID afleiden uit URL
-        # (zelfde methode als jouw scraper gebruikt)
-        paper_id = url.split("/")[-1]
-        ids.append(paper_id)
+        log(f"[CLEAN] Total real cards: {len(cleaned)}")
 
-    # Unieke IDs
-    ids = sorted(set(ids))
-    log(f"[CLEAN] Extracted {len(ids)} unique paper IDs.")
+        # posted_pmids.txt opnieuw schrijven
+        posted_path = os.path.join(REPO_PATH, "posted_pmids.txt")
+        with open(posted_path, "w", encoding="utf-8") as f:
+            for pid in cleaned:
+                f.write(pid + "\n")
 
-    # posted_pmids.txt opnieuw schrijven
-    with open(os.path.join(REPO_PATH, "posted_pmids.txt"), "w", encoding="utf-8") as f:
-        for pid in ids:
-            f.write(pid + "\n")
-
-    log("[CLEAN] posted_pmids.txt successfully rebuilt.")
+        log("[CLEAN] posted_pmids.txt successfully rebuilt.")
 
 # MAIN
 
