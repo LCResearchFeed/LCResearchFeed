@@ -280,6 +280,31 @@ def inject_stats_into_index(stats):
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(html)
+        
+def inject_badge_stats(stats):
+    log("[HTML] Updating badge stats...")
+
+    with open(INDEX_PATH, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    updated_date = datetime.now().strftime("%Y-%m-%d")
+    total = stats.get("total", 0)
+
+    html = re.sub(
+        r'<span id="stat-updated">.*?</span>',
+        f'<span id="stat-updated">{updated_date}</span>',
+        html
+    )
+
+    html = re.sub(
+        r'<span id="stat-total-badge">.*?</span>',
+        f'<span id="stat-total-badge">{total}</span>',
+        html
+    )
+
+    with open(INDEX_PATH, "w", encoding="utf-8") as f:
+        f.write(html)
+
 
 # ---------------------------------------------------------
 # GIT
@@ -500,6 +525,7 @@ def main() -> None:
 
     stats = compute_stats(visible_cards)
     inject_stats_into_index(stats)
+    inject_badge_stats(stats)
 
     log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
 
