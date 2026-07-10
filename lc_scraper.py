@@ -356,12 +356,10 @@ def main() -> None:
     all_raw = []
     for papers in sources.values():
         all_raw.extend(papers)
+    
+    all_raw = all_raw[:50]
 
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
-
-    # TEST MODE — limit number of papers
-    all_raw = all_raw[:50]
-    log(f"[TEST] Limiting to {len(all_raw)} papers for fast testing")
 
     candidates = [p for p in all_raw if is_valid_candidate(p)]
     log(f"[PREFILTER] Candidates: {len(candidates)}")
@@ -404,22 +402,22 @@ def main() -> None:
     for p in candidates:
         ai = results.get(p.get("id"))
 
-        # Skip AI failures (None)
         if not isinstance(ai, dict):
             continue
 
-        # Skip irrelevant categories
         if ai.get("category") in ("Irrelevant", "Epidemiology"):
             continue
 
-        # Skip low scores
         if ai.get("score", 0) < 60:
             continue
 
-        # Attach AI metadata
         p["ai_score"] = ai.get("score", 0)
         p["ai_category"] = ai.get("category", "Irrelevant")
-        p["ai_mechanistic_group"] = ai.get("mechanistic_group", "Non-mechanistic")
+
+        raw_group = ai.get("mechanistic_group", "Non-mechanistic") or "Non-mechanistic"
+        group = raw_group.lower().replace(" ", "-")
+        p["ai_mechanistic_group"] = group
+
         p["ai_summary"] = ai.get("summary", p.get("abstract", "")[:400])
         p["ai_reason"] = ai.get("reason", "")
 
@@ -443,24 +441,10 @@ def main() -> None:
     top = [p for p in ranked if p["ai_score"] >= 70]
     log(f"[RANK] Top papers: {len(top)}")
 
-    # STATS
-    stats = compute_stats(top)
-    inject_stats_into_index(stats)
-    log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
+    # ---------------------------------------------------------
+    # SECOND PASS: BUILD cached_new FIRST
+    # ---------------------------------------------------------
 
-    new_papers = [p for p in top if p.get("id") not in seen]
-    log(f"[NEW] New papers: {len(new_papers)}")
-
-    if not new_papers:
-        log("[DONE] No new papers to inject.")
-        commit_and_push()
-        print("\n================ LC SCRAPER END ================\n")
-        return
-
-    cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
-    inject_cards_into_index(cards_html)
-
-    # SECOND PASS: POST RELEVANT PAPERS FROM ai_cache.json
     log("[CACHE] Checking cached papers for missed relevant items...")
 
     cached_new = []
@@ -484,7 +468,11 @@ def main() -> None:
 
         original["ai_score"] = ai["score"]
         original["ai_category"] = ai["category"]
-        original["ai_mechanistic_group"] = ai.get("mechanistic_group", "Non-mechanistic")
+
+        raw_group = ai.get("mechanistic_group", "Non-mechanistic") or "Non-mechanistic"
+        group = raw_group.lower().replace(" ", "-")
+        original["ai_mechanistic_group"] = group
+
         original["ai_summary"] = ai["summary"]
         original["ai_reason"] = ai["reason"]
 
@@ -492,25 +480,72 @@ def main() -> None:
 
     log(f"[CACHE] Missed relevant papers found: {len(cached_new)}")
 
+    # ---------------------------------------------------------
+    # BUILD VISIBLE CARDS (REAL HTML CARDS)
+    # ---------------------------------------------------------
+
+    visible_cards = []
+
+    for p in top:
+        if build_card_html(p).strip():
+            visible_cards.append(p)
+
+    for p in cached_new:
+        if build_card_html(p).strip():
+            visible_cards.append(p)
+
+    # ---------------------------------------------------------
+    # STATS BASED ON VISIBLE CARDS ONLY
+    # ---------------------------------------------------------
+
+    stats = compute_stats(visible_cards)
+    inject_stats_into_index(stats)
+
+    log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
+
+    # ---------------------------------------------------------
+    # NEW PAPERS
+    # ---------------------------------------------------------
+
+    new_papers = [p for p in top if p.get("id") not in seen]
+    log(f"[NEW] New papers: {len(new_papers)}")
+
+    if not new_papers:
+        log("[DONE] No new papers to inject.")
+        commit_and_push()
+        print("\n================ LC SCRAPER END ================\n")
+        return
+
+    cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
+    inject_cards_into_index(cards_html)
+
+    # ---------------------------------------------------------
+    # INJECT CACHED CARDS
+    # ---------------------------------------------------------
+
     if cached_new:
         cached_html = "\n\n".join(build_card_html(p) for p in cached_new)
         inject_cards_into_index(cached_html)
 
-    for p in cached_new:
-        seen.add(p["id"])
-    save_seen(seen)
+    # ---------------------------------------------------------
+    # UPDATE SEEN
+    # ---------------------------------------------------------
 
-    log(f"[CACHE] Added {len(cached_new)} cached relevant papers.")
+    for p in cached_new:
+        if build_card_html(p).strip():
+            seen.add(p["id"])
 
     for p in new_papers:
         if "id" in p:
             seen.add(p["id"])
+
     save_seen(seen)
 
     commit_and_push()
 
     log(f"[DONE] Added {len(new_papers)} new papers.")
     print("\n================ LC SCRAPER END ================\n")
+
 
 
 if __name__ == "__main__":
