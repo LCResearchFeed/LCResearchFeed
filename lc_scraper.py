@@ -668,7 +668,7 @@ def main() -> None:
     )
 
     top = [p for p in ranked if p["ai_score"] >= 70]
-    log(f"[RANK] Top papers: {len(top)}")
+    #log(f"[RANK] Top papers: {len(top)}")
 
     # SECOND PASS: BUILD cached_new FIRST
 
@@ -724,7 +724,7 @@ def main() -> None:
     stats = compute_stats(visible_cards)
     inject_badge_stats(stats)
 
-    log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
+    #log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
 
     # NEW PAPERS
 
