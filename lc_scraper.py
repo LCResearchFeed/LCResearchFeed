@@ -7,7 +7,7 @@ import subprocess
 from datetime import datetime
 import concurrent.futures
 
-# Absolute path to your repo
+# Absolute path to repo
 REPO_PATH = r"C:\Users\mkoni\LCResearchFeed"
 INDEX_PATH = os.path.join(REPO_PATH, "index.html")
 LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
@@ -29,10 +29,7 @@ from sources.patientresearchcovid19 import fetch_plrc_papers
 # AI classifier
 from ai.classifier import classify_paper
 
-
-# ---------------------------------------------------------
 # LOGGING
-# ---------------------------------------------------------
 
 def log(msg: str) -> None:
     ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -44,51 +41,244 @@ def log(msg: str) -> None:
     except Exception:
         pass
 
-
-# ---------------------------------------------------------
 # PREFILTER
-# ---------------------------------------------------------
 
 LC_TERMS = [
-    "long covid", "post covid", "post-covid", "pasc",
-    "post-acute", "post-acute sequelae", "sequelae",
-    "post-viral", "post-infectious", "post-infection",
-    "post-sars-cov-2", "chronic covid", "long-term covid",
-    "sars-cov-2", "covid-19", "covid 19"
+    # Core Long COVID terms
+    "long covid",
+    "long-covid",
+    "long COVID syndrome",
+    "long COVID condition",
+    "post covid",
+    "post-covid",
+    "post-COVID condition",
+    "post COVID condition",
+    "post-COVID-19 condition",
+    "PCC",
+
+    # PASC terminology
+    "PASC",
+    "post-acute sequelae",
+    "post-acute sequelae of SARS-CoV-2 infection",
+    "post-acute COVID-19 syndrome",
+    "post-acute COVID syndrome",
+    "post acute COVID",
+
+    # Post-infectious terminology
+    "post-viral syndrome",
+    "post viral syndrome",
+    "post-infectious syndrome",
+    "post infectious syndrome",
+    "post-acute infection syndrome",
+    "PAIS",
+
+    # Persistent/chronic COVID terminology
+    "chronic COVID",
+    "chronic COVID-19",
+    "persistent COVID",
+    "persistent COVID-19",
+    "ongoing symptomatic COVID-19",
+    "long-term COVID",
+    "post-SARS-CoV-2",
+    "post SARS-CoV-2",
+
+    # Common research abbreviations
+    "LTC",
+    "LC",
 ]
 
 MECH_TERMS = [
-    "immune", "immunity", "inflammation", "cytokine", "interferon",
-    "autoimmune", "autoimmunity", "autoantibody",
-    "t-cell", "b-cell", "innate", "adaptive",
-    "viral", "virus", "persistent", "persistence", "reservoir",
-    "reactivation", "latency",
-    "neurological", "neuro", "neuroinflammation", "neuroimmune",
-    "microglia", "glial",
-    "endothelial", "endothelium", "microclots", "microvascular",
-    "coagulation", "thrombosis", "vascular",
-    "mitochondria", "mitochondrial", "oxidative stress",
-    "metabolic", "metabolism"
+    # Immune dysregulation
+    "immune",
+    "immunity",
+    "immune dysregulation",
+    "immune dysfunction",
+    "inflammation",
+    "inflammatory",
+    "cytokine",
+    "cytokine storm",
+    "interferon",
+    "autoimmune",
+    "autoimmunity",
+    "autoantibody",
+    "autoantibodies",
+    "antibody",
+    "complement",
+    "mast cell",
+    "mast cell activation",
+    "MCAS",
+
+    # Adaptive and innate immunity
+    "t-cell",
+    "T cell",
+    "b-cell",
+    "B cell",
+    "innate",
+    "adaptive",
+    "NK cell",
+    "natural killer",
+
+    # Viral persistence
+    "viral",
+    "virus",
+    "viral persistence",
+    "persistent infection",
+    "persistence",
+    "reservoir",
+    "viral reservoir",
+    "reactivation",
+    "latency",
+    "latent",
+
+    # Neurological / neuroimmune
+    "neurological",
+    "neurologic",
+    "neuro",
+    "neuroinflammation",
+    "neuroimmune",
+    "microglia",
+    "glial",
+    "blood brain barrier",
+    "BBB",
+    "brain fog",
+    "cognitive dysfunction",
+
+    # Endothelial / vascular
+    "endothelial",
+    "endothelium",
+    "endothelial dysfunction",
+    "microclots",
+    "microvascular",
+    "vascular",
+    "coagulation",
+    "thrombosis",
+    "platelet",
+    "platelet activation",
+    "fibrin",
+    "fibrinogen",
+
+    # Mitochondrial / metabolic
+    "mitochondria",
+    "mitochondrial",
+    "oxidative stress",
+    "metabolic",
+    "metabolism",
+    "energy metabolism",
+    "cellular energy",
+    "ATP",
+
+    # Autonomic dysfunction (important for POTS)
+    "autonomic",
+    "autonomic dysfunction",
+    "dysautonomia",
+    "orthostatic intolerance",
+    "POTS",
+    "postural tachycardia",
+    "heart rate variability",
+    "baroreflex",
+
+    # PEM / exercise intolerance
+    "post-exertional malaise",
+    "PEM",
+    "post exertional",
+    "exercise intolerance",
+    "exercise capacity",
+    "anaerobic threshold",
+    "lactate",
+    "VO2 max",
+
+    # Hormonal / stress systems
+    "HPA axis",
+    "cortisol",
+    "hypothalamic",
+    "adrenal",
 ]
 
 TREAT_TERMS = [
-    "treatment", "therapy", "drug", "intervention", "rehabilitation",
-    "trial", "clinical trial", "clinical study",
-    "randomized", "controlled", "rct",
-    "phase", "phase 1", "phase 2", "phase 3", "phase 4",
-    "phase iib", "dose-ranging",
-    "pilot", "pilot trial", "open-label", "double-blind",
-    "single-blind", "double-masked", "multi-center",
-    "placebo", "placebo-controlled", "sham-controlled",
-    "prospective", "retrospective", "observational study",
-    "efficacy", "evaluation", "feasibility",
-    "naltrexone", "ldn", "low-dose naltrexone"
+    # General treatment terms
+    "treatment",
+    "therapy",
+    "intervention",
+    "management",
+    "protocol",
+    "drug",
+    "medication",
+    "pharmacological",
+    "non-pharmacological",
+
+    # Clinical studies
+    "trial",
+    "clinical trial",
+    "clinical study",
+    "randomized",
+    "controlled",
+    "rct",
+    "phase",
+    "pilot",
+    "open-label",
+    "double-blind",
+    "placebo-controlled",
+    "sham-controlled",
+    "prospective",
+    "observational study",
+    "efficacy",
+    "feasibility",
+
+    # Long COVID treatments
+    "naltrexone",
+    "low-dose naltrexone",
+    "LDN",
+    "ldn",
+    "low dose naltrexone",
+    "low dose Naltrexone",
+    "antiviral",
+    "ivermectin",
+    "metformin",
+    "statin",
+    "anticoagulant",
+    "antiplatelet",
+    "immunomodulator",
+    "steroid",
+    "corticosteroid",
+    "IVIG",
+    "monoclonal antibody",
+
+    # POTS treatments
+    "fludrocortisone",
+    "midodrine",
+    "beta blocker",
+    "propranolol",
+    "ivabradine",
+    "pyridostigmine",
+    "salt loading",
+    "fluid loading",
+    "compression garment",
+    "compression stockings",
+    "exercise training",
+
+    # PEM / ME-CFS related management
+    "pacing",
+    "activity management",
+    "energy envelope",
+    "heart rate monitoring",
+    "autonomic rehabilitation",
+
+    # Rehabilitation
+    "rehabilitation",
+    "physical therapy",
+    "occupational therapy",
+    "breathing therapy",
 ]
 
 NOISE_TERMS = [
-    "survey", "protocol", "quality of life", "burden",
-    "opinion", "editorial", "review", "meta-analysis",
-    "scoping review", "narrative review"
+    "survey",
+    "questionnaire",
+    "quality of life",
+    "burden",
+    "opinion",
+    "editorial",
+    "commentary",
+    "letter to editor",
 ]
 
 def _contains_any(text: str, terms: list[str]) -> bool:
@@ -110,7 +300,6 @@ def is_valid_candidate_pubmed_nature(p: dict) -> bool:
 
     return True
 
-
 def is_valid_candidate_europepmc(p: dict) -> bool:
     combo = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
 
@@ -122,7 +311,6 @@ def is_valid_candidate_europepmc(p: dict) -> bool:
 
     return True
 
-
 def is_valid_candidate_generic(p: dict) -> bool:
     combo = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
 
@@ -133,7 +321,6 @@ def is_valid_candidate_generic(p: dict) -> bool:
         return False
 
     return True
-
 
 def is_valid_candidate(p: dict) -> bool:
     if not isinstance(p.get("date"), datetime):
@@ -148,10 +335,7 @@ def is_valid_candidate(p: dict) -> bool:
     else:
         return is_valid_candidate_generic(p)
 
-
-# ---------------------------------------------------------
 # HTML CARD GENERATION
-# ---------------------------------------------------------
 
 def build_card_html(p: dict) -> str:
     # Skip papers with missing critical fields
@@ -159,7 +343,6 @@ def build_card_html(p: dict) -> str:
         return ""
 
     abstract = p.get("abstract") or p.get("ai_summary") or "No abstract available."
-
 
     source = (p.get("source", "other") or "other").lower()
 
@@ -220,12 +403,7 @@ def build_card_html(p: dict) -> str:
 </div>
 """.strip()
 
-
-
-
-# ---------------------------------------------------------
 # STATISTICS (mechanistic groups)
-# ---------------------------------------------------------
 
 def compute_stats(papers):
     stats = {"total": len(papers)}
@@ -236,7 +414,6 @@ def compute_stats(papers):
         stats[group] += 1
     return stats
 
-    
 def build_compact_header(stats):
     icons = {
         "autoimmunity": "🧬",
@@ -261,7 +438,6 @@ def build_compact_header(stats):
         parts.append(f"{icon} {label}: {count}")
 
     return " &nbsp;•&nbsp; ".join(parts)
-
 
 def inject_stats_into_index(stats):
     log("[HTML] Injecting statistics into index.html...")
@@ -305,10 +481,7 @@ def inject_badge_stats(stats):
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(html)
 
-
-# ---------------------------------------------------------
 # GIT
-# ---------------------------------------------------------
 
 def run_git(args: list[str]) -> None:
     log(f"[GIT] Running git command: {' '.join(args)}")
@@ -329,10 +502,7 @@ def commit_and_push() -> None:
     run_git(["commit", "-m", "Update LC papers", "--allow-empty"])
     run_git(["push", "origin", "main"])
 
-
-# ---------------------------------------------------------
 # HTML injection for cards
-# ---------------------------------------------------------
 
 def inject_cards_into_index(cards_html: str) -> None:
     log("[HTML] Injecting cards into index.html...")
@@ -354,9 +524,7 @@ def inject_cards_into_index(cards_html: str) -> None:
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(new_html)
 
-# ---------------------------------------------------------
 # MAIN
-# ---------------------------------------------------------
 
 def main() -> None:
     print("\n================ LC SCRAPER START ================\n")
@@ -394,9 +562,7 @@ def main() -> None:
         print("\n================ LC SCRAPER END ================\n")
         return
 
-    # ---------------------------------------------------------
     # PARALLEL AI CLASSIFICATION
-    # ---------------------------------------------------------
 
     log(f"[AI] Running parallel classification on {len(candidates)} papers...")
 
@@ -419,9 +585,7 @@ def main() -> None:
             title_preview = p.get("title", "")[:80]
             log(f"[AI] ({completed}/{total}) Done: {title_preview}")
 
-    # ---------------------------------------------------------
     # FILTERING
-    # ---------------------------------------------------------
 
     enriched = []
     for p in candidates:
@@ -466,9 +630,7 @@ def main() -> None:
     top = [p for p in ranked if p["ai_score"] >= 70]
     log(f"[RANK] Top papers: {len(top)}")
 
-    # ---------------------------------------------------------
     # SECOND PASS: BUILD cached_new FIRST
-    # ---------------------------------------------------------
 
     log("[CACHE] Checking cached papers for missed relevant items...")
 
@@ -505,9 +667,7 @@ def main() -> None:
 
     log(f"[CACHE] Missed relevant papers found: {len(cached_new)}")
 
-    # ---------------------------------------------------------
     # BUILD VISIBLE CARDS (REAL HTML CARDS)
-    # ---------------------------------------------------------
 
     visible_cards = []
 
@@ -519,9 +679,7 @@ def main() -> None:
         if build_card_html(p).strip():
             visible_cards.append(p)
 
-    # ---------------------------------------------------------
     # STATS BASED ON VISIBLE CARDS ONLY
-    # ---------------------------------------------------------
 
     stats = compute_stats(visible_cards)
     inject_stats_into_index(stats)
@@ -529,9 +687,7 @@ def main() -> None:
 
     log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
 
-    # ---------------------------------------------------------
     # NEW PAPERS
-    # ---------------------------------------------------------
 
     new_papers = [p for p in top if p.get("id") not in seen]
     log(f"[NEW] New papers: {len(new_papers)}")
@@ -545,17 +701,13 @@ def main() -> None:
     cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
     inject_cards_into_index(cards_html)
 
-    # ---------------------------------------------------------
     # INJECT CACHED CARDS
-    # ---------------------------------------------------------
 
     if cached_new:
         cached_html = "\n\n".join(build_card_html(p) for p in cached_new)
         inject_cards_into_index(cached_html)
 
-    # ---------------------------------------------------------
     # UPDATE SEEN
-    # ---------------------------------------------------------
 
     for p in cached_new:
         if build_card_html(p).strip():
@@ -571,8 +723,6 @@ def main() -> None:
 
     log(f"[DONE] Added {len(new_papers)} new papers.")
     print("\n================ LC SCRAPER END ================\n")
-
-
 
 if __name__ == "__main__":
     main()

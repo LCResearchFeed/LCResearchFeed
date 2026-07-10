@@ -1,12 +1,10 @@
 import os
 
-# Absolute path to your repo
+# Absolute path to repo
 REPO_PATH = r"C:\Users\mkoni\LCResearchFeed"
 SEEN_FILE = os.path.join(REPO_PATH, "posted_pmids.txt")
 
-# ---------------------------------------------------------
 # Seen PMIDs storage
-# ---------------------------------------------------------
 
 def load_seen() -> set[str]:
     """
