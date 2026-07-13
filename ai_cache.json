@@ -6485,5 +6485,18 @@
     "review": true,
     "summary": "This case series describes four previously healthy children with confirmed COVID-19 infection presenting to the Pediatric Emergency Department (PED) with prolonged fever and abrupt onset of hemodynamic instability, indicative of a post-infectious cytokine release syndrome.",
     "reason": "The paper is a case series that discusses clinical features of a specific condition in children without delving into mechanisms or treatments."
+  },
+  "plrc-986d30681b9a": {
+    "score": 65,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper discusses the lack of clinical trials for Long COVID and provides guidelines for designing and optimizing such trials, emphasizing the need for rigorous yet accessible designs.",
+    "reason": "The paper focuses on the design and optimization of clinical trials rather than discussing specific mechanisms, treatments, or lifestyle interventions."
   }
 }
