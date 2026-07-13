@@ -6472,5 +6472,18 @@
     "review": true,
     "summary": "This systematic review and meta-analysis aimed to summarize the risk factors for long COVID in children and adolescents, identifying several factors associated with an increased or decreased risk of developing long-term sequelae post-COVID-19 infection.",
     "reason": "The paper focuses on summarizing existing studies rather than delving into specific mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "32471782": {
+    "score": 75,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This case series describes four previously healthy children with confirmed COVID-19 infection presenting to the Pediatric Emergency Department (PED) with prolonged fever and abrupt onset of hemodynamic instability, indicative of a post-infectious cytokine release syndrome.",
+    "reason": "The paper is a case series that discusses clinical features of a specific condition in children without delving into mechanisms or treatments."
   }
 }

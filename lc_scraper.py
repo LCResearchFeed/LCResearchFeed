@@ -717,7 +717,7 @@ def main() -> None:
 
     # STATS BASED ON VISIBLE CARDS ONLY
 
-    stats = compute_stats(visible_cards)
+    stats = compute_stats(enriched)
     inject_badge_stats(stats)
 
     #log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
