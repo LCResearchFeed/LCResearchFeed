@@ -355,7 +355,7 @@ def build_card_html(p: dict) -> str:
             "longcovidweb": "LongCovidWeb",
             "recover": "RECOVER",
             "rki": "RKI",
-            "patientresearchcovid19": "PatientResearch",
+            "plrc-scholar": "PLRC",
         }
         return mapping.get(s.lower(), "Other")
 
