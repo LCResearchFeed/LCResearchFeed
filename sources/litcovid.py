@@ -20,6 +20,16 @@ def fetch_litcovid_html_long_covid(max_results: int = 200) -> list[dict]:
             headers={"Accept": "text/html"}
         )
         r.raise_for_status()
+        
+        print("URL:", r.url)
+        print("Status:", r.status_code)
+        print("Content-Type:", r.headers.get("Content-Type"))
+
+        with open("litcovid_debug.html", "w", encoding="utf-8") as f:
+            f.write(r.text)
+
+        print(r.text[:1000])
+        
     except Exception as e:
         print(f"[LitCovid] ERROR fetching HTML: {e}")
         return []
@@ -70,3 +80,15 @@ def fetch_litcovid_html_long_covid(max_results: int = 200) -> list[dict]:
 
     print(f"[LitCovid] Parsed HTML papers: {len(results)}")
     return results
+
+if __name__ == "__main__":
+    papers = fetch_litcovid_html_long_covid(max_results=5)
+
+    print(f"\nAantal papers: {len(papers)}\n")
+
+    for paper in papers:
+        print("=" * 80)
+        print("Titel :", paper["title"])
+        print("Datum :", paper["date"])
+        print("URL   :", paper["url"])
+        print()

@@ -487,6 +487,32 @@ def inject_badge_stats(stats):
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(html)
 
+def rebuild_posted_pmids_from_html():
+    log("[CLEAN] Rebuilding posted_pmids.txt from index.html...")
+
+    with open(INDEX_PATH, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    cards = re.findall(r'<div class="paper-card"[^>]*>', html)
+
+    real_ids = set()
+    for card in cards:
+        m = re.search(r'href="([^"]+)"', card)
+        if not m:
+            continue
+        url = m.group(1)
+        paper_id = url.split("/")[-1]
+        real_ids.add(paper_id)
+
+    cleaned = sorted(real_ids)
+
+    posted_path = os.path.join(REPO_PATH, "posted_pmids.txt")
+    with open(posted_path, "w", encoding="utf-8") as f:
+        for pid in cleaned:
+            f.write(pid + "\n")
+
+    log("[CLEAN] posted_pmids.txt successfully rebuilt.")
+
 # GIT
 
 def run_git(args: list[str]) -> None:
@@ -523,46 +549,16 @@ def inject_cards_into_index(cards_html: str) -> None:
 
     # Split in één keer
     before, middle_and_after = html.split(start, 1)
-    _, after = middle_and_after.split(end, 1)
+    existing, after = middle_and_after.split(end, 1)
 
-    new_html = before + start + "\n" + cards_html + "\n" + end + after
+    existing = existing.strip()
+    combined = existing + "\n\n" + cards_html
+
+    new_html = before + start + "\n" + combined + "\n" + end + after
+
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(new_html)
-        
-    def rebuild_posted_pmids_from_html():
-        log("[CLEAN] Rebuilding posted_pmids.txt from index.html...")
-
-        with open(INDEX_PATH, "r", encoding="utf-8") as f:
-            html = f.read()
-
-        # Zoek alle echte kaarten
-        cards = re.findall(
-            r'<div class="paper-card"[^>]*>',
-            html
-        )
-
-        real_ids = set()
-        for card in cards:
-            m = re.search(r'href="([^"]+)"', card)
-            if not m:
-                continue
-            url = m.group(1)
-            paper_id = url.split("/")[-1]
-            real_ids.add(paper_id)
-
-        # posted_pmids = alle echte kaarten
-        cleaned = sorted(real_ids)
-
-        log(f"[CLEAN] Total real cards: {len(cleaned)}")
-
-        # posted_pmids.txt opnieuw schrijven
-        posted_path = os.path.join(REPO_PATH, "posted_pmids.txt")
-        with open(posted_path, "w", encoding="utf-8") as f:
-            for pid in cleaned:
-                f.write(pid + "\n")
-
-        log("[CLEAN] posted_pmids.txt successfully rebuilt.")
 
 # MAIN
 
@@ -738,13 +734,10 @@ def main() -> None:
         return
 
     cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
-    inject_cards_into_index(cards_html)
+    all_cards_html = "\n\n".join(build_card_html(p) for p in (new_papers + cached_new))
+    inject_cards_into_index(all_cards_html)
+    inject_stats_into_index(stats)
 
-    # INJECT CACHED CARDS
-
-    if cached_new:
-        cached_html = "\n\n".join(build_card_html(p) for p in cached_new)
-        inject_cards_into_index(cached_html)
 
     # UPDATE SEEN — ONLY REAL CARDS
 

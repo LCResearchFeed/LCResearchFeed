@@ -124,6 +124,7 @@
 42069416
 42079673
 42138268
+42156560
 42158815
 42174604
 42191437
@@ -237,9 +238,17 @@ https://www.nature.com/articles/s41582-026-01243-6
 https://www.nature.com/articles/s41598-026-38800-4
 https://www.nature.com/articles/s41598-026-57064-6
 https://www.nature.com/articles/s41598-026-59934-5
+https://www.nature.com/articles/s43856-026-01761-w
 https://www.nature.com/articles/s44220-026-00675-9
+plrc-7c998bd678e2
+plrc-89c3214082dc
+plrc-a9a16276072b
+plrc-b49faa9fd027
+plrc-b93f314885be
+plrc-d8bd1a3bbb4f
 recover-a-causal-link-between-autoantibodies-and
 recover-differences-in-sars-cov-2-antigen-persis
+recover-evaluation-of-steroids-for-acute-covid-i
 recover-rationale-and-design-of-recover-energize
 recover-ssri/snri-and-long-covid-in-children-and
 recover-sustained-reduction-in-cardiopulmonary-f
