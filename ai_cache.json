@@ -6446,5 +6446,31 @@
     "review": true,
     "summary": "This review discusses the prevalence and impact of Long COVID among people with preexisting disabilities.",
     "reason": "The paper is a review focusing on the experiences and outcomes of individuals with preexisting disabilities who have developed Long COVID. It does not delve into specific mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "plrc-9a38813f00fb": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This review discusses the post-COVID condition, long COVID-19, and post-acute sequelae of SARS-CoV-2 infection (PASC), focusing on neurological sequelae. It highlights the lack of clear diagnostic methodologies or treatments for PASC.",
+    "reason": "The paper is a review that provides an overview of PASC without delving into specific mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "plrc-64d10fa6b7ef": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This systematic review and meta-analysis aimed to summarize the risk factors for long COVID in children and adolescents, identifying several factors associated with an increased or decreased risk of developing long-term sequelae post-COVID-19 infection.",
+    "reason": "The paper focuses on summarizing existing studies rather than delving into specific mechanisms, treatments, drugs, or lifestyle interventions."
   }
 }
