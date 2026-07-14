@@ -148,7 +148,6 @@
 42409655
 42421498
 42421939
-causal-link-between-autoantibodies-and-neurological-symptoms-long-covid
 europepmc-10.1101/2025.08.18.670908
 europepmc-10.1101/2025.10.15.25338065
 europepmc-10.12688/f1000research.173520.1
@@ -162,12 +161,8 @@ europepmc-10.21203/rs.3.rs-873830/v1
 europepmc-10.64898/2025.12.04.25341650
 europepmc-10.64898/2026.03.09.710460
 europepmc-10.64898/2026.04.27.721205
-evaluation-steroids-acute-covid-prevention-long-covid-children-ehr-and-pediatric
-rationale-and-design-recover-energize-platform-clinical-trial-interventions-exercise
 s41577-026-01326-x
 s41582-026-01243-6
 s41598-026-38800-4
 s43856-026-01761-w
 s44220-026-00675-9
-ssrisnri-and-long-covid-children-and-adolescents-neuropsychiatric-conditions-cohort
-sustained-reduction-cardiopulmonary-fitness-long-covid-report-recover-adult-cohort
