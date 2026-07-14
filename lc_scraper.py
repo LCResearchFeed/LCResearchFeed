@@ -454,7 +454,7 @@ def rebuild_posted_pmids_from_html():
 
     real_ids = set()
     for card in cards:
-        m = re.search(r'href="([^"]+)"', card)
+        m = re.search(r'<a[^>]+href="([^"]+)"', card, flags=re.DOTALL)
         if not m:
             continue
 
