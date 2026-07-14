@@ -15,7 +15,9 @@ def parse_any_date(raw: Optional[str]) -> Optional[datetime]:
 
     raw = raw.strip()
 
-    # ISO formats
+    # ----------------------------------------
+    # 1. ISO formats
+    # ----------------------------------------
     iso_formats = [
         "%Y-%m-%dT%H:%M:%SZ",
         "%Y-%m-%dT%H:%M:%S",
@@ -27,19 +29,25 @@ def parse_any_date(raw: Optional[str]) -> Optional[datetime]:
         except Exception:
             pass
 
-    # YYYY-MM-DD
+    # ----------------------------------------
+    # 2. YYYY-MM-DD
+    # ----------------------------------------
     try:
         return datetime.strptime(raw[:10], "%Y-%m-%d")
     except Exception:
         pass
 
-    # YYYY-MM
+    # ----------------------------------------
+    # 3. YYYY-MM
+    # ----------------------------------------
     try:
         return datetime.strptime(raw, "%Y-%m")
     except Exception:
         pass
 
-    # Text months
+    # ----------------------------------------
+    # 4. Text months
+    # ----------------------------------------
     text_months = {
         "Jan": 1, "January": 1,
         "Feb": 2, "February": 2,
@@ -56,26 +64,55 @@ def parse_any_date(raw: Optional[str]) -> Optional[datetime]:
     }
 
     parts = raw.split()
+
+    # ----------------------------------------
+    # 5. "Published: July 2024"
+    # ----------------------------------------
+    if raw.lower().startswith("published:"):
+        raw2 = raw.split(":", 1)[1].strip()
+        parts2 = raw2.split()
+
+        # Month + Year
+        if len(parts2) == 2 and parts2[0] in text_months:
+            try:
+                return datetime(int(parts2[1]), text_months[parts2[0]], 1)
+            except Exception:
+                pass
+
+        # Year only
+        if len(parts2) == 1 and parts2[0].isdigit():
+            return datetime(int(parts2[0]), 1, 1)
+
+    # ----------------------------------------
+    # 6. "14 July 2024"
+    # ----------------------------------------
     if len(parts) == 3 and parts[1] in text_months:
-        # e.g. "14 July 2024"
         try:
-            day = int(parts[0])
-            month = text_months[parts[1]]
-            year = int(parts[2])
-            return datetime(year, month, day)
+            return datetime(int(parts[2]), text_months[parts[1]], int(parts[0]))
         except Exception:
             pass
 
+    # ----------------------------------------
+    # 7. "July 2024"
+    # ----------------------------------------
+    if len(parts) == 2 and parts[0] in text_months and parts[1].isdigit():
+        try:
+            return datetime(int(parts[1]), text_months[parts[0]], 1)
+        except Exception:
+            pass
+
+    # ----------------------------------------
+    # 8. "2024 July"
+    # ----------------------------------------
     if len(parts) == 2 and parts[1] in text_months:
-        # e.g. "2024 July"
         try:
-            year = int(parts[0])
-            month = text_months[parts[1]]
-            return datetime(year, month, 1)
+            return datetime(int(parts[0]), text_months[parts[1]], 1)
         except Exception:
             pass
 
-    # Seasons
+    # ----------------------------------------
+    # 9. Seasons
+    # ----------------------------------------
     seasons = {
         "Winter": 1,
         "Spring": 3,
@@ -86,21 +123,32 @@ def parse_any_date(raw: Optional[str]) -> Optional[datetime]:
 
     if len(parts) == 2 and parts[1] in seasons:
         try:
-            year = int(parts[0])
-            month = seasons[parts[1]]
-            return datetime(year, month, 1)
+            return datetime(int(parts[0]), seasons[parts[1]], 1)
         except Exception:
             pass
 
-    # YYYY only
-    if len(raw) == 4 and raw.isdigit():
-        try:
-            return datetime.strptime(raw, "%Y")
-        except Exception:
-            pass
+    # ----------------------------------------
+    # 10. Ranges: "2024 Fall-Winter"
+    # ----------------------------------------
+    if "-" in raw:
+        left = raw.split("-")[0].strip()
+        parts_left = left.split()
+        if len(parts_left) == 2 and parts_left[1] in seasons:
+            try:
+                return datetime(int(parts_left[0]), seasons[parts_left[1]], 1)
+            except Exception:
+                pass
+
+    # ----------------------------------------
+    # 11. Extract ANY year → ALWAYS 01-01-YYYY
+    # ----------------------------------------
+    import re
+    m = re.search(r"\b(19|20)\d{2}\b", raw)
+    if m:
+        year = int(m.group())
+        return datetime(year, 1, 1)
 
     return None
-
 
 # ---------------------------------------------------------
 # Main fetcher

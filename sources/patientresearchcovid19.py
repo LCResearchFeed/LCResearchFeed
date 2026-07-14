@@ -6,17 +6,26 @@ import re
 import xml.etree.ElementTree as ET
 from difflib import SequenceMatcher
 from concurrent.futures import ThreadPoolExecutor
+import time
+import random
+from typing import Optional, List, Dict
 
 
+# ---------------------------------------------------------
+# Config
+# ---------------------------------------------------------
 SCHOLAR_URL = "https://scholar.google.com/citations?user=rUDHZgIAAAAJ"
 PUBMED_SEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 PUBMED_FETCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
 
+UA_LIST = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/123 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17 Safari/605.1.15",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/122 Safari/537.36",
+]
+
 HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "Chrome/120 Safari/537.36"
-    )
+    "User-Agent": random.choice(UA_LIST)
 }
 
 # Hard-coded fallback for PLRC papers that PubMed search struggles with
@@ -34,6 +43,9 @@ PLRC_MANUAL = {
 }
 
 
+# ---------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------
 def normalize_title(t: str) -> str:
     return re.sub(r"[^a-z0-9 ]", "", t.lower())
 
@@ -49,174 +61,130 @@ def safe_xml(text: str):
         return None
 
 
-def parse_date(article: ET.Element) -> datetime | None:
-    """
-    Universal PubMed-style date parser for PLRC.
-    Supports:
-    - ArticleDate (ISO)
-    - PubMedPubDate (Year/Month/Day, including text months)
-    - PubDate (Year/Month/Day or Year only)
-    - MedlineDate ("2024 Feb 14", "2024 Feb", "2024", "2024 Oct", "2024 Fall")
-    - DateCreated / DateCompleted / DateRevised
-    """
+# ---------------------------------------------------------
+# Universele datumparser
+# ---------------------------------------------------------
+def parse_date(raw: Optional[str]) -> Optional[datetime]:
+    if not raw:
+        return None
 
-    # -----------------------------
-    # Universal parser
-    # -----------------------------
-    def parse_any(raw: str | None) -> datetime | None:
-        if not raw:
-            return None
+    raw = raw.strip()
 
-        raw = raw.strip()
-
-        # ISO formats
-        iso_formats = [
-            "%Y-%m-%dT%H:%M:%SZ",
-            "%Y-%m-%dT%H:%M:%S",
-            "%Y-%m-%dT%H:%M:%S%z",
-        ]
-        for fmt in iso_formats:
-            try:
-                return datetime.strptime(raw, fmt)
-            except Exception:
-                pass
-
-        # YYYY-MM-DD
+    # 1. ISO formats
+    iso_formats = [
+        "%Y-%m-%dT%H:%M:%SZ",
+        "%Y-%m-%dT%H:%M:%S",
+        "%Y-%m-%dT%H:%M:%S%z",
+    ]
+    for fmt in iso_formats:
         try:
-            return datetime.strptime(raw[:10], "%Y-%m-%d")
+            return datetime.strptime(raw, fmt)
         except Exception:
             pass
 
-        # YYYY-MM
+    # 2. YYYY-MM-DD
+    try:
+        return datetime.strptime(raw[:10], "%Y-%m-%d")
+    except Exception:
+        pass
+
+    # 3. YYYY-MM
+    try:
+        return datetime.strptime(raw, "%Y-%m")
+    except Exception:
+        pass
+
+    # 4. Text months
+    text_months = {
+        "Jan": 1, "January": 1,
+        "Feb": 2, "February": 2,
+        "Mar": 3, "March": 3,
+        "Apr": 4, "April": 4,
+        "May": 5,
+        "Jun": 6, "June": 6,
+        "Jul": 7, "July": 7,
+        "Aug": 8, "August": 8,
+        "Sep": 9, "Sept": 9, "September": 9,
+        "Oct": 10, "October": 10,
+        "Nov": 11, "November": 11,
+        "Dec": 12, "December": 12,
+    }
+
+    parts = raw.split()
+
+    # 5. "Published: July 2024"
+    if raw.lower().startswith("published:"):
+        raw2 = raw.split(":", 1)[1].strip()
+        parts2 = raw2.split()
+
+        if len(parts2) == 2 and parts2[0] in text_months:
+            try:
+                return datetime(int(parts2[1]), text_months[parts2[0]], 1)
+            except Exception:
+                pass
+
+        if len(parts2) == 1 and parts2[0].isdigit():
+            return datetime(int(parts2[0]), 1, 1)
+
+    # 6. "14 July 2024"
+    if len(parts) == 3 and parts[1] in text_months:
         try:
-            return datetime.strptime(raw, "%Y-%m")
+            return datetime(int(parts[2]), text_months[parts[1]], int(parts[0]))
         except Exception:
             pass
 
-        # Text months
-        text_months = {
-            "Jan": 1, "January": 1,
-            "Feb": 2, "February": 2,
-            "Mar": 3, "March": 3,
-            "Apr": 4, "April": 4,
-            "May": 5,
-            "Jun": 6, "June": 6,
-            "Jul": 7, "July": 7,
-            "Aug": 8, "August": 8,
-            "Sep": 9, "Sept": 9, "September": 9,
-            "Oct": 10, "October": 10,
-            "Nov": 11, "November": 11,
-            "Dec": 12, "December": 12,
-        }
+    # 7. "July 2024"
+    if len(parts) == 2 and parts[0] in text_months and parts[1].isdigit():
+        try:
+            return datetime(int(parts[1]), text_months[parts[0]], 1)
+        except Exception:
+            pass
 
-        parts = raw.split()
+    # 8. "2024 July"
+    if len(parts) == 2 and parts[1] in text_months:
+        try:
+            return datetime(int(parts[0]), text_months[parts[1]], 1)
+        except Exception:
+            pass
 
-        # e.g. "14 July 2024"
-        if len(parts) == 3 and parts[1] in text_months:
+    # 9. Seasons
+    seasons = {
+        "Winter": 1,
+        "Spring": 3,
+        "Summer": 6,
+        "Autumn": 9,
+        "Fall": 9,
+    }
+
+    if len(parts) == 2 and parts[1] in seasons:
+        try:
+            return datetime(int(parts[0]), seasons[parts[1]], 1)
+        except Exception:
+            pass
+
+    # 10. Ranges: "2024 Fall-Winter"
+    if "-" in raw:
+        left = raw.split("-")[0].strip()
+        parts_left = left.split()
+        if len(parts_left) == 2 and parts_left[1] in seasons:
             try:
-                return datetime(int(parts[2]), text_months[parts[1]], int(parts[0]))
+                return datetime(int(parts_left[0]), seasons[parts_left[1]], 1)
             except Exception:
                 pass
 
-        # e.g. "2024 October"
-        if len(parts) == 2 and parts[1] in text_months:
-            try:
-                return datetime(int(parts[0]), text_months[parts[1]], 1)
-            except Exception:
-                pass
-
-        # Seasons
-        seasons = {
-            "Winter": 1,
-            "Spring": 3,
-            "Summer": 6,
-            "Autumn": 9,
-            "Fall": 9,
-        }
-
-        if len(parts) == 2 and parts[1] in seasons:
-            try:
-                return datetime(int(parts[0]), seasons[parts[1]], 1)
-            except Exception:
-                pass
-
-        # YYYY only
-        if len(raw) == 4 and raw.isdigit():
-            try:
-                return datetime.strptime(raw, "%Y")
-            except Exception:
-                pass
-
-        return None
-
-    # -----------------------------
-    # ArticleDate
-    # -----------------------------
-    y = article.findtext(".//ArticleDate/Year")
-    if y:
-        raw = f"{y} {article.findtext('.//ArticleDate/Month','1')} {article.findtext('.//ArticleDate/Day','1')}"
-        parsed = parse_any(raw)
-        if parsed:
-            return parsed
-
-    # -----------------------------
-    # PubMedPubDate
-    # -----------------------------
-    for tag in article.findall(".//PubMedPubDate"):
-        y = tag.findtext("Year")
-        m = tag.findtext("Month") or "1"
-        d = tag.findtext("Day") or "1"
-        raw = f"{y} {m} {d}"
-        parsed = parse_any(raw)
-        if parsed:
-            return parsed
-
-    # -----------------------------
-    # PubDate
-    # -----------------------------
-    y = article.findtext(".//PubDate/Year")
-    if y:
-        m = article.findtext(".//PubDate/Month") or "1"
-        d = article.findtext(".//PubDate/Day") or "1"
-        raw = f"{y} {m} {d}"
-        parsed = parse_any(raw)
-        if parsed:
-            return parsed
-
-    # -----------------------------
-    # MedlineDate
-    # -----------------------------
-    md = article.findtext(".//MedlineDate")
-    if md:
-        parsed = parse_any(md)
-        if parsed:
-            return parsed
-
-    # -----------------------------
-    # DateCreated / Completed / Revised
-    # -----------------------------
-    def parse_three(tag):
-        if not tag:
-            return None
-        y = tag.findtext("Year")
-        m = tag.findtext("Month")
-        d = tag.findtext("Day")
-        if y and m and d:
-            raw = f"{y} {m} {d}"
-            return parse_any(raw)
-        return None
-
-    for field in ["DateCreated", "DateCompleted", "DateRevised"]:
-        parsed = parse_three(article.find(f".//{field}"))
-        if parsed:
-            return parsed
+    # 11. ANY year → 01-01-YYYY
+    m = re.search(r"\b(19|20)\d{2}\b", raw)
+    if m:
+        year = int(m.group())
+        return datetime(year, 1, 1)
 
     return None
 
 
-
-def pubmed_search_terms(title: str):
-    """Two-stage search strategy."""
+# ---------------------------------------------------------
+# PubMed lookup
+# ---------------------------------------------------------
+def pubmed_search_terms(title: str) -> List[str]:
     return [
         f"{title} [Title]",
         f"{title} AND long covid",
@@ -235,7 +203,7 @@ def fetch_pubmed_record(pmid: str):
     return safe_xml(r.text)
 
 
-def pubmed_lookup(title: str):
+def pubmed_lookup(title: str) -> Dict:
     # Hard-coded PLRC fix
     if title in PLRC_MANUAL:
         return PLRC_MANUAL[title].copy()
@@ -251,16 +219,21 @@ def pubmed_lookup(title: str):
         "journal": "",
     }
 
-    pmids = []
+    pmids: List[str] = []
 
     # Multi-strategy search
     for term in pubmed_search_terms(title):
-        r = requests.get(
-            PUBMED_SEARCH_URL,
-            params={"db": "pubmed", "term": term, "retmax": 10, "retmode": "xml"},
-            headers=HEADERS,
-            timeout=20,
-        )
+        try:
+            r = requests.get(
+                PUBMED_SEARCH_URL,
+                params={"db": "pubmed", "term": term, "retmax": 10, "retmode": "xml"},
+                headers=HEADERS,
+                timeout=20,
+            )
+        except Exception as e:
+            print("[PLRC] PubMed search error:", e)
+            continue
+
         root = safe_xml(r.text)
         if root:
             pmids = [x.text for x in root.findall(".//Id")]
@@ -284,7 +257,6 @@ def pubmed_lookup(title: str):
         pub_title = rec.findtext(".//ArticleTitle", "") or ""
         score = title_similarity(title, pub_title)
 
-        # Heuristics
         mesh_terms = [
             x.text for x in rec.findall(".//MeshHeading/DescriptorName")
             if x is not None and x.text
@@ -301,7 +273,7 @@ def pubmed_lookup(title: str):
             best = rec
 
     if best is None or best_score < 0.75:
-        print("[DEBUG] No reliable PubMed match:", title, "score:", round(best_score, 2))
+        print("[PLRC] No reliable PubMed match:", title, "score:", round(best_score, 2))
         return empty
 
     pmid = best.findtext(".//PMID")
@@ -328,7 +300,15 @@ def pubmed_lookup(title: str):
             authors.append(f"{first or ''} {last}".strip())
 
     journal = best.findtext(".//Journal/Title", "") or ""
-    date = parse_date(best)
+
+    # Datum uit PubMed
+    # Gebruik dezelfde universele parser op MedlineDate / PubDate / ArticleDate
+    date_raw = (
+        best.findtext(".//PubDate/Year")
+        or best.findtext(".//ArticleDate")
+        or best.findtext(".//MedlineDate")
+    )
+    date = parse_date(date_raw) if date_raw else None
 
     return {
         "pmid": pmid,
@@ -342,29 +322,49 @@ def pubmed_lookup(title: str):
     }
 
 
-def fetch_scholar_page(offset=0):
-    r = requests.get(
-        SCHOLAR_URL + f"&cstart={offset}",
-        headers=HEADERS,
-        timeout=30,
-    )
-    r.raise_for_status()
+# ---------------------------------------------------------
+# Google Scholar fetch
+# ---------------------------------------------------------
+def fetch_scholar_page(offset: int = 0) -> Optional[BeautifulSoup]:
+    try:
+        r = requests.get(
+            SCHOLAR_URL + f"&cstart={offset}",
+            headers=HEADERS,
+            timeout=30,
+        )
+        r.raise_for_status()
+    except Exception as e:
+        print("[PLRC] Scholar request error:", e)
+        return None
+
+    if "/sorry/" in r.text.lower():
+        print("[PLRC] BLOCKED BY GOOGLE SCHOLAR CAPTCHA")
+        return None
+
     return BeautifulSoup(r.text, "html.parser")
 
 
-def fetch_plrc_papers(max_results=200):
+# ---------------------------------------------------------
+# Main PLRC fetcher
+# ---------------------------------------------------------
+def fetch_plrc_papers(max_results: int = 200) -> List[Dict]:
     print("[PLRC] Fetching Google Scholar PLRC profile...")
 
-    results = []
+    results: List[Dict] = []
     seen = set()
 
     for offset in range(0, max_results, 20):
         print("[DEBUG] Scholar offset:", offset)
         soup = fetch_scholar_page(offset)
-        items = soup.select("tr.gsc_a_tr")
+        if soup is None:
+            print("[PLRC] Stopping PLRC fetch due to Scholar error/block.")
+            break
 
+        items = soup.select("tr.gsc_a_tr") or []
         print("[DEBUG] Found:", len(items))
+
         if not items:
+            print("[PLRC] No items returned — likely end of list or block.")
             break
 
         for item in items:
@@ -405,29 +405,8 @@ def fetch_plrc_papers(max_results=200):
                 }
             )
 
+        # kleine pauze om Scholar niet te triggeren
+        time.sleep(1.5)
+
     print("[PLRC] Total papers:", len(results))
     return results
-
-#if __name__ == "__main__":
-#
-#    papers = fetch_plrc_papers(
-#        max_results=10
-#    )
-#
-#
-#    print(
-#        "\nAantal papers:",
-#        len(papers)
-#    )
-#
-#
-#    for p in papers:
-#
-#        print("=" * 80)
-#        print("Titel :", p["title"])
-#        print("Datum :", p["date"])
-#        print("PMID  :", p["pmid"])
-#        print("DOI   :", p["doi"])
-#        print("Journal:", p["journal"])
-#        print("URL   :", p["url"])
-#        print("Mesh  :", p["mesh"][:5])

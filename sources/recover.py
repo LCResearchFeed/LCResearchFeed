@@ -15,7 +15,23 @@ def parse_any_date(raw: str | None) -> datetime | None:
 
     raw = raw.strip()
 
-    # ISO formats
+    # ----------------------------------------
+    # 0. Extract ANY year first (for weird RECOVER formats)
+    # ----------------------------------------
+    import re
+    year_match = re.search(r"\b(19|20)\d{2}\b", raw)
+    if year_match:
+        year = int(year_match.group())
+
+        # If the string contains "online", "updated", "ahead", "preprint", etc.
+        if any(x in raw.lower() for x in [
+            "online", "updated", "ahead", "preprint", "release", "version"
+        ]):
+            return datetime(year, 1, 1)
+
+    # ----------------------------------------
+    # 1. ISO formats
+    # ----------------------------------------
     iso_formats = [
         "%Y-%m-%dT%H:%M:%SZ",
         "%Y-%m-%dT%H:%M:%S",
@@ -27,19 +43,25 @@ def parse_any_date(raw: str | None) -> datetime | None:
         except Exception:
             pass
 
-    # YYYY-MM-DD
+    # ----------------------------------------
+    # 2. YYYY-MM-DD
+    # ----------------------------------------
     try:
         return datetime.strptime(raw[:10], "%Y-%m-%d")
     except Exception:
         pass
 
-    # YYYY-MM
+    # ----------------------------------------
+    # 3. YYYY-MM
+    # ----------------------------------------
     try:
         return datetime.strptime(raw, "%Y-%m")
     except Exception:
         pass
 
-    # Text months
+    # ----------------------------------------
+    # 4. Text months
+    # ----------------------------------------
     text_months = {
         "Jan": 1, "January": 1,
         "Feb": 2, "February": 2,
@@ -57,36 +79,31 @@ def parse_any_date(raw: str | None) -> datetime | None:
 
     parts = raw.split()
 
-    # e.g. "October 3, 2024"
+    # "October 3, 2024"
     if len(parts) == 3 and "," in parts[1]:
         try:
             return datetime.strptime(raw, "%B %d, %Y")
         except Exception:
             pass
 
-    # e.g. "Oct 3, 2024"
+    # "Oct 3, 2024"
     if len(parts) == 3 and "," in parts[1]:
         try:
             return datetime.strptime(raw, "%b %d, %Y")
         except Exception:
             pass
 
-    # e.g. "14 July 2024"
+    # "14 July 2024"
     if len(parts) == 3 and parts[1] in text_months:
         try:
-            day = int(parts[0])
-            month = text_months[parts[1]]
-            year = int(parts[2])
-            return datetime(year, month, day)
+            return datetime(int(parts[2]), text_months[parts[1]], int(parts[0]))
         except Exception:
             pass
 
-    # e.g. "2024 October"
+    # "2024 October"
     if len(parts) == 2 and parts[1] in text_months:
         try:
-            year = int(parts[0])
-            month = text_months[parts[1]]
-            return datetime(year, month, 1)
+            return datetime(int(parts[0]), text_months[parts[1]], 1)
         except Exception:
             pass
 
@@ -101,21 +118,17 @@ def parse_any_date(raw: str | None) -> datetime | None:
 
     if len(parts) == 2 and parts[1] in seasons:
         try:
-            year = int(parts[0])
-            month = seasons[parts[1]]
-            return datetime(year, month, 1)
+            return datetime(int(parts[0]), seasons[parts[1]], 1)
         except Exception:
             pass
 
-    # YYYY only
-    if len(raw) == 4 and raw.isdigit():
-        try:
-            return datetime.strptime(raw, "%Y")
-        except Exception:
-            pass
+    # ----------------------------------------
+    # Final fallback: ANY year → 01-01-YYYY
+    # ----------------------------------------
+    if year_match:
+        return datetime(year, 1, 1)
 
     return None
-
 
 # ---------------------------------------------------------
 # Main fetcher
