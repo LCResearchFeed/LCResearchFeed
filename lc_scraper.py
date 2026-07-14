@@ -450,11 +450,15 @@ def rebuild_posted_pmids_from_html():
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
         html = f.read()
 
-    cards = re.findall(r'<div class="paper-card"[\s\S]*?</div>', html)
+    cards = re.findall(
+        r'<div[^>]*class="paper-card"[^>]*>[\s\S]*?<a[^>]+href="[^"]+"',
+        html,
+        flags=re.DOTALL
+    )
 
     real_ids = set()
     for card in cards:
-        m = re.search(r'<a[^>]+href="([^"]+)"', card, flags=re.DOTALL)
+        m = re.search(r'<a[^>]+href="([^"]+)"', card)
         if not m:
             continue
 
@@ -462,7 +466,7 @@ def rebuild_posted_pmids_from_html():
 
         # PubMed → PMID
         if "pubmed.ncbi.nlm.nih.gov" in url:
-            m2 = re.search(r'pubmed\.ncbi\.nlm\.nih\.gov/(\d+)', url)
+            m2 = re.search(r'/(\d+)/?', url)
             if m2:
                 real_ids.add(m2.group(1))
                 continue
@@ -504,6 +508,7 @@ def rebuild_posted_pmids_from_html():
             f.write(pid + "\n")
 
     log("[CLEAN] posted_pmids.txt successfully rebuilt.")
+
 
 # GIT
 

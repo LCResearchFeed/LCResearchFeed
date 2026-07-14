@@ -5627,5 +5627,18 @@
     "review": true,
     "summary": "This review discusses the prevalence and impact of Long COVID among people with preexisting disabilities.",
     "reason": "The paper is a review focusing on the experiences and impacts of Long COVID in individuals with preexisting disabilities, without delving into specific mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "32471782": {
+    "score": 75,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This case series describes four previously healthy children with confirmed COVID-19 infection presenting to the Pediatric Emergency Department (PED) with prolonged fever and abrupt onset of hemodynamic instability, indicative of a post-infectious cytokine release syndrome.",
+    "reason": "The paper is a case series that discusses clinical features of a specific condition in children without delving into mechanisms or treatments."
   }
 }
