@@ -303,6 +303,7 @@ def build_card_html(p: dict) -> str:
     if not p.get("title") or not p.get("url"):
         return ""
 
+    # ✔ Abstract mag leeg zijn → fallback gebruiken
     abstract = p.get("abstract") or p.get("ai_summary") or "No abstract available."
 
     source = (p.get("source", "other") or "other").lower()
@@ -326,7 +327,9 @@ def build_card_html(p: dict) -> str:
     category = category_raw.lower()
     group = (p.get("ai_mechanistic_group") or "").lower()
 
-    full_abstract = (p.get("abstract", "") or "").replace('"', '&quot;').replace("'", "&#39;")
+    # ✔ Abstract mag leeg zijn → fallback hierboven al toegepast
+    full_abstract = abstract.replace('"', '&quot;').replace("'", "&#39;")
+
     ai_summary = (p.get("ai_summary", "") or "").replace('"', '&quot;').replace("'", "&#39;")
 
     date_obj = p.get("date")
@@ -358,11 +361,12 @@ def build_card_html(p: dict) -> str:
         Show abstract
     </button>
 
-    <p class="abstract hidden" data-full="{full_abstract}">{p.get('abstract','')}</p>
+    <p class="abstract hidden" data-full="{full_abstract}">{abstract}</p>
 
     <a href="{p.get('url','')}" target="_blank">Read paper</a>
 </div>
 """.strip()
+
 
 # STATISTICS
 

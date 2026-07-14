@@ -1,37 +1,28 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import re
+from typing import Optional, List, Dict
+
 
 BASE_URL = "https://recovercovid.org"
 RECOVER_URL = f"{BASE_URL}/publications"
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/123 Safari/537.36"
+}
+
 
 # ---------------------------------------------------------
-# Universal date parser (used by ALL sources)
+# Universele datumparser
 # ---------------------------------------------------------
-def parse_any_date(raw: str | None) -> datetime | None:
+def parse_any_date(raw: Optional[str]) -> Optional[datetime]:
     if not raw:
         return None
 
     raw = raw.strip()
 
-    # ----------------------------------------
-    # 0. Extract ANY year first (for weird RECOVER formats)
-    # ----------------------------------------
-    import re
-    year_match = re.search(r"\b(19|20)\d{2}\b", raw)
-    if year_match:
-        year = int(year_match.group())
-
-        # If the string contains "online", "updated", "ahead", "preprint", etc.
-        if any(x in raw.lower() for x in [
-            "online", "updated", "ahead", "preprint", "release", "version"
-        ]):
-            return datetime(year, 1, 1)
-
-    # ----------------------------------------
-    # 1. ISO formats
-    # ----------------------------------------
+    # ISO
     iso_formats = [
         "%Y-%m-%dT%H:%M:%SZ",
         "%Y-%m-%dT%H:%M:%S",
@@ -43,67 +34,48 @@ def parse_any_date(raw: str | None) -> datetime | None:
         except Exception:
             pass
 
-    # ----------------------------------------
-    # 2. YYYY-MM-DD
-    # ----------------------------------------
+    # YYYY-MM-DD
     try:
         return datetime.strptime(raw[:10], "%Y-%m-%d")
     except Exception:
         pass
 
-    # ----------------------------------------
-    # 3. YYYY-MM
-    # ----------------------------------------
+    # YYYY-MM
     try:
         return datetime.strptime(raw, "%Y-%m")
     except Exception:
         pass
 
-    # ----------------------------------------
-    # 4. Text months
-    # ----------------------------------------
-    text_months = {
-        "Jan": 1, "January": 1,
-        "Feb": 2, "February": 2,
-        "Mar": 3, "March": 3,
-        "Apr": 4, "April": 4,
-        "May": 5,
-        "Jun": 6, "June": 6,
-        "Jul": 7, "July": 7,
-        "Aug": 8, "August": 8,
-        "Sep": 9, "Sept": 9, "September": 9,
-        "Oct": 10, "October": 10,
-        "Nov": 11, "November": 11,
-        "Dec": 12, "December": 12,
+    # Text months
+    months = {
+        "January": 1, "February": 2, "March": 3, "April": 4,
+        "May": 5, "June": 6, "July": 7, "August": 8,
+        "September": 9, "October": 10, "November": 11, "December": 12,
+        "Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4,
+        "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9,
+        "Oct": 10, "Nov": 11, "Dec": 12,
     }
 
     parts = raw.split()
 
-    # "October 3, 2024"
-    if len(parts) == 3 and "," in parts[1]:
-        try:
-            return datetime.strptime(raw, "%B %d, %Y")
-        except Exception:
-            pass
-
-    # "Oct 3, 2024"
-    if len(parts) == 3 and "," in parts[1]:
-        try:
-            return datetime.strptime(raw, "%b %d, %Y")
-        except Exception:
-            pass
-
     # "14 July 2024"
-    if len(parts) == 3 and parts[1] in text_months:
+    if len(parts) == 3 and parts[1] in months:
         try:
-            return datetime(int(parts[2]), text_months[parts[1]], int(parts[0]))
+            return datetime(int(parts[2]), months[parts[1]], int(parts[0]))
         except Exception:
             pass
 
-    # "2024 October"
-    if len(parts) == 2 and parts[1] in text_months:
+    # "July 2024"
+    if len(parts) == 2 and parts[0] in months and parts[1].isdigit():
         try:
-            return datetime(int(parts[0]), text_months[parts[1]], 1)
+            return datetime(int(parts[1]), months[parts[0]], 1)
+        except Exception:
+            pass
+
+    # "2024 July"
+    if len(parts) == 2 and parts[1] in months:
+        try:
+            return datetime(int(parts[0]), months[parts[1]], 1)
         except Exception:
             pass
 
@@ -122,29 +94,76 @@ def parse_any_date(raw: str | None) -> datetime | None:
         except Exception:
             pass
 
-    # ----------------------------------------
-    # Final fallback: ANY year → 01-01-YYYY
-    # ----------------------------------------
-    if year_match:
-        return datetime(year, 1, 1)
+    # Ranges: "2024 Fall-Winter"
+    if "-" in raw:
+        left = raw.split("-")[0].strip()
+        parts_left = left.split()
+        if len(parts_left) == 2 and parts_left[1] in seasons:
+            try:
+                return datetime(int(parts_left[0]), seasons[parts_left[1]], 1)
+            except Exception:
+                pass
+
+    # ANY year → 01-01-YYYY
+    m = re.search(r"\b(19|20)\d{2}\b", raw)
+    if m:
+        return datetime(int(m.group()), 1, 1)
 
     return None
 
+
 # ---------------------------------------------------------
-# Main fetcher
+# PubMed fallback (alleen datum)
 # ---------------------------------------------------------
-def fetch_recover_papers(max_results: int = 200) -> list[dict]:
+def fetch_pubmed_date(title: str) -> Optional[datetime]:
+    try:
+        r = requests.get(
+            "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi",
+            params={"db": "pubmed", "term": title, "retmax": 1},
+            timeout=10,
+        )
+        r.raise_for_status()
+        pmids = re.findall(r"<Id>(\d+)</Id>", r.text)
+        if not pmids:
+            return None
+
+        pmid = pmids[0]
+
+        r2 = requests.get(
+            "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi",
+            params={"db": "pubmed", "id": pmid, "retmode": "xml"},
+            timeout=10,
+        )
+        r2.raise_for_status()
+
+        # Zoek PubDate / MedlineDate
+        m = re.search(r"<PubDate>.*?<Year>(\d+)</Year>.*?<Month>(.*?)</Month>", r2.text, re.S)
+        if m:
+            year = int(m.group(1))
+            month = m.group(2)
+            return parse_any_date(f"{year} {month}")
+
+        m2 = re.search(r"<MedlineDate>(.*?)</MedlineDate>", r2.text)
+        if m2:
+            return parse_any_date(m2.group(1))
+
+    except Exception:
+        return None
+
+    return None
+
+
+# ---------------------------------------------------------
+# Main RECOVER fetcher
+# ---------------------------------------------------------
+def fetch_recover_papers(max_results: int = 200) -> List[Dict]:
     print("[RECOVER] Fetching RECOVER publications...")
 
     try:
-        r = requests.get(
-            RECOVER_URL,
-            timeout=20,
-            headers={"User-Agent": "Mozilla/5.0"}
-        )
+        r = requests.get(RECOVER_URL, headers=HEADERS, timeout=20)
         r.raise_for_status()
     except Exception as e:
-        print(f"[RECOVER] ERROR fetching page: {e}")
+        print("[RECOVER] ERROR fetching page:", e)
         return []
 
     soup = BeautifulSoup(r.text, "html.parser")
@@ -158,7 +177,6 @@ def fetch_recover_papers(max_results: int = 200) -> list[dict]:
 
     for item in items[:max_results]:
         try:
-            # Title + URL
             title_el = item.select_one("h3 a")
             if not title_el:
                 continue
@@ -168,43 +186,50 @@ def fetch_recover_papers(max_results: int = 200) -> list[dict]:
             if url and not url.startswith("http"):
                 url = BASE_URL + url
 
-            abstract = ""
-            pub_date = None
-
             # Fetch detail page
             try:
-                detail = requests.get(
-                    url,
-                    timeout=20,
-                    headers={"User-Agent": "Mozilla/5.0"}
-                )
+                detail = requests.get(url, headers=HEADERS, timeout=20)
                 detail.raise_for_status()
                 dsoup = BeautifulSoup(detail.text, "html.parser")
-
-                # Abstract
-                body = dsoup.select_one("div.field--name-body")
-                if body:
-                    abstract = body.get_text(strip=True)
-
-                # Date
-                date_tag = dsoup.select_one("time")
-                if date_tag:
-                    raw_date = date_tag.get("datetime") or date_tag.get_text(strip=True)
-                    pub_date = parse_any_date(raw_date)
-
             except Exception as e:
-                print(f"[RECOVER] WARNING: Could not fetch detail page: {e}")
-
-            # Skip papers without valid date
-            if pub_date is None:
-                print(f"[RECOVER] Skipping paper without valid date: {title[:50]}")
+                print("[RECOVER] WARNING: Could not fetch detail page:", e)
                 continue
 
-            # ID
-            paper_id = (
-                "recover-" +
-                title[:40].replace(" ", "-").replace("/", "-").lower()
-            )
+            # 1. Try <time>
+            date_tag = dsoup.select_one("time")
+            pub_date = None
+
+            if date_tag:
+                raw_date = date_tag.get("datetime") or date_tag.get_text(strip=True)
+                pub_date = parse_any_date(raw_date)
+
+            # 2. Fallback: zoek maand + jaar in tekst
+            if pub_date is None:
+                text = dsoup.get_text(" ", strip=True)
+                m = re.search(
+                    r"(January|February|March|April|May|June|July|August|September|October|November|December)\s+20\d{2}",
+                    text,
+                    re.I,
+                )
+                if m:
+                    pub_date = parse_any_date(m.group())
+
+            # 3. PubMed fallback
+            if pub_date is None:
+                pub_date = fetch_pubmed_date(title)
+
+            # 4. Als nog steeds geen datum → skip
+            if pub_date is None:
+                print("[RECOVER] Skipping paper without valid date:", title[:50])
+                continue
+
+            # Abstract
+            abstract = ""
+            body = dsoup.select_one("div.field--name-body")
+            if body:
+                abstract = body.get_text(strip=True)
+
+            paper_id = "recover-" + re.sub(r"[^a-z0-9]+", "-", title.lower())[:40]
 
             results.append({
                 "id": paper_id,
@@ -217,8 +242,8 @@ def fetch_recover_papers(max_results: int = 200) -> list[dict]:
             })
 
         except Exception as e:
-            print(f"[RECOVER] ERROR parsing item: {e}")
+            print("[RECOVER] ERROR parsing item:", e)
             continue
 
-    print(f"[RECOVER] Parsed papers: {len(results)}")
+    print("[RECOVER] Parsed papers:", len(results))
     return results

@@ -47,10 +47,10 @@
 38593220
 38668888
 38793604
+38947087
 39236463
 39243697
 39287247
-39433942
 39434512
 39454992
 39628044
@@ -86,8 +86,13 @@
 42399536
 42421498
 42421939
+causal-link-between-autoantibodies-and-neurological-symptoms-long-covid
+evaluation-steroids-acute-covid-prevention-long-covid-children-ehr-and-pediatric
+rationale-and-design-recover-energize-platform-clinical-trial-interventions-exercise
 s41577-026-01326-x
 s41582-026-01243-6
 s41598-026-38800-4
 s43856-026-01761-w
 s44220-026-00675-9
+ssrisnri-and-long-covid-children-and-adolescents-neuropsychiatric-conditions-cohort
+sustained-reduction-cardiopulmonary-fitness-long-covid-report-recover-adult-cohort
