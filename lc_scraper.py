@@ -246,10 +246,6 @@ NOISE_TERMS = [
 
 def _contains_any(text: str, terms: list[str]) -> bool:
     t = text.lower()
-    return any(kw in t for kw in t for kw in terms)
-
-def _contains_any(text: str, terms: list[str]) -> bool:
-    t = text.lower()
     return any(kw in t for kw in terms)
 
 def is_valid_candidate_pubmed_nature(p: dict) -> bool:
@@ -430,7 +426,7 @@ def inject_badge_stats(stats):
 
     updated_date = datetime.now().strftime("%Y-%m-%d")
 
-    real_cards = re.findall(r'<div class="paper-card"[^>]*>', html)
+    real_cards = re.findall(r'<div class="paper-card"[\s\S]*?</div>', html)
     total = len(real_cards)
 
     html = re.sub(
@@ -454,7 +450,7 @@ def rebuild_posted_pmids_from_html():
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
         html = f.read()
 
-    cards = re.findall(r'<div class="paper-card"[^>]*>', html)
+    cards = re.findall(r'<div class="paper-card"[\s\S]*?</div>', html)
 
     real_ids = set()
     for card in cards:

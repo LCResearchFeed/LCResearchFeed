@@ -5562,5 +5562,44 @@
     "review": true,
     "summary": "The paper examines the heterogeneity of adoption and use of U09.9, the ICD-10-CM code for 'Post COVID-19 condition, unspecified,' in patients with Long COVID in the US. It characterizes co-occurring diagnoses, procedures, and medications associated with this code and highlights demographic disparities.",
     "reason": "The paper focuses on the diagnostic coding of Long COVID rather than discussing mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "37702769": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper reviews current knowledge on the variability of SARS-CoV-2 infection in children, focusing on milder acute courses compared to adults and susceptibility to post-infectious complications like MIS-C, myocarditis, neuroinflammation, and long COVID. It highlights recent findings related to host factors such as HLA.",
+    "reason": "The paper is a review of current knowledge without specific focus on mechanisms or treatments for long COVID."
+  },
+  "37543809": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This narrative review synthesizes evidence from existing studies to assess the relationship between SARS-CoV-2 infections and multisystem inflammatory syndrome in children (MIS-C) among children. It aims to provide a better-comprehended review covering pertinent material and data on this topic.",
+    "reason": "The paper is focused on reviewing the relationship between SARS-CoV-2 infections and MIS-C, which does not directly discuss long COVID symptoms or mechanisms."
+  },
+  "plrc-2c2762d1342e": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper advocates for routine patient review in long COVID research, emphasizing the importance of ongoing assessment and management.",
+    "reason": "The focus is on the need for regular reviews rather than discussing specific mechanisms, treatments, or lifestyle interventions."
   }
 }
