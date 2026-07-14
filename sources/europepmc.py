@@ -9,16 +9,6 @@ API_URL = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
 # Robust EuropePMC date parser (NO fallback to today)
 # ---------------------------------------------------------
 def parse_europepmc_date(raw: Optional[str]) -> Optional[datetime]:
-    """
-    Parse EuropePMC date formats.
-    Returns None if the date cannot be parsed.
-    Supported formats:
-        - YYYY
-        - YYYY-MM
-        - YYYY-MM-DD
-        - ISO timestamps with Z or timezone
-    """
-
     if not raw:
         return None
 
@@ -43,20 +33,62 @@ def parse_europepmc_date(raw: Optional[str]) -> Optional[datetime]:
         pass
 
     # YYYY-MM
-    if len(raw) == 7:
+    try:
+        return datetime.strptime(raw, "%Y-%m")
+    except Exception:
+        pass
+
+    # Text months (e.g. "2024 Oct")
+    text_months = {
+        "Jan": 1, "January": 1,
+        "Feb": 2, "February": 2,
+        "Mar": 3, "March": 3,
+        "Apr": 4, "April": 4,
+        "May": 5,
+        "Jun": 6, "June": 6,
+        "Jul": 7, "July": 7,
+        "Aug": 8, "August": 8,
+        "Sep": 9, "Sept": 9, "September": 9,
+        "Oct": 10, "October": 10,
+        "Nov": 11, "November": 11,
+        "Dec": 12, "December": 12,
+    }
+
+    parts = raw.split()
+    if len(parts) == 2 and parts[1] in text_months:
         try:
-            return datetime.strptime(raw, "%Y-%m")
+            year = int(parts[0])
+            month = text_months[parts[1]]
+            return datetime(year, month, 1)
         except Exception:
             pass
 
-    # YYYY
-    if len(raw) == 4:
+    # Seasons (EuropePMC sometimes uses these)
+    seasons = {
+        "Winter": 1,   # Jan
+        "Spring": 3,   # Mar
+        "Summer": 6,   # Jun
+        "Autumn": 9,   # Sep
+        "Fall": 9,     # Sep
+    }
+
+    if len(parts) == 2 and parts[1] in seasons:
+        try:
+            year = int(parts[0])
+            month = seasons[parts[1]]
+            return datetime(year, month, 1)
+        except Exception:
+            pass
+
+    # YYYY only
+    if len(raw) == 4 and raw.isdigit():
         try:
             return datetime.strptime(raw, "%Y")
         except Exception:
             pass
 
     return None
+
 
 
 # ---------------------------------------------------------

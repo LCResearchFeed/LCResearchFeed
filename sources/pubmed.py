@@ -16,58 +16,136 @@ def log(msg: str):
 # ---------------------------------------------------------
 def parse_pubmed_date(article) -> Optional[datetime]:
     """
-    Parse PubMed XML date fields.
-    Returns None if no valid date is found.
-    Supports:
-        - PubDate
-        - ArticleDate (ISO)
-        - MedlineDate ("2024 Feb 14", "2024 Feb", "2024")
-        - DateCreated
-        - DateCompleted
-        - DateRevised
+    Robust PubMed date parser with support for:
+    - PubDate (Year/Month/Day, including text months)
+    - ArticleDate (ISO)
+    - MedlineDate ("2024 Feb 14", "2024 Feb", "2024", "2024 Oct", "2024 Fall")
+    - DateCreated / DateCompleted / DateRevised
     """
 
-    # 1. PubDate (preferred)
-    pub = article.find("PubDate")
-    if pub:
-        y = pub.find("Year")
-        m = pub.find("Month")
-        d = pub.find("Day")
-        if y:
-            year = y.text.strip()
-            month = (m.text.strip() if m else "01")
-            day = (d.text.strip() if d else "01")
-            try:
-                return datetime.strptime(f"{year}-{month}-{day}", "%Y-%m-%d")
-            except Exception:
-                pass
+    # -----------------------------
+    # Helper: universal date parser
+    # -----------------------------
+    def parse_any(raw: Optional[str]) -> Optional[datetime]:
+        if not raw:
+            return None
 
-    # 2. ArticleDate (ISO)
-    ad = article.find("ArticleDate")
-    if ad:
-        raw = ad.text.strip()
+        raw = raw.strip()
+
+        # ISO formats
         iso_formats = [
-            "%Y-%m-%d",
             "%Y-%m-%dT%H:%M:%SZ",
             "%Y-%m-%dT%H:%M:%S",
+            "%Y-%m-%dT%H:%M:%S%z",
         ]
         for fmt in iso_formats:
-            try:
-                return datetime.strptime(raw[:len(fmt)], fmt)
-            except Exception:
-                pass
-
-    # 3. MedlineDate ("2024 Feb 14", "2024 Feb", "2024")
-    md = article.find("MedlineDate")
-    if md:
-        raw = md.text.strip()
-        for fmt in ("%Y %b %d", "%Y %b", "%Y"):
             try:
                 return datetime.strptime(raw, fmt)
             except Exception:
                 pass
 
-    # Helper for DateCreated / DateCompleted / DateRevised
+        # YYYY-MM-DD
+        try:
+            return datetime.strptime(raw[:10], "%Y-%m-%d")
+        except Exception:
+            pass
+
+        # YYYY-MM
+        try:
+            return datetime.strptime(raw, "%Y-%m")
+        except Exception:
+            pass
+
+        # Text months
+        text_months = {
+            "Jan": 1, "January": 1,
+            "Feb": 2, "February": 2,
+            "Mar": 3, "March": 3,
+            "Apr": 4, "April": 4,
+            "May": 5,
+            "Jun": 6, "June": 6,
+            "Jul": 7, "July": 7,
+            "Aug": 8, "August": 8,
+            "Sep": 9, "Sept": 9, "September": 9,
+            "Oct": 10, "October": 10,
+            "Nov": 11, "November": 11,
+            "Dec": 12, "December": 12,
+        }
+
+        parts = raw.split()
+        if len(parts) == 2 and parts[1] in text_months:
+            try:
+                return datetime(int(parts[0]), text_months[parts[1]], 1)
+            except Exception:
+                pass
+
+        # Seasons
+        seasons = {
+            "Winter": 1,
+            "Spring": 3,
+            "Summer": 6,
+            "Autumn": 9,
+            "Fall": 9,
+        }
+
+        if len(parts) == 2 and parts[1] in seasons:
+            try:
+                return datetime(int(parts[0]), seasons[parts[1]], 1)
+            except Exception:
+                pass
+
+        # YYYY only
+        if len(raw) == 4 and raw.isdigit():
+            try:
+                return datetime.strptime(raw, "%Y")
+            except Exception:
+                pass
+
+        return None
+
+    # -----------------------------
+    # 1. PubDate
+    # -----------------------------
+    pub = article.find("PubDate")
+    if pub:
+        y = pub.find("Year")
+        m = pub.find("Month")
+        d = pub.find("Day")
+
+        if y:
+            year = y.text.strip()
+            month = m.text.strip() if m else "01"
+            day = d.text.strip() if d else "01"
+
+            # Month may be text ("Oct")
+            raw = f"{year} {month} {day}"
+            parsed = parse_any(raw)
+            if parsed:
+                return parsed
+
+    # -----------------------------
+    # 2. ArticleDate (ISO)
+    # -----------------------------
+    ad = article.find("ArticleDate")
+    if ad:
+        raw = ad.text.strip()
+        parsed = parse_any(raw)
+        if parsed:
+            return parsed
+
+    # -----------------------------
+    # 3. MedlineDate
+    # -----------------------------
+    md = article.find("MedlineDate")
+    if md:
+        raw = md.text.strip()
+        parsed = parse_any(raw)
+        if parsed:
+            return parsed
+
+    # -----------------------------
+    # Helper for DateCreated / Completed / Revised
+    # -----------------------------
     def parse_three(tag):
         if not tag:
             return None
@@ -75,13 +153,8 @@ def parse_pubmed_date(article) -> Optional[datetime]:
         m = tag.find("Month")
         d = tag.find("Day")
         if y and m and d:
-            try:
-                return datetime.strptime(
-                    f"{y.text.strip()}-{m.text.strip()}-{d.text.strip()}",
-                    "%Y-%m-%d"
-                )
-            except Exception:
-                return None
+            raw = f"{y.text.strip()} {m.text.strip()} {d.text.strip()}"
+            return parse_any(raw)
         return None
 
     # 4. DateCreated
@@ -99,8 +172,8 @@ def parse_pubmed_date(article) -> Optional[datetime]:
     if rev:
         return rev
 
-    # No valid date found
     return None
+
 
 
 # ---------------------------------------------------------
