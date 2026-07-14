@@ -457,9 +457,44 @@ def rebuild_posted_pmids_from_html():
         m = re.search(r'href="([^"]+)"', card)
         if not m:
             continue
-        url = m.group(1)
-        paper_id = url.split("/")[-1]
-        real_ids.add(paper_id)
+
+        url = m.group(1).strip()
+
+        # PubMed → PMID
+        if "pubmed.ncbi.nlm.nih.gov" in url:
+            m2 = re.search(r'pubmed\.ncbi\.nlm\.nih\.gov/(\d+)', url)
+            if m2:
+                real_ids.add(m2.group(1))
+                continue
+
+        # DOI → europepmc-DOI
+        if "doi.org" in url:
+            m2 = re.search(r'doi\.org/(.+)', url)
+            if m2:
+                real_ids.add("europepmc-" + m2.group(1))
+                continue
+
+        # EuropePMC → europepmc-PMID
+        if "europepmc" in url:
+            m2 = re.search(r'/(\d+)$', url)
+            if m2:
+                real_ids.add("europepmc-" + m2.group(1))
+                continue
+
+        # Nature → slug
+        if "nature.com/articles" in url:
+            slug = url.split("/")[-1]
+            real_ids.add(slug)
+            continue
+
+        # RECOVER → slug
+        if "recovercovid.org/publications" in url:
+            slug = url.split("/")[-1]
+            real_ids.add(slug)
+            continue
+
+        # fallback → volledige URL
+        real_ids.add(url)
 
     cleaned = sorted(real_ids)
 

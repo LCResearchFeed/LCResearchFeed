@@ -5601,5 +5601,31 @@
     "review": true,
     "summary": "The paper advocates for routine patient review in long COVID research, emphasizing the importance of ongoing assessment and management.",
     "reason": "The focus is on the need for regular reviews rather than discussing specific mechanisms, treatments, or lifestyle interventions."
+  },
+  "plrc-9a38813f00fb": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This review discusses the post-COVID condition, long COVID-19, and post-acute sequelae of SARS-CoV-2 infection (PASC), focusing on neurological sequelae. It highlights the lack of clear diagnostic methodologies or treatments for PASC.",
+    "reason": "The paper is a review that provides an overview of PASC without delving into specific mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "plrc-a9a16276072b": {
+    "score": 60,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This review discusses the prevalence and impact of Long COVID among people with preexisting disabilities.",
+    "reason": "The paper is a review focusing on the experiences and impacts of Long COVID in individuals with preexisting disabilities, without delving into specific mechanisms, treatments, drugs, or lifestyle interventions."
   }
 }
