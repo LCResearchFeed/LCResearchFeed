@@ -5536,5 +5536,31 @@
     "review": true,
     "summary": "The paper discusses serology test results and other characteristics of patients with persistent COVID-19 symptoms.",
     "reason": "This is a review article focusing on the characteristics of patients with long COVID, which falls under the category of a review."
+  },
+  "plrc-27f7600e4f8b": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This interdisciplinary review synthesizes the state of scientific evidence on long COVID, assesses its impacts on human health, health systems, the economy, and global health metrics, and provides a forward-looking research and policy roadmap.",
+    "reason": "The paper is primarily a review that discusses the prevalence, mechanisms, and impacts of long COVID without delving deeply into specific mechanisms or treatments."
+  },
+  "plrc-eb140d0ef53f": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper examines the heterogeneity of adoption and use of U09.9, the ICD-10-CM code for 'Post COVID-19 condition, unspecified,' in patients with Long COVID in the US. It characterizes co-occurring diagnoses, procedures, and medications associated with this code and highlights demographic disparities.",
+    "reason": "The paper focuses on the diagnostic coding of Long COVID rather than discussing mechanisms, treatments, drugs, or lifestyle interventions."
   }
 }

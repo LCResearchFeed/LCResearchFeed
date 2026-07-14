@@ -44,7 +44,6 @@ def log(msg: str) -> None:
 # PREFILTER
 
 LC_TERMS = [
-    # Core Long COVID terms
     "long covid",
     "long-covid",
     "long COVID syndrome",
@@ -55,24 +54,18 @@ LC_TERMS = [
     "post COVID condition",
     "post-COVID-19 condition",
     "PCC",
-
-    # PASC terminology
     "PASC",
     "post-acute sequelae",
     "post-acute sequelae of SARS-CoV-2 infection",
     "post-acute COVID-19 syndrome",
     "post-acute COVID syndrome",
     "post acute COVID",
-
-    # Post-infectious terminology
     "post-viral syndrome",
     "post viral syndrome",
     "post-infectious syndrome",
     "post infectious syndrome",
     "post-acute infection syndrome",
     "PAIS",
-
-    # Persistent/chronic COVID terminology
     "chronic COVID",
     "chronic COVID-19",
     "persistent COVID",
@@ -81,14 +74,11 @@ LC_TERMS = [
     "long-term COVID",
     "post-SARS-CoV-2",
     "post SARS-CoV-2",
-
-    # Common research abbreviations
     "LTC",
     "LC",
 ]
 
 MECH_TERMS = [
-    # Immune dysregulation
     "immune",
     "immunity",
     "immune dysregulation",
@@ -107,8 +97,6 @@ MECH_TERMS = [
     "mast cell",
     "mast cell activation",
     "MCAS",
-
-    # Adaptive and innate immunity
     "t-cell",
     "T cell",
     "b-cell",
@@ -117,8 +105,6 @@ MECH_TERMS = [
     "adaptive",
     "NK cell",
     "natural killer",
-
-    # Viral persistence
     "viral",
     "virus",
     "viral persistence",
@@ -129,8 +115,6 @@ MECH_TERMS = [
     "reactivation",
     "latency",
     "latent",
-
-    # Neurological / neuroimmune
     "neurological",
     "neurologic",
     "neuro",
@@ -142,8 +126,6 @@ MECH_TERMS = [
     "BBB",
     "brain fog",
     "cognitive dysfunction",
-
-    # Endothelial / vascular
     "endothelial",
     "endothelium",
     "endothelial dysfunction",
@@ -156,8 +138,6 @@ MECH_TERMS = [
     "platelet activation",
     "fibrin",
     "fibrinogen",
-
-    # Mitochondrial / metabolic
     "mitochondria",
     "mitochondrial",
     "oxidative stress",
@@ -166,8 +146,6 @@ MECH_TERMS = [
     "energy metabolism",
     "cellular energy",
     "ATP",
-
-    # Autonomic dysfunction (important for POTS)
     "autonomic",
     "autonomic dysfunction",
     "dysautonomia",
@@ -176,8 +154,6 @@ MECH_TERMS = [
     "postural tachycardia",
     "heart rate variability",
     "baroreflex",
-
-    # PEM / exercise intolerance
     "post-exertional malaise",
     "PEM",
     "post exertional",
@@ -186,8 +162,6 @@ MECH_TERMS = [
     "anaerobic threshold",
     "lactate",
     "VO2 max",
-
-    # Hormonal / stress systems
     "HPA axis",
     "cortisol",
     "hypothalamic",
@@ -195,7 +169,6 @@ MECH_TERMS = [
 ]
 
 TREAT_TERMS = [
-    # General treatment terms
     "treatment",
     "therapy",
     "intervention",
@@ -205,8 +178,6 @@ TREAT_TERMS = [
     "medication",
     "pharmacological",
     "non-pharmacological",
-
-    # Clinical studies
     "trial",
     "clinical trial",
     "clinical study",
@@ -223,8 +194,6 @@ TREAT_TERMS = [
     "observational study",
     "efficacy",
     "feasibility",
-
-    # Long COVID treatments
     "naltrexone",
     "low-dose naltrexone",
     "LDN",
@@ -242,8 +211,6 @@ TREAT_TERMS = [
     "corticosteroid",
     "IVIG",
     "monoclonal antibody",
-
-    # POTS treatments
     "fludrocortisone",
     "midodrine",
     "beta blocker",
@@ -255,15 +222,11 @@ TREAT_TERMS = [
     "compression garment",
     "compression stockings",
     "exercise training",
-
-    # PEM / ME-CFS related management
     "pacing",
     "activity management",
     "energy envelope",
     "heart rate monitoring",
     "autonomic rehabilitation",
-
-    # Rehabilitation
     "rehabilitation",
     "physical therapy",
     "occupational therapy",
@@ -283,8 +246,11 @@ NOISE_TERMS = [
 
 def _contains_any(text: str, terms: list[str]) -> bool:
     t = text.lower()
-    return any(kw in t for kw in terms)
+    return any(kw in t for kw in t for kw in terms)
 
+def _contains_any(text: str, terms: list[str]) -> bool:
+    t = text.lower()
+    return any(kw in t for kw in terms)
 
 def is_valid_candidate_pubmed_nature(p: dict) -> bool:
     combo = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
@@ -338,7 +304,6 @@ def is_valid_candidate(p: dict) -> bool:
 # HTML CARD GENERATION
 
 def build_card_html(p: dict) -> str:
-    # Skip papers with missing critical fields
     if not p.get("title") or not p.get("url"):
         return ""
 
@@ -403,7 +368,7 @@ def build_card_html(p: dict) -> str:
 </div>
 """.strip()
 
-# STATISTICS (mechanistic groups)
+# STATISTICS
 
 def compute_stats(papers):
     stats = {"total": len(papers)}
@@ -456,7 +421,7 @@ def inject_stats_into_index(stats):
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(html)
-        
+
 def inject_badge_stats(stats):
     log("[HTML] Updating badge stats...")
 
@@ -464,10 +429,6 @@ def inject_badge_stats(stats):
         html = f.read()
 
     updated_date = datetime.now().strftime("%Y-%m-%d")
-    
-    # Tel ALLE kaarten in index.html
-    with open(INDEX_PATH, "r", encoding="utf-8") as f:
-        html = f.read()
 
     real_cards = re.findall(r'<div class="paper-card"[^>]*>', html)
     total = len(real_cards)
@@ -528,7 +489,6 @@ def run_git(args: list[str]) -> None:
     if result.stderr:
         print("[GIT STDERR]", result.stderr.strip())
 
-
 def commit_and_push() -> None:
     run_git(["add", "."])
     run_git(["commit", "-m", "Update LC papers", "--allow-empty"])
@@ -547,15 +507,13 @@ def inject_cards_into_index(cards_html: str) -> None:
     if start not in html or end not in html:
         raise RuntimeError("Inject markers not found in index.html")
 
-    # Split in één keer
     before, middle_and_after = html.split(start, 1)
     existing, after = middle_and_after.split(end, 1)
 
     existing = existing.strip()
-    combined = existing + "\n\n" + cards_html
+    combined = (existing + "\n\n" + cards_html).strip()
 
     new_html = before + start + "\n" + combined + "\n" + end + after
-
 
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(new_html)
@@ -585,8 +543,6 @@ def main() -> None:
     all_raw = []
     for papers in sources.values():
         all_raw.extend(papers)
-    
-    #all_raw = all_raw[:50]
 
     log(f"[MERGE] Total fetched: {len(all_raw)} papers")
 
@@ -621,7 +577,7 @@ def main() -> None:
             title_preview = p.get("title", "")[:80]
             log(f"[AI] ({completed}/{total}) Done: {title_preview}")
 
-    # FILTERING
+    # FILTERING (AI + threshold)
 
     enriched = []
     for p in candidates:
@@ -630,10 +586,14 @@ def main() -> None:
         if not isinstance(ai, dict):
             continue
 
+        # Huidige logica behouden: LC + category filter
         if ai.get("category") in ("Irrelevant", "Epidemiology"):
             continue
 
-        if ai.get("score", 0) < 60:
+        if not ai.get("long_covid", False):
+            continue
+
+        if ai.get("score", 0) < 65:
             continue
 
         p["ai_score"] = ai.get("score", 0)
@@ -649,7 +609,7 @@ def main() -> None:
         enriched.append(p)
 
     save_ai_cache(ai_cache)
-    log(f"[AI] Selected after filtering: {len(enriched)}")
+    log(f"[AI] Selected after filtering (score ≥ 65, LC, category): {len(enriched)}")
 
     if not enriched:
         log("[DONE] No enriched papers.")
@@ -657,14 +617,15 @@ def main() -> None:
         print("\n================ LC SCRAPER END ================\n")
         return
 
+    # Ranking: score + date
     ranked = sorted(
         enriched,
         key=lambda p: (p.get("ai_score", 0), p.get("date", datetime.min)),
         reverse=True,
     )
 
-    top = [p for p in ranked if p["ai_score"] >= 70]
-    #log(f"[RANK] Top papers: {len(top)}")
+    # Top = alles met score ≥ 65 (en al gefilterd)
+    top = ranked
 
     # SECOND PASS: BUILD cached_new FIRST
 
@@ -679,7 +640,7 @@ def main() -> None:
             continue
         if ai.get("category") in ("Irrelevant", "Epidemiology"):
             continue
-        if ai.get("score", 0) < 60:
+        if ai.get("score", 0) < 65:
             continue
 
         original = next((p for p in all_raw if p.get("id") == paper_id), None)
@@ -701,9 +662,9 @@ def main() -> None:
 
         cached_new.append(original)
 
-    log(f"[CACHE] Missed relevant papers found: {len(cached_new)}")
+    log(f"[CACHE] Missed relevant papers found (score ≥ 65): {len(cached_new)}")
 
-    # BUILD VISIBLE CARDS (REAL HTML CARDS)
+    # BUILD VISIBLE CARDS
 
     visible_cards = []
 
@@ -711,51 +672,56 @@ def main() -> None:
         if build_card_html(p).strip():
             visible_cards.append(p)
 
-    for p in cached_new:
-        if build_card_html(p).strip():
-            visible_cards.append(p)
+    # cached_new alleen gebruiken als er al geposte papers zijn
+    use_cached_new = bool(seen)
+
+    if use_cached_new:
+        for p in cached_new:
+            if build_card_html(p).strip():
+                visible_cards.append(p)
 
     # STATS BASED ON VISIBLE CARDS ONLY
 
-    stats = compute_stats(enriched)
-    inject_badge_stats(stats)
-
-    #log("[STATS] " + ", ".join(f"{k.upper()}={v}" for k, v in stats.items()))
+    stats = compute_stats(visible_cards)
 
     # NEW PAPERS
 
     new_papers = [p for p in top if p.get("id") not in seen]
-    log(f"[NEW] New papers: {len(new_papers)}")
+    log(f"[NEW] New papers (score ≥ 65, not in seen): {len(new_papers)}")
 
-    if not new_papers:
+    if not new_papers and not (use_cached_new and cached_new):
         log("[DONE] No new papers to inject.")
+        inject_badge_stats(stats)
         commit_and_push()
         print("\n================ LC SCRAPER END ================\n")
         return
 
-    cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
-    all_cards_html = "\n\n".join(build_card_html(p) for p in (new_papers + cached_new))
+    if use_cached_new:
+        all_cards_html = "\n\n".join(build_card_html(p) for p in (new_papers + cached_new))
+    else:
+        all_cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
+
     inject_cards_into_index(all_cards_html)
     inject_stats_into_index(stats)
-
+    inject_badge_stats(stats)
 
     # UPDATE SEEN — ONLY REAL CARDS
 
-    for p in cached_new:
-        if build_card_html(p).strip():      # only real cards
-            seen.add(p["id"])
+    if use_cached_new:
+        for p in cached_new:
+            if build_card_html(p).strip():
+                seen.add(p["id"])
 
     for p in new_papers:
-        if build_card_html(p).strip():      # only real cards
+        if build_card_html(p).strip():
             seen.add(p["id"])
 
     save_seen(seen)
-    
     rebuild_posted_pmids_from_html()
 
     commit_and_push()
 
-    log(f"[DONE] Added {len(new_papers)} new papers.")
+    log(f"[DONE] Added {len(new_papers)} new papers (plus {len(cached_new) if use_cached_new else 0} cached).")
     print("\n================ LC SCRAPER END ================\n")
 
 if __name__ == "__main__":
