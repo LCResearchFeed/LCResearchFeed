@@ -153,7 +153,7 @@ def parse_any_date(raw: Optional[str]) -> Optional[datetime]:
 # ---------------------------------------------------------
 # Main fetcher
 # ---------------------------------------------------------
-def fetch_nature_papers(max_results: int = 50) -> List[Dict]:
+def fetch_nature_papers(max_results: int = 200) -> List[Dict]:
     print("[Nature] Fetching Nature papers...")
 
     url = f"{BASE_NATURE}/search?q=long+covid&order=date"

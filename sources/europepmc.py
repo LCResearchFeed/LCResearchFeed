@@ -150,7 +150,7 @@ def fetch_europepmc_papers(max_results: int = 200) -> List[Dict]:
     }
 
     try:
-        r = requests.get(API_URL, params=params, timeout=20)
+        r = requests.get(API_URL, params=params, timeout=45)
         r.raise_for_status()
         data = r.json()
     except Exception as e:
