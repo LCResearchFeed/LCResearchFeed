@@ -16,6 +16,9 @@ LOG_PATH = os.path.join(REPO_PATH, "scheduler_log.txt")
 from storage.seen import load_seen, save_seen
 from storage.cache import load_ai_cache, save_ai_cache
 
+from utils.deduplicate import deduplicate_papers
+from utils.deduplicate import is_duplicate
+
 # Sources
 from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
@@ -199,8 +202,6 @@ def is_valid_candidate(p: dict) -> bool:
 
     return _candidate_generic(p)
 
-
-
 # ---------------------------------------------------------
 # HTML card generation
 # ---------------------------------------------------------
@@ -319,14 +320,17 @@ def inject_stats_into_index(stats):
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         f.write(html)
 
-
+#number of papers on website
 def inject_badge_stats(stats):
     log("[HTML] Updating badge stats...")
     with open(INDEX_PATH, "r", encoding="utf-8") as f:
         html = f.read()
 
     updated_date = datetime.now().strftime("%Y-%m-%d")
-    real_cards = re.findall(r'<div class="paper-card"[\s\S]*?</div>', html)
+    real_cards = re.findall(
+        r'<div class="paper-card" data-source=.*?>',
+        html
+    )
     total = len(real_cards)
 
     html = re.sub(
@@ -392,6 +396,121 @@ def commit_and_push() -> None:
     run_git(["commit", "-m", "Update LC papers", "--allow-empty"])
     run_git(["push", "origin", "main"])
 
+def clean_duplicate_cards(index_path: str):
+    """
+    Verwijdert dubbele <div class="paper-card"> blokken uit index.html
+    op basis van DOI, PMID, URL en titel.
+    Gebruikt dezelfde logica als deduplicate_papers().
+    Geeft stats terug in hetzelfde formaat als lc_scraper.py verwacht.
+    """
+
+    # ---------------------------------------------------------
+    # 1. Lees HTML
+    # ---------------------------------------------------------
+    with open(index_path, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    # ---------------------------------------------------------
+    # 2. Extract alle kaarten
+    # ---------------------------------------------------------
+    card_pattern = re.compile(
+        r'(<div class="paper-card".*?</div>)',
+        re.DOTALL
+    )
+    cards = card_pattern.findall(html)
+
+    parsed = []
+
+    # ---------------------------------------------------------
+    # 3. Parse metadata uit elke kaart
+    # ---------------------------------------------------------
+    for card_html in cards:
+
+        # URL
+        url_match = re.search(r'<a href="([^"]+)"', card_html)
+        url = url_match.group(1).strip() if url_match else ""
+
+        # Titel
+        title_match = re.search(r'<h2>(.*?)</h2>', card_html, re.DOTALL)
+        title = title_match.group(1).strip() if title_match else ""
+
+        # DOI (indien aanwezig)
+        doi_match = re.search(r'doi[:/]\s*([^\s"<]+)', card_html, re.IGNORECASE)
+        doi = doi_match.group(1).strip() if doi_match else ""
+
+        # PMID (indien aanwezig)
+        pmid_match = re.search(r'pmid[:/]\s*([0-9]+)', card_html, re.IGNORECASE)
+        pmid = pmid_match.group(1).strip() if pmid_match else ""
+
+        # Source
+        source_match = re.search(r'data-source="([^"]+)"', card_html)
+        source = source_match.group(1).strip() if source_match else ""
+
+        parsed.append({
+            "html": card_html,
+            "url": url,
+            "title": title,
+            "doi": doi,
+            "pmid": pmid,
+            "source": source,
+        })
+
+    # ---------------------------------------------------------
+    # 4. Deduplicatie met jouw bestaande is_duplicate()
+    # ---------------------------------------------------------
+    unique = []
+    removed = 0
+
+    for p in parsed:
+        duplicate_index = None
+
+        for i, existing in enumerate(unique):
+            if is_duplicate(p, existing):
+                duplicate_index = i
+                break
+
+        if duplicate_index is None:
+            unique.append(p)
+        else:
+            removed += 1
+
+    # ---------------------------------------------------------
+    # 5. Bouw nieuwe HTML
+    # ---------------------------------------------------------
+    cleaned_cards_html = "\n\n".join(p["html"] for p in unique)
+
+    start = "<!-- SCRAPER_INJECT_START -->"
+    end = "<!-- SCRAPER_INJECT_END -->"
+
+    if start not in html or end not in html:
+        raise RuntimeError("Inject markers not found in index.html")
+
+    before, middle_and_after = html.split(start, 1)
+    _, after = middle_and_after.split(end, 1)
+
+    new_html = before + start + "\n" + cleaned_cards_html + "\n" + end + after
+
+    with open(index_path, "w", encoding="utf-8") as f:
+        f.write(new_html)
+
+    # ---------------------------------------------------------
+    # 6. Stats bouwen
+    # ---------------------------------------------------------
+    stats = {"total": len(unique)}
+
+    for p in unique:
+        group_match = re.search(r'data-mech="([^"]+)"', p["html"])
+        group = group_match.group(1).strip().lower() if group_match else "unknown"
+        stats[group] = stats.get(group, 0) + 1
+
+    # ---------------------------------------------------------
+    # 7. Resultaat teruggeven
+    # ---------------------------------------------------------
+    return {
+        "removed": removed,
+        "remaining": len(unique),
+        "stats": stats,
+    }
 
 # ---------------------------------------------------------
 # Main
@@ -428,6 +547,14 @@ def main() -> None:
 
     if not candidates:
         log("[AI] No candidates after prefilter.")
+
+        result = clean_duplicate_cards(INDEX_PATH)
+
+        inject_stats_into_index(result["stats"])
+        inject_badge_stats(result["stats"])
+
+        commit_and_push()
+
         print("\n================ LC SCRAPER END ================\n")
         return
 
@@ -478,10 +605,28 @@ def main() -> None:
 
     save_ai_cache(ai_cache)
     log(f"[AI] Selected after filtering (score ≥ 65, LC, category): {len(enriched)}")
+    
+    before = len(enriched)
+
+    enriched = deduplicate_papers(enriched)
+
+    after = len(enriched)
+
+    log(
+        f"[DEDUP] Removed {before-after} duplicate papers. "
+        f"Remaining: {after}"
+    )
 
     if not enriched:
         log("[DONE] No enriched papers.")
+
+        result = clean_duplicate_cards(INDEX_PATH)
+
+        inject_stats_into_index(result["stats"])
+        inject_badge_stats(result["stats"])
+
         commit_and_push()
+
         print("\n================ LC SCRAPER END ================\n")
         return
 
@@ -525,25 +670,19 @@ def main() -> None:
 
     log(f"[CACHE] Missed relevant papers found (score ≥ 65): {len(cached_new)}")
 
-    visible_cards = []
-    for p in top:
-        if build_card_html(p).strip():
-            visible_cards.append(p)
-
     use_cached_new = bool(seen)
-    if use_cached_new:
-        for p in cached_new:
-            if build_card_html(p).strip():
-                visible_cards.append(p)
-
-    stats = compute_stats(visible_cards)
 
     new_papers = [p for p in top if p.get("id") not in seen]
     log(f"[NEW] New papers (score ≥ 65, not in seen): {len(new_papers)}")
 
     if not new_papers and not (use_cached_new and cached_new):
         log("[DONE] No new papers to inject.")
-        inject_badge_stats(stats)
+
+        result = clean_duplicate_cards(INDEX_PATH)
+
+        inject_stats_into_index(result["stats"])
+        inject_badge_stats(result["stats"])
+
         commit_and_push()
         print("\n================ LC SCRAPER END ================\n")
         return
@@ -556,6 +695,21 @@ def main() -> None:
         all_cards_html = "\n\n".join(build_card_html(p) for p in new_papers)
 
     inject_cards_into_index(all_cards_html)
+
+
+    # ---------------------------------------------------------
+    # FINAL HTML DEDUPLICATION
+    # ---------------------------------------------------------
+
+    result = clean_duplicate_cards(INDEX_PATH)
+    
+    stats = result["stats"]
+
+    log(
+        f"[HTML DEDUP] Removed {result['removed']} duplicates. "
+        f"Remaining cards: {result['remaining']}"
+    )
+
     inject_stats_into_index(stats)
     inject_badge_stats(stats)
 
