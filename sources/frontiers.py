@@ -2,6 +2,32 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
+def extract_frontiers_abstract(psoup):
+    # 1. Standard abstract
+    sec = psoup.find("section", {"class": "Abstract"})
+    if sec:
+        return sec.get_text(strip=True)
+
+    # 2. Alternative abstract block
+    div = psoup.find("div", {"class": "abstract"})
+    if div:
+        return div.get_text(strip=True)
+
+    # 3. Summary section
+    summ = psoup.find("section", {"class": "article-summary"})
+    if summ:
+        return summ.get_text(strip=True)
+
+    # 4. First paragraph of article content
+    body = psoup.find("section", {"class": "article-content"})
+    if body:
+        p = body.find("p")
+        if p:
+            return p.get_text(strip=True)
+
+    return ""
+
+
 def fetch_frontiers_papers():
     url = "https://www.frontiersin.org/articles"
     papers = []
@@ -30,17 +56,27 @@ def fetch_frontiers_papers():
 
             psoup = BeautifulSoup(pr.text, "html.parser")
 
-            title = psoup.find("h1")
-            abstract = psoup.find("section", {"class": "Abstract"})
-            date = psoup.find("time")
+            title_el = psoup.find("h1")
+            title = title_el.get_text(strip=True) if title_el else ""
+
+            abstract = extract_frontiers_abstract(psoup)
+
+            date_el = psoup.find("time")
+            if date_el and date_el.get("datetime"):
+                try:
+                    date = datetime.fromisoformat(date_el["datetime"])
+                except:
+                    date = None
+            else:
+                date = None
 
             p = {
                 "id": full_url.split("/")[-2],
-                "title": title.text.strip() if title else "",
-                "abstract": abstract.text.strip() if abstract else "",
+                "title": title,
+                "abstract": abstract,
                 "url": full_url,
                 "source": "frontiers",
-                "date": datetime.fromisoformat(date["datetime"]) if date else None,
+                "date": date,
             }
 
             papers.append(p)

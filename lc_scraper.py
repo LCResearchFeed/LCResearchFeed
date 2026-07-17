@@ -109,44 +109,96 @@ def _contains_any(text: str, terms: list[str]) -> bool:
     return any(kw in t for kw in terms)
 
 
+def _combo(p: dict) -> str:
+    """Combine title + abstract safely."""
+    title = p.get("title") or ""
+    abstract = p.get("abstract") or ""
+    return (title + " " + abstract).lower()
+
+
+# ---------------------------------------------------------
+# PubMed / Nature — STRIKT mechanistisch
+# ---------------------------------------------------------
 def _candidate_pubmed_nature(p: dict) -> bool:
-    combo = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
+    combo = _combo(p)
+
+    # Must mention LC or COVID
     if not _contains_any(combo, LC_TERMS) and "covid" not in combo:
         return False
+
+    # Must contain mechanistic or treatment terms
     if not (_contains_any(combo, MECH_TERMS) or _contains_any(combo, TREAT_TERMS)):
         return False
+
+    # Noise exclusion
     if _contains_any(combo, NOISE_TERMS):
         return False
+
     return True
 
 
+# ---------------------------------------------------------
+# EuropePMC — LC-friendly
+# ---------------------------------------------------------
 def _candidate_europepmc(p: dict) -> bool:
-    combo = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
+    combo = _combo(p)
+
+    # Must mention LC or COVID
     if not _contains_any(combo, LC_TERMS) and "covid" not in combo:
         return False
+
+    # Noise exclusion
     if _contains_any(combo, NOISE_TERMS):
         return False
+
     return True
 
 
+# ---------------------------------------------------------
+# Frontiers — ALWAYS send to AI
+# ---------------------------------------------------------
+def _candidate_frontiers(p: dict) -> bool:
+    # Frontiers is mechanistic-heavy → AI decides relevance
+    return True
+
+
+# ---------------------------------------------------------
+# Generic sources — LC-friendly
+# ---------------------------------------------------------
 def _candidate_generic(p: dict) -> bool:
-    combo = ((p.get("title") or "") + " " + (p.get("abstract") or "")).lower()
+    combo = _combo(p)
+
+    # Must mention LC or COVID
     if not _contains_any(combo, LC_TERMS) and "covid" not in combo:
         return False
+
+    # Noise exclusion
     if _contains_any(combo, NOISE_TERMS):
         return False
+
     return True
 
 
+# ---------------------------------------------------------
+# Main selector
+# ---------------------------------------------------------
 def is_valid_candidate(p: dict) -> bool:
     if not isinstance(p.get("date"), datetime):
         return False
+
     source = (p.get("source") or "").lower()
+
     if source in ("pubmed", "nature"):
         return _candidate_pubmed_nature(p)
+
     if source == "europepmc":
         return _candidate_europepmc(p)
+
+    if source == "frontiers":
+        return _candidate_frontiers(p)
+
     return _candidate_generic(p)
+
 
 
 # ---------------------------------------------------------

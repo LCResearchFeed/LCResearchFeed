@@ -5705,5 +5705,18 @@
     "review": true,
     "summary": "The paper discusses distinct regulatory DNA methylation signatures across multiple sclerosis, neuromyelitis optica, and neurological post-acute sequelae of COVID-19.",
     "reason": "This review article focuses on comparing epigenetic changes in different neurological conditions including Long COVID, which supports the classification as a review with moderate relevance."
+  },
+  "42235853": {
+    "score": 75,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Autoimmunity",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The study compared TCR Vβ 21.3+ T-cell expansion in pediatric post-COVID condition (PPCC) and Multisystem Inflammatory Syndrome in Children (MIS-C). It found no enrichment of these cells in PPCC patients, suggesting a different pathophysiology.",
+    "reason": "The paper discusses the absence of a specific immune response (TCR Vβ 21.3+ T-cell expansion) in long COVID cases compared to MIS-C, indicating an autoimmunity-related mechanism."
   }
 }
