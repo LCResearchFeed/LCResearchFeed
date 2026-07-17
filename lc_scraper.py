@@ -25,6 +25,7 @@ from sources.recover import fetch_recover_papers
 from sources.rki import fetch_rki_papers
 from sources.litcovid import fetch_litcovid_html_long_covid
 from sources.patientresearchcovid19 import fetch_plrc_papers
+from sources.frontiers import fetch_frontiers_papers
 
 # AI
 from ai.classifier import classify_paper
@@ -161,6 +162,7 @@ def _source_display_name(s: str) -> str:
         "recover": "RECOVER",
         "rki": "RKI",
         "plrc-scholar": "PLRC",
+        "frontiers": "Frontiers",
     }
     return mapping.get(s.lower(), "Other")
 
@@ -357,6 +359,7 @@ def main() -> None:
         "recover": fetch_recover_papers(),
         "rki": fetch_rki_papers(),
         "patientresearchcovid19": fetch_plrc_papers(),
+        "frontiers": fetch_frontiers_papers(),
     }
 
     for name, papers in sources.items():

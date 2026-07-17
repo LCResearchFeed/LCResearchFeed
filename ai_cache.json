@@ -5653,5 +5653,57 @@
     "review": false,
     "summary": "A cohort study from the RECOVER Initiative examining the use of SSRIs/SNRIs in children and adolescents with neuropsychiatric conditions, focusing on their association with Long COVID.",
     "reason": "The paper discusses a treatment (SSRIs/SNRIs) for a specific population affected by Long COVID."
+  },
+  "https://www.nature.com/articles/s41598-026-62635-8": {
+    "score": 75,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper discusses variant-specific and cross-reactive antibody responses following COVID-19 booster vaccinations and SARS-CoV-2 breakthrough infections.",
+    "reason": "This review focuses on antibody responses rather than long-term symptoms or mechanisms related to Long COVID."
+  },
+  "https://www.nature.com/articles/s41398-026-04250-9": {
+    "score": 85,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Neuroinflammation",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The paper discusses the association between fatigue after COVID-19 infection and peripheral immunometabolic alterations that affect neuroimmune responses in the hippocampus.",
+    "reason": "The study provides strong mechanistic evidence linking post-COVID fatigue to specific biological changes, fitting into the category of neuroinflammation."
+  },
+  "https://www.nature.com/articles/s41598-026-62813-8": {
+    "score": 20,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "This study monitors the prevalence of enteric viruses over a three-year period, including during the COVID-19 pandemic. It does not focus on long COVID or related mechanisms.",
+    "reason": "The paper focuses on monitoring the prevalence of enteric viruses and does not discuss any aspects related to long COVID."
+  },
+  "europepmc-10.3390/jcm15134968": {
+    "score": 75,
+    "category": "Review",
+    "long_covid": true,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper discusses distinct regulatory DNA methylation signatures across multiple sclerosis, neuromyelitis optica, and neurological post-acute sequelae of COVID-19.",
+    "reason": "This review article focuses on comparing epigenetic changes in different neurological conditions including Long COVID, which supports the classification as a review with moderate relevance."
   }
 }

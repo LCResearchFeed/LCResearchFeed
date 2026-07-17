@@ -148,6 +148,7 @@ europepmc-10.3389/fresc.2026.1766757
 europepmc-10.3390/biom16020283
 europepmc-10.3390/biomedicines14010145
 europepmc-10.3390/children13020279
+europepmc-10.3390/jcm15134968
 europepmc-10.3390/nu18030521
 europepmc-10.64898/2025.12.04.25341650
 europepmc-10.64898/2026.03.09.710460
@@ -157,6 +158,7 @@ europepmc-10.7759/cureus.81530
 europepmc-10.7759/cureus.85576
 europepmc-10.7759/cureus.88680
 europepmc-41505721
+https://www.nature.com/articles/s41398-026-04250-9
 https://www.nature.com/articles/s41577-026-01326-x
 https://www.nature.com/articles/s41582-026-01243-6
 https://www.nature.com/articles/s41598-026-38800-4
