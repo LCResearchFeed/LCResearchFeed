@@ -400,51 +400,72 @@ def clean_duplicate_cards(index_path: str):
     """
     Verwijdert dubbele <div class="paper-card"> blokken uit index.html
     op basis van DOI, PMID, URL en titel.
-    Gebruikt dezelfde logica als deduplicate_papers().
-    Geeft stats terug in hetzelfde formaat als lc_scraper.py verwacht.
+    Gebruikt dezelfde logica als is_duplicate().
+    Geeft: {"removed": X, "remaining": Y, "stats": {...}}.
     """
 
-    # ---------------------------------------------------------
-    # 1. Lees HTML
-    # ---------------------------------------------------------
     with open(index_path, "r", encoding="utf-8") as f:
         html = f.read()
 
-    # ---------------------------------------------------------
-    # 2. Extract alle kaarten
-    # ---------------------------------------------------------
-    card_pattern = re.compile(
-        r'(<div class="paper-card".*?</div>)',
-        re.DOTALL
-    )
-    cards = card_pattern.findall(html)
+    start = "<!-- SCRAPER_INJECT_START -->"
+    end = "<!-- SCRAPER_INJECT_END -->"
 
-    parsed = []
+    if start not in html or end not in html:
+        raise RuntimeError("Inject markers not found in index.html")
+
+    before, middle_and_after = html.split(start, 1)
+    inject_block, after = middle_and_after.split(end, 1)
+
+    inject_block = inject_block.strip()
+
+    # ---------------------------------------------------------
+    # 1. Vind alle kaart-startposities
+    # ---------------------------------------------------------
+    card_starts = []
+    pos = 0
+    while True:
+        idx = inject_block.find('<div class="paper-card"', pos)
+        if idx == -1:
+            break
+        card_starts.append(idx)
+        pos = idx + 1
+
+    if not card_starts:
+        return {"removed": 0, "remaining": 0, "stats": {"total": 0}}
+
+    # ---------------------------------------------------------
+    # 2. Snijd elke kaart uit het inject-blok
+    # ---------------------------------------------------------
+    card_html_list = []
+
+    for i, start_idx in enumerate(card_starts):
+        end_idx = card_starts[i + 1] if i + 1 < len(card_starts) else len(inject_block)
+        card_html = inject_block[start_idx:end_idx].strip()
+        card_html_list.append(card_html)
 
     # ---------------------------------------------------------
     # 3. Parse metadata uit elke kaart
     # ---------------------------------------------------------
-    for card_html in cards:
+    parsed = []
 
-        # URL
+    for card_html in card_html_list:
         url_match = re.search(r'<a href="([^"]+)"', card_html)
         url = url_match.group(1).strip() if url_match else ""
 
-        # Titel
         title_match = re.search(r'<h2>(.*?)</h2>', card_html, re.DOTALL)
         title = title_match.group(1).strip() if title_match else ""
 
-        # DOI (indien aanwezig)
         doi_match = re.search(r'doi[:/]\s*([^\s"<]+)', card_html, re.IGNORECASE)
         doi = doi_match.group(1).strip() if doi_match else ""
 
-        # PMID (indien aanwezig)
         pmid_match = re.search(r'pmid[:/]\s*([0-9]+)', card_html, re.IGNORECASE)
         pmid = pmid_match.group(1).strip() if pmid_match else ""
 
-        # Source
         source_match = re.search(r'data-source="([^"]+)"', card_html)
         source = source_match.group(1).strip() if source_match else ""
+
+        mech_match = re.search(r'data-mech="([^"]+)"', card_html)
+        mech = mech_match.group(1).strip().lower() if mech_match else "unknown"
 
         parsed.append({
             "html": card_html,
@@ -453,17 +474,17 @@ def clean_duplicate_cards(index_path: str):
             "doi": doi,
             "pmid": pmid,
             "source": source,
+            "ai_mechanistic_group": mech,
         })
 
     # ---------------------------------------------------------
-    # 4. Deduplicatie met jouw bestaande is_duplicate()
+    # 4. Deduplicatie met jouw is_duplicate()
     # ---------------------------------------------------------
     unique = []
     removed = 0
 
     for p in parsed:
         duplicate_index = None
-
         for i, existing in enumerate(unique):
             if is_duplicate(p, existing):
                 duplicate_index = i
@@ -475,18 +496,9 @@ def clean_duplicate_cards(index_path: str):
             removed += 1
 
     # ---------------------------------------------------------
-    # 5. Bouw nieuwe HTML
+    # 5. Nieuwe inject-blok opbouwen
     # ---------------------------------------------------------
     cleaned_cards_html = "\n\n".join(p["html"] for p in unique)
-
-    start = "<!-- SCRAPER_INJECT_START -->"
-    end = "<!-- SCRAPER_INJECT_END -->"
-
-    if start not in html or end not in html:
-        raise RuntimeError("Inject markers not found in index.html")
-
-    before, middle_and_after = html.split(start, 1)
-    _, after = middle_and_after.split(end, 1)
 
     new_html = before + start + "\n" + cleaned_cards_html + "\n" + end + after
 
@@ -497,20 +509,16 @@ def clean_duplicate_cards(index_path: str):
     # 6. Stats bouwen
     # ---------------------------------------------------------
     stats = {"total": len(unique)}
-
     for p in unique:
-        group_match = re.search(r'data-mech="([^"]+)"', p["html"])
-        group = group_match.group(1).strip().lower() if group_match else "unknown"
+        group = (p.get("ai_mechanistic_group") or "").lower()
         stats[group] = stats.get(group, 0) + 1
 
-    # ---------------------------------------------------------
-    # 7. Resultaat teruggeven
-    # ---------------------------------------------------------
     return {
         "removed": removed,
         "remaining": len(unique),
         "stats": stats,
     }
+
 
 # ---------------------------------------------------------
 # Main
