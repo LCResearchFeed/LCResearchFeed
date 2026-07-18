@@ -46,4 +46,3 @@ Abstract:
 
 Respond ONLY with JSON.
 """.strip()
-

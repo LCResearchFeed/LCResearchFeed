@@ -44,7 +44,7 @@ def call_agent(prompt: str) -> str:
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0,
             },
-            timeout=600,
+            timeout=1200,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -162,7 +162,7 @@ def classify_paper(p: dict, cache: dict) -> dict | None:
 # Parallel classification
 # ---------------------------------------------------------
 
-def classify_parallel(papers: list, cache: dict, workers: int = 3) -> dict:
+def classify_parallel(papers: list, cache: dict, workers: int = 1) -> dict:
     results = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
