@@ -1,14 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def extract_frontiers_abstract(psoup):
-    # 0. Meta abstract (beste en volledige bron)
     meta_abs = psoup.find("meta", {"name": "abstract"})
     if meta_abs and meta_abs.get("content"):
         return meta_abs["content"].strip()
 
-    # 1. Meta description fallback
     meta = psoup.find("meta", {"name": "description"})
     if meta and meta.get("content"):
         return meta["content"].strip()
@@ -17,24 +16,20 @@ def extract_frontiers_abstract(psoup):
     if og and og.get("content"):
         return og["content"].strip()
 
-    # 2. Standard Frontiers abstract block
     sec = psoup.find("section", {"id": "abstract"})
     if sec:
         cont = sec.find("div", {"class": "content"})
         if cont:
             return cont.get_text(strip=True)
 
-    # 3. JournalAbstract wrapper
     div = psoup.find("div", {"class": "JournalAbstract"})
     if div:
         return div.get_text(strip=True)
 
-    # 4. Abstract container
     cont = psoup.find("div", {"class": "abstract-container"})
     if cont:
         return cont.get_text(strip=True)
 
-    # 5. Generic article-section with Abstract header
     for sec in psoup.find_all("section", {"class": "article-section"}):
         h2 = sec.find("h2")
         if h2 and "abstract" in h2.get_text(strip=True).lower():
@@ -43,7 +38,6 @@ def extract_frontiers_abstract(psoup):
                 return cont.get_text(strip=True)
             return sec.get_text(strip=True)
 
-    # 6. Fallback: first paragraph
     p = psoup.find("p")
     if p:
         return p.get_text(strip=True)
@@ -52,9 +46,7 @@ def extract_frontiers_abstract(psoup):
 
 
 def extract_frontiers_date(psoup):
-    # Datum uit Frontiers meta-tags
     metas = psoup.find_all("meta")
-
     pub_date_str = None
     online_date_str = None
 
@@ -65,94 +57,130 @@ def extract_frontiers_date(psoup):
         if not name or not content:
             continue
 
-        if name == "citation_publication_date":
+        if name == "citation_publication_date" and isinstance(content, str):
             pub_date_str = content.strip()
 
-        if name == "citation_online_date":
+        if name == "citation_online_date" and isinstance(content, str):
             online_date_str = content.strip()
 
-    # 1. Publication date (voorkeur)
-    if pub_date_str:
-        try:
-            return datetime.strptime(pub_date_str, "%Y/%m/%d")
-        except:
-            pass
+    for candidate in (pub_date_str, online_date_str):
+        if isinstance(candidate, str):
+            try:
+                return datetime.strptime(candidate, "%Y/%m/%d")
+            except:
+                pass
 
-    # 2. Online date fallback
-    if online_date_str:
-        try:
-            return datetime.strptime(online_date_str, "%Y/%m/%d")
-        except:
-            pass
-
-    # 3. Oude fallback: <time datetime="...">
     date_el = psoup.find("time")
-    if date_el and date_el.get("datetime"):
-        try:
-            return datetime.fromisoformat(date_el["datetime"])
-        except:
-            pass
+    if date_el:
+        dt = date_el.get("datetime")
+        if isinstance(dt, str):
+            try:
+                return datetime.fromisoformat(dt)
+            except:
+                pass
 
     return None
 
 
-def fetch_frontiers_papers():
-    base_url = "https://www.frontiersin.org/journals/molecular-biosciences/articles"
+
+def fetch_article(session, link):
+    full_url = link if link.startswith("http") else "https://www.frontiersin.org" + link
+
+    try:
+        pr = session.get(full_url, timeout=20)
+        if pr.status_code != 200:
+            return None
+
+        psoup = BeautifulSoup(pr.text, "html.parser")
+
+        title_el = psoup.find("h1")
+        title = title_el.get_text(strip=True) if title_el else ""
+
+        abstract = extract_frontiers_abstract(psoup)
+        date = extract_frontiers_date(psoup)
+
+        parts = full_url.rstrip("/").split("/")
+        paper_id = parts[-1] if parts[-1] != "full" else parts[-2]
+
+        return {
+            "id": paper_id,
+            "title": title,
+            "abstract": abstract,
+            "url": full_url,
+            "source": "frontiers",
+            "date": date,
+        }
+
+    except Exception:
+        return None
+
+
+def fetch_frontiers_papers(max_pages=10, stop_before_year=2025):
+    base_url = "https://www.frontiersin.org/articles"
+
     papers = []
+    seen_ids = set()
+
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0 (compatible; LC-Scraper/1.0)"
+    })
+
     page = 1
 
-    while True:
+    while page <= max_pages:
+        print(f"[Frontiers] Fetching page {page}...")
+
         params = {
-            "tab": "latest",
-            "sort": "latest",
+            "query": "covid",
+            "search": "covid",
+            "sort": 1,
             "page": page,
         }
 
-        r = requests.get(base_url, params=params, timeout=20)
+        r = session.get(base_url, params=params, timeout=20)
         if r.status_code != 200:
+            print(f"[Frontiers] Page {page} returned {r.status_code}, stopping.")
             break
 
         soup = BeautifulSoup(r.text, "html.parser")
 
-        links = soup.find_all("a", href=True)
+        links = soup.select("a[href*='/articles/']")
         article_links = [
-            l["href"] for l in links
-            if "/articles/" in l["href"] and "/full" in l["href"]
+            a["href"] for a in links
+            if "/articles/" in a["href"] and a["href"].count("/") > 3
         ]
 
-        # Geen artikelen meer → stop paginatie
         if not article_links:
+            print(f"[Frontiers] No articles found on page {page}, stopping.")
             break
 
-        for link in article_links:
-            full_url = link if link.startswith("http") else "https://www.frontiersin.org" + link
+        results = []
+        with ThreadPoolExecutor(max_workers=12) as exe:
+            futures = [exe.submit(fetch_article, session, link) for link in article_links]
+            for f in as_completed(futures):
+                res = f.result()
+                if res:
+                    results.append(res)
 
-            try:
-                pr = requests.get(full_url, timeout=20)
-                if pr.status_code != 200:
-                    continue
-
-                psoup = BeautifulSoup(pr.text, "html.parser")
-
-                title_el = psoup.find("h1")
-                title = title_el.get_text(strip=True) if title_el else ""
-
-                abstract = extract_frontiers_abstract(psoup)
-                date = extract_frontiers_date(psoup)
-
-                p = {
-                    "id": full_url.split("/")[-2],
-                    "title": title,
-                    "abstract": abstract,
-                    "url": full_url,
-                    "source": "frontiers",
-                    "date": date,
-                }
-
-                papers.append(p)
-
-            except Exception:
+        new_count = 0
+        for p in results:
+            if p["id"] in seen_ids:
                 continue
+
+            if p["date"] and p["date"].year < stop_before_year:
+                print(f"[Frontiers] Hit year < {stop_before_year}, stopping.")
+                return papers, page
+
+            seen_ids.add(p["id"])
+            papers.append(p)
+            new_count += 1
+
+        print(f"[Frontiers] Page {page}: {new_count} new papers")
+
+        if new_count == 0:
+            print("[Frontiers] No new papers on this page, stopping.")
+            break
 
         page += 1
 
@@ -160,13 +188,15 @@ def fetch_frontiers_papers():
 
 
 # if __name__ == "__main__":
-    # papers = fetch_frontiers_papers()
-    # print(f"Found {len(papers)} papers\n")
+    # papers, last_page = fetch_frontiers_papers(max_pages=10, stop_before_year=2025)
+
+    # print(f"\nTotal papers: {len(papers)}")
+    # print(f"Last page scraped: {last_page}\n")
 
     # for p in papers:
         # print("ID:", p["id"])
         # print("Title:", p["title"])
         # print("Date:", p["date"].date() if p["date"] else None)
         # print("URL:", p["url"])
-        # print("Abstract snippet:", p["abstract"][:300], "...")
+        # print("Abstract snippet:", p["abstract"][:200], "...")
         # print("-" * 80)

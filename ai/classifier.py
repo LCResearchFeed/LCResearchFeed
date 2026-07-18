@@ -162,7 +162,7 @@ def classify_paper(p: dict, cache: dict) -> dict | None:
 # Parallel classification
 # ---------------------------------------------------------
 
-def classify_parallel(papers: list, cache: dict, workers: int = 1) -> dict:
+def classify_parallel(papers: list, cache: dict, workers: int = 3) -> dict:
     results = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
