@@ -24,7 +24,6 @@ from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
 from sources.europepmc import fetch_europepmc_papers
 from sources.recover import fetch_recover_papers
-from sources.rki import fetch_rki_papers
 from sources.patientresearchcovid19 import fetch_plrc_papers
 from sources.frontiers import fetch_frontiers_papers
 
@@ -209,7 +208,6 @@ def _source_display_name(s: str) -> str:
         "nature": "Nature",
         "europepmc": "EuropePMC",
         "recover": "RECOVER",
-        "rki": "RKI",
         "plrc-scholar": "PLRC",
         "frontiers": "Frontiers",
     }
@@ -530,7 +528,6 @@ def main() -> None:
         "nature": fetch_nature_papers(),
         "europepmc": fetch_europepmc_papers(),
         "recover": fetch_recover_papers(),
-        "rki": fetch_rki_papers(),
         "patientresearchcovid19": fetch_plrc_papers(),
         "frontiers": fetch_frontiers_papers(),
     }
