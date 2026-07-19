@@ -165,28 +165,36 @@ def fetch_europepmc_papers(max_results: int = 200) -> List[Dict]:
             title = (item.get("title") or "").strip()
             abstract = (item.get("abstractText") or "").strip()
 
+            pmcid = item.get("pmcid")
             doi = item.get("doi")
             pmid = item.get("pmid")
 
             # -----------------------------
             # URL extraction
             # -----------------------------
-            # URL extraction (skip papers without any valid link)
             link = None
             full_urls = item.get("fullTextUrlList", {}).get("fullTextUrl", [])
 
+            # 1. Full-text URLs (als ze bestaan)
             if full_urls:
                 link = full_urls[0].get("url", "")
+
+            # 2. PMC fallback (belangrijk!)
+            elif pmcid:
+                link = f"https://europepmc.org/article/PMC/{pmcid}"
+
+            # 3. PubMed fallback
             elif pmid:
                 link = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
+
+            # 4. DOI fallback
             elif doi:
                 link = f"https://doi.org/{doi}"
 
-            # Skip papers without any usable link
+            # 5. Skip alleen als er *echt* geen link is
             if not link:
                 print(f"[EuropePMC] Skipping paper without valid link: {title[:50]}")
                 continue
-
 
             # -----------------------------
             # DATE extraction (no fallback)
@@ -199,7 +207,6 @@ def fetch_europepmc_papers(max_results: int = 200) -> List[Dict]:
 
             pub_date = parse_europepmc_date(raw_date)
 
-            # Skip papers without valid date
             if pub_date is None:
                 print(f"[EuropePMC] Skipping paper without valid date: {title[:50]}")
                 continue
@@ -234,5 +241,19 @@ def fetch_europepmc_papers(max_results: int = 200) -> List[Dict]:
             print(f"[EuropePMC] ERROR parsing item: {e}")
             continue
 
+
     print(f"[EuropePMC] Parsed papers: {len(results)}")
     return results
+
+# if __name__ == "__main__":
+    # papers = fetch_europepmc_papers()
+
+    # print(f"\nTotal papers: {len(papers)}")
+
+    # for p in papers:
+        # print("ID:", p["id"])
+        # print("Title:", p["title"])
+        # print("Date:", p["date"].date() if p["date"] else None)
+        # print("URL:", p["url"])
+        # print("Abstract snippet:", p["abstract"][:200], "...")
+        # print("-" * 80)

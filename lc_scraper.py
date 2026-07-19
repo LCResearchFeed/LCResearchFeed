@@ -23,10 +23,8 @@ from utils.deduplicate import is_duplicate
 from sources.pubmed import fetch_pubmed_papers
 from sources.nature import fetch_nature_papers
 from sources.europepmc import fetch_europepmc_papers
-from sources.longcovidweb import fetch_longcovidweb_papers
 from sources.recover import fetch_recover_papers
 from sources.rki import fetch_rki_papers
-from sources.litcovid import fetch_litcovid_html_long_covid
 from sources.patientresearchcovid19 import fetch_plrc_papers
 from sources.frontiers import fetch_frontiers_papers
 
@@ -210,8 +208,6 @@ def _source_display_name(s: str) -> str:
         "pubmed": "PubMed",
         "nature": "Nature",
         "europepmc": "EuropePMC",
-        "litcovid": "LitCovid",
-        "longcovidweb": "LongCovidWeb",
         "recover": "RECOVER",
         "rki": "RKI",
         "plrc-scholar": "PLRC",
@@ -533,8 +529,6 @@ def main() -> None:
         "pubmed": fetch_pubmed_papers(),
         "nature": fetch_nature_papers(),
         "europepmc": fetch_europepmc_papers(),
-        "litcovid": fetch_litcovid_html_long_covid(),
-        "longcovidweb": fetch_longcovidweb_papers(),
         "recover": fetch_recover_papers(),
         "rki": fetch_rki_papers(),
         "patientresearchcovid19": fetch_plrc_papers(),

@@ -7,7 +7,14 @@ LONG COVID:
 true if symptoms/mechanisms/biological findings occur weeks–months after SARS‑CoV‑2 infection.
 
 CATEGORY (one):
-Mechanism, Treatment, Drug, Lifestyle, Review.
+CATEGORY LOGIC:
+If review=true -> category = Review
+Else if lifestyle=true -> category = Lifestyle
+Else if drug=true -> category = Drug
+Else if treatment=true -> category = Treatment
+Else if mechanism=true -> category = Mechanism
+Else -> category = Mechanism
+
 
 FLAGS:
 mechanism=true if biological mechanisms: immune dysregulation, autoimmunity, autoantibodies,

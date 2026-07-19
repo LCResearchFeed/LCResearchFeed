@@ -86,3 +86,16 @@ def fetch_rki_papers(max_results: int = 200) -> list[dict]:
 
     print(f"[RKI] Parsed papers: {len(results)}")
     return results
+
+if __name__ == "__main__":
+    papers = fetch_rki_papers()
+
+    print(f"\nTotal papers: {len(papers)}")
+
+    for p in papers:
+        print("ID:", p["id"])
+        print("Title:", p["title"])
+        print("Date:", p["date"].date() if p["date"] else None)
+        print("URL:", p["url"])
+        print("Abstract snippet:", p["abstract"][:200], "...")
+        print("-" * 80)

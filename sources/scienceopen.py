@@ -69,3 +69,17 @@ def fetch_scienceopen_papers(max_results: int = 200) -> list[dict]:
 
     print(f"[ScienceOpen] Parsed papers: {len(results)}")
     return results
+
+# if __name__ == "__main__":
+    # papers, last_page = fetch_frontiers_papers(max_pages=10, stop_before_year=2025)
+
+    # print(f"\nTotal papers: {len(papers)}")
+    # print(f"Last page scraped: {last_page}\n")
+
+    # for p in papers:
+        # print("ID:", p["id"])
+        # print("Title:", p["title"])
+        # print("Date:", p["date"].date() if p["date"] else None)
+        # print("URL:", p["url"])
+        # print("Abstract snippet:", p["abstract"][:200], "...")
+        # print("-" * 80)
