@@ -181,6 +181,7 @@ fped.2026.1710900
 fphar.2026.1852220
 fragi.2026.1866981
 https://www.nature.com/articles/s41398-026-04250-9
+https://www.nature.com/articles/s41467-026-72224-y
 https://www.nature.com/articles/s41577-026-01326-x
 https://www.nature.com/articles/s41582-026-01243-6
 https://www.nature.com/articles/s41598-026-38800-4

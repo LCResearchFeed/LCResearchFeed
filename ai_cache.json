@@ -9124,5 +9124,57 @@
     "review": true,
     "summary": "The paper discusses the persistent excess mortality in post-pandemic Japan, analyzing current evidence and methodological limitations.",
     "reason": "This article is a review that focuses on the ongoing impact of COVID-19 on mortality rates in Japan without delving into specific mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "https://www.nature.com/articles/s41467-026-72224-y": {
+    "score": 85,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Immune Dysregulation",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The study delineates immunometabolic subgroups in pediatric long COVID with up to 3 years follow-up, highlighting recovery-associated features and EBV imprinting.",
+    "reason": "The paper discusses immune dysregulation as a mechanism underlying long COVID in children."
+  },
+  "fpsyg.2026.1801247": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "A cross-sectional study examining mental health and psychological distress in healthcare-related university students during the pandemic.",
+    "reason": "The paper is a review of mental health challenges faced by university students, particularly those in healthcare fields, without focusing on long COVID mechanisms, treatments, drugs, or lifestyle interventions."
+  },
+  "fpubh.2026.1901548": {
+    "score": 50,
+    "category": "Lifestyle",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": true,
+    "review": false,
+    "summary": "This paper is a correction to an article about the impact of occupational stress, job satisfaction, and intention to leave among critical care nurses during the COVID-19 pandemic in Lebanon. It does not discuss long COVID or any biological mechanisms.",
+    "reason": "The paper is a correction for a study on lifestyle factors (stress, job satisfaction) affecting healthcare workers during the pandemic."
+  },
+  "fpsyg.2026.1850043": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": true,
+    "review": true,
+    "summary": "A systematic review and meta-analysis of the association between physical activity and depression among university students.",
+    "reason": "The paper is a review/meta-analysis focusing on lifestyle interventions (physical activity) without discussing specific mechanisms, treatments, or drugs."
   }
 }
