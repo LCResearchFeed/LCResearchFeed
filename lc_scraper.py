@@ -26,10 +26,10 @@ from sources.europepmc import fetch_europepmc_papers
 from sources.recover import fetch_recover_papers
 from sources.patientresearchcovid19 import fetch_plrc_papers
 from sources.frontiers import fetch_frontiers_papers
+from sources.wust import fetch_wust_papers
 
 # AI
 from ai.classifier import classify_paper
-
 
 # ---------------------------------------------------------
 # Logging
@@ -210,6 +210,7 @@ def _source_display_name(s: str) -> str:
         "recover": "RECOVER",
         "plrc-scholar": "PLRC",
         "frontiers": "Frontiers",
+        "wust": "Rob Wüst",
     }
     return mapping.get(s.lower(), "Other")
 
@@ -530,6 +531,7 @@ def main() -> None:
         "recover": fetch_recover_papers(),
         "patientresearchcovid19": fetch_plrc_papers(),
         "frontiers": fetch_frontiers_papers(),
+        "wust": fetch_wust_papers(),
     }
 
     for name, papers in sources.items():
