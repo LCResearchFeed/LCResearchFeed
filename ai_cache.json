@@ -10205,7 +10205,7 @@
     "reason": "The study focuses on identifying dysautonomia as a mechanism of Long COVID through the use of wearable technology, which falls under moderate mechanistic evidence."
   },
   "manual-wust-hrv-pem-2026": {
-    "score": 60,
+    "score": 80,
     "category": "Mechanism",
     "long_covid": true,
     "mechanistic_group": "Dysautonomia",
