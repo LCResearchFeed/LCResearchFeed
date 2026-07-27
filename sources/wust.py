@@ -28,12 +28,6 @@ def _contains_lc_terms(text: str) -> bool:
 
 
 def _parse_date(item: dict):
-    """
-    EuropePMC heeft meerdere datumvelden:
-    - firstPublicationDate
-    - epubDate
-    - pubYear (alleen jaar)
-    """
     for key in ("firstPublicationDate", "epubDate"):
         d = item.get(key)
         if d:
@@ -42,7 +36,6 @@ def _parse_date(item: dict):
             except:
                 pass
 
-    # fallback: alleen jaar
     year = item.get("pubYear")
     if year:
         try:
@@ -54,24 +47,16 @@ def _parse_date(item: dict):
 
 
 def _extract_url(item: dict):
-    """
-    EuropePMC geeft soms meerdere full-text URLs.
-    Als die ontbreken:
-    - PMC fallback
-    - DOI fallback
-    """
     urls = item.get("fullTextUrlList", {}).get("fullTextUrl", [])
     if urls:
         for u in urls:
             if "url" in u:
                 return u["url"]
 
-    # PMC fallback
     pmcid = item.get("pmcid")
     if pmcid:
         return f"https://www.ncbi.nlm.nih.gov/pmc/articles/{pmcid}/"
 
-    # DOI fallback
     doi = item.get("doi")
     if doi:
         return f"https://doi.org/{doi}"
@@ -81,18 +66,28 @@ def _extract_url(item: dict):
 
 def _build_id(item: dict, title: str):
     """
-    Robuuste ID:
-    - EuropePMC ID
-    - DOI
-    - Titel fallback
+    Nieuwe, stabiele ID-logica:
+    - Als er een PMID is → gebruik PMID
+    - Als er een PMC is → gebruik PMC
+    - Als er een DOI is → gebruik doi-<doi>
+    - Anders → fallback op titel
     """
-    if item.get("id"):
-        return f"wust-{item['id']}"
 
-    if item.get("doi"):
-        return f"wust-{item['doi']}"
+    pmid = item.get("pmid")
+    if pmid:
+        return pmid  # pure PMID
 
-    return f"wust-{title[:60].replace(' ', '_')}"
+    pmcid = item.get("pmcid")
+    if pmcid:
+        return f"PMC{pmcid}"
+
+    doi = item.get("doi")
+    if doi:
+        return f"doi-{doi}"
+
+    # fallback: stabiele titel-ID
+    safe_title = title[:60].replace(" ", "_")
+    return f"wust-{safe_title}"
 
 
 # ---------------------------------------------------------
@@ -112,7 +107,6 @@ def fetch_wust_papers():
 
         combo = f"{title} {abstract}".lower()
 
-        # Extra LC-veiligheidsfilter
         if not _contains_lc_terms(combo):
             continue
 
@@ -129,15 +123,9 @@ def fetch_wust_papers():
             "url": url,
             "doi": doi,
             "source": "wust",
-            "category": "mechanism",  # jouw AI-classifier bepaalt later de echte categorie
+            "category": "mechanism",
             "date": date,
         })
 
     print(f"[Wust] Found {len(results)} LC papers from Rob Wüst.")
     return results
-
-
-# if __name__ == "__main__":
-    # papers = fetch_wust_papers()
-    # for p in papers:
-        # print(p["title"])
