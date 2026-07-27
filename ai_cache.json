@@ -10203,5 +10203,18 @@
     "review": false,
     "summary": "The paper uses wearable heart rate variability monitoring to identify autonomic dysfunction and thresholds for post-exertional malaise in Long COVID patients.",
     "reason": "The study focuses on identifying dysautonomia as a mechanism of Long COVID through the use of wearable technology, which falls under moderate mechanistic evidence."
+  },
+  "manual-wust-hrv-pem-2026": {
+    "score": 60,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Dysautonomia",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The study uses wearable heart rate variability (HRV) monitoring to detect autonomic dysfunction and identify thresholds for post-exertional malaise in Long COVID patients.",
+    "reason": "The paper focuses on the mechanism of dysautonomia in Long COVID through HRV monitoring, which is a moderate mechanism."
   }
 }
