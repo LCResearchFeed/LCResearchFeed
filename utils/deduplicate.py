@@ -1,6 +1,7 @@
 import re
 from difflib import SequenceMatcher
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
+from datetime import datetime
 
 
 def normalize_title(title: str) -> str:
@@ -18,17 +19,10 @@ def normalize_doi(doi: str) -> str:
         return ""
 
     doi = doi.lower().strip()
-
-    # strip common prefixes
     doi = re.sub(r"^(https?://(dx\.)?doi\.org/)", "", doi)
     doi = re.sub(r"^doi:\s*", "", doi)
-
-    # strip suffixes
     doi = re.sub(r"/(pdf|epdf|abstract)$", "", doi)
-
-    # strip query params
     doi = doi.split("?")[0]
-
     return doi
 
 
@@ -37,12 +31,8 @@ def normalize_url(url: str) -> str:
         return ""
 
     url = url.strip()
-
     parsed = urlparse(url)
-
-    # strip query params & fragments
     clean = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
-
     return clean.rstrip("/").lower()
 
 
@@ -52,15 +42,10 @@ def normalize_id(value):
 
     v = str(value).strip().lower()
 
-    # unify pubmed
     if v.startswith("pubmed-"):
         return v.replace("pubmed-", "")
-
-    # unify pmcid
     if v.startswith("pmcid:"):
         return v.replace("pmcid:", "").strip()
-
-    # unify europepmc DOI
     if v.startswith("europepmc-10."):
         return v.replace("europepmc-", "")
 
@@ -76,29 +61,54 @@ def same_title(a: str, b: str, threshold=0.86):
 
 
 def is_duplicate(paper, existing):
+    title_p = paper.get("title", "")
+    title_e = existing.get("title", "")
 
-    # PMID
+    # ---------------------------------------------------------
+    # 1. Prefer peer-reviewed (DOI) over preprint (no DOI)
+    # ---------------------------------------------------------
+    if same_title(title_p, title_e):
+        doi_p = paper.get("doi")
+        doi_e = existing.get("doi")
+
+        if doi_p and not doi_e:
+            return True
+        if doi_e and not doi_p:
+            return True
+
+        # ---------------------------------------------------------
+        # 2. Prefer newest version (date)
+        # ---------------------------------------------------------
+        date_p = paper.get("date")
+        date_e = existing.get("date")
+
+        if isinstance(date_p, datetime) and isinstance(date_e, datetime):
+            if date_p > date_e:
+                return True
+            if date_e > date_p:
+                return True
+
+    # ---------------------------------------------------------
+    # 3. Existing logic (unchanged)
+    # ---------------------------------------------------------
+
     if paper.get("pmid") and existing.get("pmid"):
         if normalize_id(paper["pmid"]) == normalize_id(existing["pmid"]):
             return True
 
-    # DOI
     if paper.get("doi") and existing.get("doi"):
         if normalize_doi(paper["doi"]) == normalize_doi(existing["doi"]):
             return True
 
-    # URL
     if paper.get("url") and existing.get("url"):
         if normalize_url(paper["url"]) == normalize_url(existing["url"]):
             return True
 
-    # Generic ID
     if paper.get("id") and existing.get("id"):
         if normalize_id(paper["id"]) == normalize_id(existing["id"]):
             return True
 
-    # Title
-    if same_title(paper.get("title", ""), existing.get("title", "")):
+    if same_title(title_p, title_e):
         return True
 
     return False
