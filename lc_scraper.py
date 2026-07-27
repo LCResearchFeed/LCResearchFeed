@@ -516,6 +516,56 @@ def clean_duplicate_cards(index_path: str):
         "stats": stats,
     }
 
+def sync_seen_with_index():
+    """
+    Synchroniseert posted_pmids.txt (seen) met de daadwerkelijke kaarten in index.html.
+    Alleen IDs die een kaart hebben blijven bestaan.
+    """
+    with open(INDEX_PATH, "r", encoding="utf-8") as f:
+        html = f.read()
+
+    # Vind alle kaart-URL's
+    urls = re.findall(r'<a href="([^"]+)"', html)
+
+    normalized_ids = set()
+
+    for url in urls:
+        # PubMed
+        m = re.search(r'pubmed\.ncbi\.nlm\.nih\.gov/(\d+)/', url)
+        if m:
+            normalized_ids.add(m.group(1))
+            continue
+
+        # PMC
+        m = re.search(r'/PMC(\d+)', url)
+        if m:
+            normalized_ids.add("PMC" + m.group(1))
+            continue
+
+        # EuropePMC DOI
+        m = re.search(r'europepmc\.org/article/DOI/(10\.\S+)', url)
+        if m:
+            normalized_ids.add("europepmc-" + m.group(1))
+            continue
+
+        # EuropePMC MED
+        m = re.search(r'europepmc\.org/article/MED/(10\.\S+)', url)
+        if m:
+            normalized_ids.add("europepmc-" + m.group(1))
+            continue
+
+        # Nature / Frontiers / Springer DOI's
+        m = re.search(r'doi\.org/(10\.\S+)', url)
+        if m:
+            normalized_ids.add("doi-" + m.group(1))
+            continue
+
+        # Fallback: hele URL als ID
+        normalized_ids.add(url)
+
+    # Save naar posted_pmids.txt
+    save_seen(normalized_ids)
+    log(f"[SYNC] posted_pmids.txt gesynchroniseerd met index.html ({len(normalized_ids)} items)")
 
 # ---------------------------------------------------------
 # Main
@@ -727,6 +777,8 @@ def main() -> None:
             seen.add(p["id"])
 
     save_seen(seen)
+    
+    sync_seen_with_index()
 
     commit_and_push()
 
