@@ -592,7 +592,7 @@ def main() -> None:
             continue
         if not ai.get("long_covid", False):
             continue
-        if ai.get("score", 0) < 65:
+        if p.get("source") != "manual" and ai.get("score", 0) < 65:
             continue
 
         p["ai_score"] = ai.get("score", 0)
