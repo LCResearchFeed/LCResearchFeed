@@ -1,7 +1,7 @@
-# sources/manual.py
+# sources/springer.py
 from datetime import datetime
 
-def fetch_manual_papers():
+def fetch_springer_papers():
     """
     Voeg hier handmatig Springer Nature papers toe.
     Deze worden volledig meegenomen in de pipeline:

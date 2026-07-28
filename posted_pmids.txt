@@ -26,6 +26,7 @@
 35986236
 35999804
 36209231
+36563487
 36809513
 36858030
 36911724
@@ -110,6 +111,7 @@
 42461564
 42492693
 42499246
+42508134
 PMC10406961
 PMC11814416
 PMC11925477
@@ -188,6 +190,7 @@ https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1824498
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1837186/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1867430/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1905758/full
+https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1916898/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1853951/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1882710/full
 https://www.frontiersin.org/journals/pediatrics/articles/10.3389/fped.2026.1710900/full
