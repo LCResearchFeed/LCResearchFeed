@@ -27,7 +27,8 @@ from sources.recover import fetch_recover_papers
 from sources.patientresearchcovid19 import fetch_plrc_papers
 from sources.frontiers import fetch_frontiers_papers
 from sources.wust import fetch_wust_papers
-from sources.springer import fetch_springer_papers
+from sources.manual_springer import fetch_springer_papers
+from sources.manual_nature import fetch_manual_nature_papers
 
 # AI
 from ai.classifier import classify_paper
@@ -213,6 +214,7 @@ def _source_display_name(s: str) -> str:
         "frontiers": "Frontiers",
         "wust": "Rob Wüst",
         "springer": "Springer Nature",
+        "manual_nature": "Nature",
     }
     return mapping.get(s.lower(), "Other")
 
@@ -585,6 +587,7 @@ def main() -> None:
         "frontiers": fetch_frontiers_papers(),
         "wust": fetch_wust_papers(),
         "springer": fetch_springer_papers(),
+        "manual_nature": fetch_manual_nature_papers(),
     }
 
     for name, papers in sources.items():
@@ -642,7 +645,7 @@ def main() -> None:
             continue
         if not ai.get("long_covid", False):
             continue
-        if p.get("source") != "springer" and ai.get("score", 0) < 65:
+        if p.get("source") != "springer" and p.get("source") != "manual_nature" and ai.get("score", 0) < 65:
             continue
 
         p["ai_score"] = ai.get("score", 0)
