@@ -11139,5 +11139,44 @@
     "review": false,
     "summary": "The study observes autonomic dysfunction and post-exertional malaise in Long COVID patients using wearable heart rate variability monitoring.",
     "reason": "The paper focuses on the observation of autonomic dysfunction, which is a mechanism related to Long COVID."
+  },
+  "fpubh.2026.1903960": {
+    "score": 50,
+    "category": "Review",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": true,
+    "summary": "The paper discusses the standardization of biobanking for infectious diseases, focusing on specimen preservation and clinical metadata alignment with in vitro diagnostic (IVD) clinical trials requirements.",
+    "reason": "The article is a review that aligns biobanking standards with IVD clinical trials, which does not directly address Long COVID."
+  },
+  "fped.2026.1914065": {
+    "score": 55,
+    "category": "Lifestyle",
+    "long_covid": false,
+    "mechanistic_group": "Non-mechanistic",
+    "mechanism": false,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": true,
+    "review": false,
+    "summary": "A pilot study on the feasibility and outcomes of an individualized exercise program in pediatric oncology.",
+    "reason": "The paper discusses a lifestyle intervention (exercise) for pediatric oncology patients, which falls under the category of lifestyle interventions."
+  },
+  "https://www.nature.com/articles/d41586-026-02443-2": {
+    "score": 75,
+    "category": "Mechanism",
+    "long_covid": true,
+    "mechanistic_group": "Viral Persistence",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The study suggests that reactivation of anelloviruses, typically harmless viruses, is linked to the development of long COVID.",
+    "reason": "The paper discusses a potential mechanism involving viral persistence as a factor in long COVID."
   }
 }
