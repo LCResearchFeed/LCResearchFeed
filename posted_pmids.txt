@@ -88,6 +88,7 @@
 41943240
 41959563
 42010704
+42017829
 42108247
 42138268
 42154742
@@ -115,6 +116,8 @@
 42501005
 42508134
 42522341
+42577970
+42589652
 PMC10406961
 PMC11814416
 PMC11925477
@@ -184,10 +187,14 @@ https://recovercovid.org/publications/sustained-reduction-cardiopulmonary-fitnes
 https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2026.1812439/full
 https://www.frontiersin.org/journals/cellular-and-infection-microbiology/articles/10.3389/fcimb.2026.1896480/full
 https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2026.1899115/full
+https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2026.1916915/full
 https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2026.1926365/full
 https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2026.1881458/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1805159/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1846423/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1870109/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1894779/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1913045/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1809451/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1813032/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1824498/full
@@ -207,6 +214,7 @@ https://www.nature.com/articles/s41467-026-72224-y
 https://www.nature.com/articles/s41467-026-75991-w
 https://www.nature.com/articles/s41577-026-01326-x
 https://www.nature.com/articles/s41582-026-01243-6
+https://www.nature.com/articles/s41586-026-10740-z
 https://www.nature.com/articles/s41598-026-38800-4
 https://www.nature.com/articles/s43856-026-01761-w
 https://www.nature.com/articles/s44220-026-00675-9

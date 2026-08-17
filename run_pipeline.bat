@@ -1,8 +1,12 @@
-powershell -Command "Add-Content scheduler_log.txt ('[' + (Get-Date) + ']')"
-powershell -Command "Add-Content scheduler_log.txt ('Session: ' + $env:SESSIONNAME)"
+@echo off
 
-cd /d "C:\Users\mkoni\LCResearchFeed"
+set LOG=C:\Users\mkoni\LCResearchFeed\scheduler_log.txt
+set PROJECT=C:\Users\mkoni\LCResearchFeed
 
-powershell -Command "python lc_scraper.py | Tee-Object -FilePath scheduler_log.txt"
+powershell -Command "Add-Content '%LOG%' ('[' + (Get-Date) + ']')"
+powershell -Command "Add-Content '%LOG%' ('Session: ' + $env:SESSIONNAME)"
 
-powershell -Command "Add-Content scheduler_log.txt '------------------------------'"
+cd /d "%PROJECT%"
+powershell -Command "python lc_scraper.py | Tee-Object -FilePath '%LOG%'"
+
+powershell -Command "Add-Content '%LOG%' '------------------------------'"
