@@ -62,6 +62,7 @@
 40368776
 40447142
 40485151
+40532786
 40707035
 40848897
 40908304
@@ -165,6 +166,8 @@ PMC13174232
 PMC13187290
 PMC13212466
 PMC13279208
+PMC13303953
+PMC13318768
 PMC8339407
 PMC8818659
 PMC8883497
@@ -201,10 +204,12 @@ https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1824498
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1837186/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1867430/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1905758/full
+https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1911269/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1916898/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1921822/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1853951/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1882710/full
+https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1913553/full
 https://www.frontiersin.org/journals/pediatrics/articles/10.3389/fped.2026.1710900/full
 https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2026.1852220/full
 https://www.nature.com/articles/d41586-026-02341-7
@@ -216,5 +221,6 @@ https://www.nature.com/articles/s41577-026-01326-x
 https://www.nature.com/articles/s41582-026-01243-6
 https://www.nature.com/articles/s41586-026-10740-z
 https://www.nature.com/articles/s41598-026-38800-4
+https://www.nature.com/articles/s41598-026-67210-9
 https://www.nature.com/articles/s43856-026-01761-w
 https://www.nature.com/articles/s44220-026-00675-9
