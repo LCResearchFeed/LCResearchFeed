@@ -48,6 +48,7 @@
 38593220
 38668888
 38793604
+39142505
 39236463
 39243697
 39287247
@@ -119,6 +120,9 @@
 42522341
 42577970
 42589652
+42652045
+42657238
+42668009
 PMC10406961
 PMC11814416
 PMC11925477
@@ -188,6 +192,7 @@ https://recovercovid.org/publications/evaluation-steroids-acute-covid-prevention
 https://recovercovid.org/publications/rationale-and-design-recover-energize-platform-clinical-trial-interventions-exercise
 https://recovercovid.org/publications/sustained-reduction-cardiopulmonary-fitness-long-covid-report-recover-adult-cohort
 https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2026.1812439/full
+https://www.frontiersin.org/journals/bioinformatics/articles/10.3389/fbinf.2026.1915857/full
 https://www.frontiersin.org/journals/cellular-and-infection-microbiology/articles/10.3389/fcimb.2026.1896480/full
 https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2026.1899115/full
 https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2026.1916915/full

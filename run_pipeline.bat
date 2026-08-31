@@ -1,5 +1,3 @@
-@echo off
-
 set LOG=C:\Users\mkoni\LCResearchFeed\scheduler_log.txt
 set PROJECT=C:\Users\mkoni\LCResearchFeed
 
