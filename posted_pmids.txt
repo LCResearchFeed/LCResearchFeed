@@ -101,9 +101,11 @@
 42200676
 42208499
 42235853
+42260034
 42285845
 42297430
 42309258
+42309909
 42323109
 42340243
 42351227
@@ -172,6 +174,7 @@ PMC13212466
 PMC13279208
 PMC13303953
 PMC13318768
+PMC13342817
 PMC8339407
 PMC8818659
 PMC8883497
@@ -189,6 +192,7 @@ doi-10.64898/2026.03.09.710460
 doi-10.64898/2026.04.27.721205
 https://link.springer.com/article/10.1007/s40279-026-02487-4
 https://recovercovid.org/publications/evaluation-steroids-acute-covid-prevention-long-covid-children-ehr-and-pediatric
+https://recovercovid.org/publications/nirmatrelvir-ritonavir-targeting-viral-persistence-post-covid-19-condition-long-covid
 https://recovercovid.org/publications/rationale-and-design-recover-energize-platform-clinical-trial-interventions-exercise
 https://recovercovid.org/publications/sustained-reduction-cardiopulmonary-fitness-long-covid-report-recover-adult-cohort
 https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2026.1812439/full
@@ -219,6 +223,7 @@ https://www.frontiersin.org/journals/pediatrics/articles/10.3389/fped.2026.17109
 https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2026.1852220/full
 https://www.nature.com/articles/d41586-026-02341-7
 https://www.nature.com/articles/d41586-026-02443-2
+https://www.nature.com/articles/d41586-026-02683-2
 https://www.nature.com/articles/s41398-026-04250-9
 https://www.nature.com/articles/s41467-026-72224-y
 https://www.nature.com/articles/s41467-026-75991-w
