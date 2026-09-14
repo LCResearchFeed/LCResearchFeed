@@ -175,6 +175,9 @@ PMC13279208
 PMC13303953
 PMC13318768
 PMC13342817
+PMC13516433
+PMC13552729
+PMC13554463
 PMC8339407
 PMC8818659
 PMC8883497
@@ -191,6 +194,7 @@ doi-10.64898/2025.12.04.25341650
 doi-10.64898/2026.03.09.710460
 doi-10.64898/2026.04.27.721205
 https://link.springer.com/article/10.1007/s40279-026-02487-4
+https://recovercovid.org/publications/early-hhv-6-igg-and-iga-responses-during-acute-sars-cov-2-infection-relation-long
 https://recovercovid.org/publications/evaluation-steroids-acute-covid-prevention-long-covid-children-ehr-and-pediatric
 https://recovercovid.org/publications/nirmatrelvir-ritonavir-targeting-viral-persistence-post-covid-19-condition-long-covid
 https://recovercovid.org/publications/rationale-and-design-recover-energize-platform-clinical-trial-interventions-exercise
@@ -216,6 +220,7 @@ https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1905758
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1911269/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1916898/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1921822/full
+https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1964697/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1853951/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1882710/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1913553/full
