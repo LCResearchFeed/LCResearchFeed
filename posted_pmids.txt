@@ -91,6 +91,7 @@
 41959563
 42010704
 42017829
+42037238
 42108247
 42138268
 42154742
@@ -178,6 +179,7 @@ PMC13342817
 PMC13516433
 PMC13552729
 PMC13554463
+PMC13581729
 PMC8339407
 PMC8818659
 PMC8883497
@@ -210,6 +212,7 @@ https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1805
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1846423/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1870109/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1894779/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1910050/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1913045/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1809451/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1813032/full
@@ -221,11 +224,15 @@ https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1911269
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1916898/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1921822/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1964697/full
+https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2026.1923299/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1853951/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1882710/full
 https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.1913553/full
 https://www.frontiersin.org/journals/pediatrics/articles/10.3389/fped.2026.1710900/full
 https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2026.1852220/full
+https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2026.1939700/full
+https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2026.1822376/full
+https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2026.1901917/full
 https://www.nature.com/articles/d41586-026-02341-7
 https://www.nature.com/articles/d41586-026-02443-2
 https://www.nature.com/articles/d41586-026-02683-2
@@ -237,5 +244,6 @@ https://www.nature.com/articles/s41582-026-01243-6
 https://www.nature.com/articles/s41586-026-10740-z
 https://www.nature.com/articles/s41598-026-38800-4
 https://www.nature.com/articles/s41598-026-67210-9
+https://www.nature.com/articles/s41598-026-72320-5
 https://www.nature.com/articles/s43856-026-01761-w
 https://www.nature.com/articles/s44220-026-00675-9
