@@ -180,6 +180,7 @@ PMC13516433
 PMC13552729
 PMC13554463
 PMC13581729
+PMC13630552
 PMC8339407
 PMC8818659
 PMC8883497
@@ -195,10 +196,12 @@ doi-10.21203/rs.3.rs-873830/v1
 doi-10.64898/2025.12.04.25341650
 doi-10.64898/2026.03.09.710460
 doi-10.64898/2026.04.27.721205
+doi-10.64898/2026.09.28.26364044
 https://link.springer.com/article/10.1007/s40279-026-02487-4
 https://recovercovid.org/publications/early-hhv-6-igg-and-iga-responses-during-acute-sars-cov-2-infection-relation-long
 https://recovercovid.org/publications/evaluation-steroids-acute-covid-prevention-long-covid-children-ehr-and-pediatric
 https://recovercovid.org/publications/nirmatrelvir-ritonavir-targeting-viral-persistence-post-covid-19-condition-long-covid
+https://recovercovid.org/publications/post-infection-increases-cardiometabolic-disease-staging-cmds-scores-are-associated
 https://recovercovid.org/publications/rationale-and-design-recover-energize-platform-clinical-trial-interventions-exercise
 https://recovercovid.org/publications/sustained-reduction-cardiopulmonary-fitness-long-covid-report-recover-adult-cohort
 https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2026.1812439/full
@@ -214,6 +217,7 @@ https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1870
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1894779/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1910050/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1913045/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1957339/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1809451/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1813032/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1824498/full
@@ -239,11 +243,13 @@ https://www.nature.com/articles/d41586-026-02683-2
 https://www.nature.com/articles/s41398-026-04250-9
 https://www.nature.com/articles/s41467-026-72224-y
 https://www.nature.com/articles/s41467-026-75991-w
+https://www.nature.com/articles/s41467-026-77925-y
 https://www.nature.com/articles/s41577-026-01326-x
 https://www.nature.com/articles/s41582-026-01243-6
 https://www.nature.com/articles/s41586-026-10740-z
 https://www.nature.com/articles/s41598-026-38800-4
 https://www.nature.com/articles/s41598-026-67210-9
 https://www.nature.com/articles/s41598-026-72320-5
+https://www.nature.com/articles/s41598-026-73807-x
 https://www.nature.com/articles/s43856-026-01761-w
 https://www.nature.com/articles/s44220-026-00675-9
