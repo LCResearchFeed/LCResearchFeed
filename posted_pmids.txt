@@ -210,6 +210,7 @@ https://www.frontiersin.org/journals/cellular-and-infection-microbiology/article
 https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2026.1899115/full
 https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2026.1916915/full
 https://www.frontiersin.org/journals/endocrinology/articles/10.3389/fendo.2026.1926365/full
+https://www.frontiersin.org/journals/health-services/articles/10.3389/frhs.2026.1912240/full
 https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2026.1881458/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1805159/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1846423/full
@@ -235,6 +236,7 @@ https://www.frontiersin.org/journals/neurology/articles/10.3389/fneur.2026.19135
 https://www.frontiersin.org/journals/pediatrics/articles/10.3389/fped.2026.1710900/full
 https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2026.1852220/full
 https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2026.1939700/full
+https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2026.1968156/full
 https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2026.1822376/full
 https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2026.1901917/full
 https://www.nature.com/articles/d41586-026-02341-7
@@ -249,6 +251,7 @@ https://www.nature.com/articles/s41582-026-01243-6
 https://www.nature.com/articles/s41586-026-10740-z
 https://www.nature.com/articles/s41598-026-38800-4
 https://www.nature.com/articles/s41598-026-67210-9
+https://www.nature.com/articles/s41598-026-71661-5
 https://www.nature.com/articles/s41598-026-72320-5
 https://www.nature.com/articles/s41598-026-73807-x
 https://www.nature.com/articles/s43856-026-01761-w
