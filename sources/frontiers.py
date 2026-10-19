@@ -1,4 +1,5 @@
 import requests
+import time
 from bs4 import BeautifulSoup
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -83,18 +84,83 @@ def extract_frontiers_date(psoup):
 
 
 
-def fetch_article(session, link):
-    full_url = link if link.startswith("http") else "https://www.frontiersin.org" + link
+
+def request_with_retries(url, params=None, attempts=3):
+    """Voer een HTTP-aanvraag uit met retries bij tijdelijke fouten."""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; LC-Scraper/1.0)"
+    }
+
+    for attempt in range(1, attempts + 1):
+        try:
+            response = requests.get(
+                url,
+                params=params,
+                headers=headers,
+                timeout=(10, 60),
+            )
+
+            # Tijdelijke serverfouten en rate limits opnieuw proberen.
+            if response.status_code == 429 or response.status_code >= 500:
+                if attempt < attempts:
+                    wait = 5 * attempt
+                    print(
+                        f"[Frontiers] HTTP {response.status_code}; "
+                        f"retry {attempt}/{attempts} in {wait}s"
+                    )
+                    response.close()
+                    time.sleep(wait)
+                    continue
+
+            return response
+
+        except requests.exceptions.RequestException as e:
+            if attempt == attempts:
+                print(
+                    f"[Frontiers] Request failed after "
+                    f"{attempts} attempts: {url} ({e})"
+                )
+                return None
+
+            wait = 5 * attempt
+            print(
+                f"[Frontiers] Request error; "
+                f"retry {attempt}/{attempts} in {wait}s: {e}"
+            )
+            time.sleep(wait)
+
+    return None
+
+
+def fetch_article(link):
+    full_url = (
+        link if link.startswith("http")
+        else "https://www.frontiersin.org" + link
+    )
 
     try:
-        pr = session.get(full_url, timeout=20)
-        if pr.status_code != 200:
+        pr = request_with_retries(full_url)
+
+        if pr is None:
             return None
 
-        psoup = BeautifulSoup(pr.text, "html.parser")
+        try:
+            if pr.status_code != 200:
+                print(
+                    f"[Frontiers] Article returned "
+                    f"HTTP {pr.status_code}: {full_url}"
+                )
+                return None
+
+            psoup = BeautifulSoup(pr.text, "html.parser")
+        finally:
+            pr.close()
 
         title_el = psoup.find("h1")
         title = title_el.get_text(strip=True) if title_el else ""
+
+        if not title:
+            return None
 
         abstract = extract_frontiers_abstract(psoup)
         date = extract_frontiers_date(psoup)
@@ -111,7 +177,8 @@ def fetch_article(session, link):
             "date": date,
         }
 
-    except Exception:
+    except Exception as e:
+        print(f"[Frontiers] Article parsing failed: {full_url}: {e}")
         return None
 
 
@@ -121,14 +188,7 @@ def fetch_frontiers_papers(max_pages=10, stop_before_year=2025):
     papers = []
     seen_ids = set()
 
-    session = requests.Session()
-    session.headers.update({
-        "User-Agent": "Mozilla/5.0 (compatible; LC-Scraper/1.0)"
-    })
-
-    page = 1
-
-    while page <= max_pages:
+    for page in range(1, max_pages + 1):
         print(f"[Frontiers] Fetching page {page}...")
 
         params = {
@@ -138,53 +198,99 @@ def fetch_frontiers_papers(max_pages=10, stop_before_year=2025):
             "page": page,
         }
 
-        r = session.get(base_url, params=params, timeout=20)
-        if r.status_code != 200:
-            print(f"[Frontiers] Page {page} returned {r.status_code}, stopping.")
+        r = request_with_retries(base_url, params=params)
+
+        # Een mislukte pagina mag de rest van de pipeline niet afbreken.
+        if r is None:
+            print(
+                f"[Frontiers] Page {page} failed after retries. "
+                f"Keeping {len(papers)} papers already collected."
+            )
             break
 
-        soup = BeautifulSoup(r.text, "html.parser")
+        try:
+            if r.status_code != 200:
+                print(
+                    f"[Frontiers] Page {page} returned "
+                    f"HTTP {r.status_code}, stopping."
+                )
+                break
+
+            soup = BeautifulSoup(r.text, "html.parser")
+        finally:
+            r.close()
 
         links = soup.select("a[href*='/articles/']")
-        article_links = [
-            a["href"] for a in links
-            if "/articles/" in a["href"] and a["href"].count("/") > 3
-        ]
+
+        article_links = list(dict.fromkeys(
+            a["href"]
+            for a in links
+            if a.get("href")
+            and "/articles/" in a["href"]
+            and a["href"].count("/") > 3
+        ))
 
         if not article_links:
-            print(f"[Frontiers] No articles found on page {page}, stopping.")
+            print(
+                f"[Frontiers] No articles found on page {page}, stopping."
+            )
             break
 
         results = []
-        with ThreadPoolExecutor(max_workers=12) as exe:
-            futures = [exe.submit(fetch_article, session, link) for link in article_links]
-            for f in as_completed(futures):
-                res = f.result()
-                if res:
-                    results.append(res)
+
+        # Een lager aantal gelijktijdige verzoeken belast de website minder.
+        with ThreadPoolExecutor(max_workers=5) as exe:
+            futures = [
+                exe.submit(fetch_article, link)
+                for link in article_links
+            ]
+
+            for future in as_completed(futures):
+                try:
+                    result = future.result()
+                    if result:
+                        results.append(result)
+                except Exception as e:
+                    print(f"[Frontiers] Worker failed: {e}")
 
         new_count = 0
-        for p in results:
-            if p["id"] in seen_ids:
+        stop_for_old_paper = False
+
+        for paper in results:
+            if paper["id"] in seen_ids:
                 continue
 
-            if p["date"] and p["date"].year < stop_before_year:
-                print(f"[Frontiers] Hit year < {stop_before_year}, stopping.")
-                return papers, page
+            if (
+                paper["date"]
+                and paper["date"].year < stop_before_year
+            ):
+                print(
+                    f"[Frontiers] Found paper before "
+                    f"{stop_before_year}: {paper['title']}"
+                )
+                stop_for_old_paper = True
+                continue
 
-            seen_ids.add(p["id"])
-            papers.append(p)
+            seen_ids.add(paper["id"])
+            papers.append(paper)
             new_count += 1
 
-        print(f"[Frontiers] Page {page}: {new_count} new papers")
+        print(
+            f"[Frontiers] Page {page}: {new_count} new papers "
+            f"(total: {len(papers)})"
+        )
+
+        if stop_for_old_paper:
+            print("[Frontiers] Stopping at the year cutoff.")
+            break
 
         if new_count == 0:
             print("[Frontiers] No new papers on this page, stopping.")
             break
 
-        page += 1
-
+    print(f"[Frontiers] Finished with {len(papers)} papers.")
     return papers
+
 
 
 # if __name__ == "__main__":

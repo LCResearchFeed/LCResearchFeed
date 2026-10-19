@@ -126,6 +126,8 @@
 42652045
 42657238
 42668009
+42845832
+42869415
 PMC10406961
 PMC11814416
 PMC11925477
@@ -181,6 +183,7 @@ PMC13552729
 PMC13554463
 PMC13581729
 PMC13630552
+PMC13665992
 PMC8339407
 PMC8818659
 PMC8883497
@@ -215,10 +218,12 @@ https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1805159/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1846423/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1870109/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1885356/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1894779/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1910050/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1913045/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1957339/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.2025243/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1809451/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1813032/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1824498/full
