@@ -128,6 +128,7 @@
 42668009
 42845832
 42869415
+42927133
 PMC10406961
 PMC11814416
 PMC11925477
@@ -223,6 +224,7 @@ https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1894
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1910050/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1913045/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1957339/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1984598/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.2025243/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1809451/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1813032/full
