@@ -207,6 +207,7 @@ https://recovercovid.org/publications/evaluation-steroids-acute-covid-prevention
 https://recovercovid.org/publications/nirmatrelvir-ritonavir-targeting-viral-persistence-post-covid-19-condition-long-covid
 https://recovercovid.org/publications/post-infection-increases-cardiometabolic-disease-staging-cmds-scores-are-associated
 https://recovercovid.org/publications/rationale-and-design-recover-energize-platform-clinical-trial-interventions-exercise
+https://recovercovid.org/publications/real-world-effectiveness-nirmatrelvir-protecting-long-covid-outpatient-adult-patients
 https://recovercovid.org/publications/sustained-reduction-cardiopulmonary-fitness-long-covid-report-recover-adult-cohort
 https://www.frontiersin.org/journals/bioengineering-and-biotechnology/articles/10.3389/fbioe.2026.1812439/full
 https://www.frontiersin.org/journals/bioinformatics/articles/10.3389/fbinf.2026.1915857/full
@@ -224,7 +225,9 @@ https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1894
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1910050/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1913045/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1957339/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1984178/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1984598/full
+https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.1995668/full
 https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2026.2025243/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1809451/full
 https://www.frontiersin.org/journals/medicine/articles/10.3389/fmed.2026.1813032/full
@@ -246,6 +249,7 @@ https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2026.19
 https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2026.1968156/full
 https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2026.1822376/full
 https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2026.1901917/full
+https://www.frontiersin.org/journals/rehabilitation-sciences/articles/10.3389/fresc.2026.1898250/full
 https://www.nature.com/articles/d41586-026-02341-7
 https://www.nature.com/articles/d41586-026-02443-2
 https://www.nature.com/articles/d41586-026-02683-2
