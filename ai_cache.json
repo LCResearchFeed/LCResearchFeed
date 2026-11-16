@@ -19095,5 +19095,18 @@
     "review": true,
     "summary": "A systematic review of methods, clinical applications, and digital health perspectives for artificial intelligence-driven computer-aided diagnosis of respiratory diseases.",
     "reason": "The paper is a review focusing on diagnostic methods and digital health perspectives without discussing long COVID."
+  },
+  "https://www.nature.com/articles/s41598-026-79881-5": {
+    "score": 85,
+    "category": "Mechanism",
+    "long_covid": false,
+    "mechanistic_group": "Autoimmunity",
+    "mechanism": true,
+    "treatment": false,
+    "drug": false,
+    "lifestyle": false,
+    "review": false,
+    "summary": "The paper discusses self-targeted attacks of a virus on scale-free networks, which is revealed by the COVID-19 pandemic. It suggests mechanisms related to autoimmunity.",
+    "reason": "The paper focuses on biological mechanisms, specifically autoimmunity, in relation to the SARS-CoV-2 infection."
   }
 }
